@@ -32,11 +32,13 @@ app.add_middleware(
 def get():
   point = Point.select(Point.faza,fn.SUM(Drawing.weight).alias('aaa')).join(Drawing).group_by(Point.faza)
 
-  b = Bolt.select(fn.SUM(Bolt.weight * Bolt.count).alias('aaa'))
+  b = Bolt.select(Bolt.profile,fn.SUM(Bolt.weight * Bolt.count).alias('aaa'),Bolt.weight,fn.SUM(Bolt.count).alias('bbb')).group_by(Bolt.profile)
 
-  n = Nut.select(fn.SUM(Nut.weight * Nut.count).alias('aaa'))
-  w = Washer.select(fn.SUM(Washer.weight * Washer.count).alias('aaa'))
-  print(n.scalar() + b.scalar() + w.scalar())
+  n = Nut.select(Nut.profile,fn.SUM(Nut.weight * Nut.count).alias('aaa'),Nut.weight,fn.SUM(Nut.count).alias('bbb')).group_by(Nut.profile)
+
+  w = Washer.select(Washer.profile,fn.SUM(Washer.weight * Washer.count).alias('aaa'),Washer.weight,fn.SUM(Washer.count).alias('bbb'),Washer.gost).group_by(Washer.gost)
+  for i in w:
+    print(i.aaa,i.weight,i.bbb,i.gost)
   return #point
 
 # @app.post('/',response_model=Drawing)
