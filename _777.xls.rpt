@@ -1,0 +1,3458 @@
+
+template _tmp_902
+{
+    name = "tpled_template2";
+    type = TEXTUAL;
+    width = 200;
+    maxheight = 5000;
+    columns = (1, 1);
+    gap = 1;
+    fillpolicy = EVEN;
+    filldirection = HORIZONTAL;
+    fillstartfrom = TOPLEFT;
+    margins = (0, 0, 0, 0);
+    gridxspacing = 1;
+    gridyspacing = 1;
+    version = 4;
+    created = "07.04.2011 10:56";
+    modified = "06.12.2021 11:36";
+    notes = "";
+
+    row _tmp_31
+    {
+        name = "ASSEMBLY_2";
+        height = 1;
+        visibility = TRUE;
+        usecolumns = FALSE;
+        rule = "";
+        contenttype = "ASSEMBLY";
+        sorttype = COMBINE;
+
+        valuefield _tmp_42
+        {
+            name = "ASSEMBLY_POS_field_1";
+            location = (10, 0);
+            formula = "GetValue(\"ASSEMBLY_POS\")";
+            maxnumoflines = 1;
+            datatype = STRING;
+            class = "";
+            cacheable = TRUE;
+            formatzeroasempty = FALSE;
+            justify = LEFT;
+            visibility = TRUE;
+            angle = 0;
+            length = 10;
+            decimals = 0;
+            sortdirection = ASCENDING;
+            fontname = "GOST type A";
+            fontcolor = 153;
+            fonttype = 2;
+            fontsize = 3.5;
+            fontratio = 1;
+            fontstyle = 0;
+            fontslant = 0;
+            pen = -1;
+            oncombine = NONE;
+            aligncontenttotop = FALSE;
+        };
+
+        valuefield _tmp_43
+        {
+            name = "DRAWING.NAME_BASE_field_1";
+            location = (27, 0);
+            formula = "GetValue(\"DRAWING.NAME_BASE\")";
+            maxnumoflines = 1;
+            datatype = STRING;
+            class = "";
+            cacheable = TRUE;
+            formatzeroasempty = FALSE;
+            justify = LEFT;
+            visibility = TRUE;
+            angle = 0;
+            length = 20;
+            decimals = 0;
+            sortdirection = NONE;
+            fontname = "GOST type A";
+            fontcolor = 153;
+            fonttype = 2;
+            fontsize = 3.5;
+            fontratio = 1;
+            fontstyle = 0;
+            fontslant = 0;
+            pen = -1;
+            oncombine = NONE;
+            aligncontenttotop = FALSE;
+        };
+
+        valuefield _tmp_44
+        {
+            name = "DRAWING.IS_READY_FOR_ISSUE_field_1";
+            location = (55, 0);
+            formula = "GetValue(\"DRAWING.IS_READY_FOR_ISSUE\")";
+            maxnumoflines = 1;
+            datatype = INTEGER;
+            class = "";
+            cacheable = TRUE;
+            formatzeroasempty = FALSE;
+            justify = LEFT;
+            visibility = TRUE;
+            angle = 0;
+            length = 1;
+            decimals = 0;
+            sortdirection = NONE;
+            fontname = "GOST type A";
+            fontcolor = 153;
+            fonttype = 2;
+            fontsize = 3.5;
+            fontratio = 1;
+            fontstyle = 0;
+            fontslant = 0;
+            pen = -1;
+            oncombine = NONE;
+            aligncontenttotop = FALSE;
+        };
+
+        text _tmp_51
+        {
+            name = "Чертежи";
+            x1 = 0;
+            y1 = 0;
+            x2 = 0;
+            y2 = 0;
+            string = "DRAWING";
+            fontname = "GOST type A";
+            fontcolor = 153;
+            fonttype = 2;
+            fontsize = 2.5;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        valuefield _tmp_4
+        {
+            name = "AREA_field";
+            location = (58, 0);
+            formula = "GetValue(\"AREA\")";
+            maxnumoflines = 1;
+            datatype = DOUBLE;
+            class = "Area";
+            cacheable = TRUE;
+            formatzeroasempty = FALSE;
+            justify = RIGHT;
+            visibility = TRUE;
+            angle = 0;
+            length = 8;
+            decimals = 3;
+            sortdirection = NONE;
+            fontname = "GOST type A";
+            fontcolor = 153;
+            fonttype = 2;
+            fontsize = 3.5;
+            fontratio = 1;
+            fontstyle = 0;
+            fontslant = 0;
+            pen = -1;
+            oncombine = NONE;
+            unit = "m2";
+            aligncontenttotop = FALSE;
+        };
+
+        text _tmp_1
+        {
+            name = "\\t";
+            x1 = 8;
+            y1 = 0;
+            x2 = 8;
+            y2 = 0;
+            string = "\\t";
+            fontname = "GOST type A";
+            fontcolor = 153;
+            fonttype = 2;
+            fontsize = 2.5;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        text _tmp_3
+        {
+            name = "Текст";
+            x1 = 25;
+            y1 = 0;
+            x2 = 25;
+            y2 = 0;
+            string = "\\t";
+            fontname = "GOST type A";
+            fontcolor = 153;
+            fonttype = 2;
+            fontsize = 2.5;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        text _tmp_4
+        {
+            name = "Текст_1";
+            x1 = 53;
+            y1 = 0;
+            x2 = 53;
+            y2 = 0;
+            string = "\\t";
+            fontname = "GOST type A";
+            fontcolor = 153;
+            fonttype = 2;
+            fontsize = 2.5;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        text _tmp_5
+        {
+            name = "Текст_2";
+            x1 = 56;
+            y1 = 0;
+            x2 = 56;
+            y2 = 0;
+            string = "\\t";
+            fontname = "GOST type A";
+            fontcolor = 153;
+            fonttype = 2;
+            fontsize = 2.5;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        text _tmp_2
+        {
+            name = "Текст_44";
+            x1 = 66;
+            y1 = 0;
+            x2 = 66;
+            y2 = 0;
+            string = "\\t";
+            fontname = "GOST type A";
+            fontcolor = 153;
+            fonttype = 2;
+            fontsize = 2.5;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        valuefield _tmp_3
+        {
+            name = "MODEL_TOTAL_field";
+            location = (68, 0);
+            formula = "GetValue(\"MODEL_TOTAL\")";
+            maxnumoflines = 1;
+            datatype = INTEGER;
+            class = "";
+            cacheable = TRUE;
+            formatzeroasempty = FALSE;
+            justify = LEFT;
+            visibility = TRUE;
+            angle = 0;
+            length = 5;
+            decimals = 0;
+            sortdirection = NONE;
+            fontname = "GOST type A";
+            fontcolor = 153;
+            fonttype = 2;
+            fontsize = 3.5;
+            fontratio = 1;
+            fontstyle = 0;
+            fontslant = 0;
+            pen = -1;
+            oncombine = NONE;
+            aligncontenttotop = FALSE;
+        };
+    };
+
+    row _tmp_1
+    {
+        name = "ASSEMBLY_1";
+        height = 1;
+        visibility = TRUE;
+        usecolumns = FALSE;
+        rule = "";
+        contenttype = "ASSEMBLY";
+        sorttype = COMBINE;
+
+        valuefield _tmp_6
+        {
+            name = "ASSEMBLY_POS_field";
+            location = (11, 0);
+            formula = "GetValue(\"ASSEMBLY_POS\")";
+            maxnumoflines = 1;
+            datatype = STRING;
+            class = "";
+            cacheable = TRUE;
+            formatzeroasempty = FALSE;
+            justify = LEFT;
+            visibility = TRUE;
+            angle = 0;
+            length = 10;
+            decimals = 0;
+            sortdirection = ASCENDING;
+            fontname = "GOST type A";
+            fontcolor = 153;
+            fonttype = 2;
+            fontsize = 3.5;
+            fontratio = 1;
+            fontstyle = 0;
+            fontslant = 0;
+            pen = -1;
+            oncombine = NONE;
+            aligncontenttotop = FALSE;
+        };
+
+        text _tmp_13
+        {
+            name = "Марки";
+            x1 = 0;
+            y1 = 0;
+            x2 = 0;
+            y2 = 0;
+            string = "ASSEMBLY";
+            fontname = "GOST type A";
+            fontcolor = 153;
+            fonttype = 2;
+            fontsize = 2.5;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        valuefield _tmp_14
+        {
+            name = "ASSEMBLY_BOTTOM_LEVEL_field";
+            location = (29, 0);
+            formula = "GetValue(\"ASSEMBLY_BOTTOM_LEVEL\")";
+            maxnumoflines = 1;
+            datatype = STRING;
+            class = "";
+            cacheable = TRUE;
+            formatzeroasempty = FALSE;
+            justify = LEFT;
+            visibility = TRUE;
+            angle = 0;
+            length = 10;
+            decimals = 0;
+            sortdirection = ASCENDING;
+            fontname = "GOST type A";
+            fontcolor = 153;
+            fonttype = 2;
+            fontsize = 3.5;
+            fontratio = 1;
+            fontstyle = 0;
+            fontslant = 0;
+            pen = -1;
+            oncombine = NONE;
+            aligncontenttotop = FALSE;
+        };
+
+        valuefield _tmp_19
+        {
+            name = "ASSEMBLY_POSITION_CODE_field";
+            location = (49, 0);
+            formula = "GetValue(\"ASSEMBLY_POSITION_CODE\")";
+            maxnumoflines = 1;
+            datatype = STRING;
+            class = "";
+            cacheable = TRUE;
+            formatzeroasempty = FALSE;
+            justify = LEFT;
+            visibility = TRUE;
+            angle = 0;
+            length = 10;
+            decimals = 0;
+            sortdirection = ASCENDING;
+            fontname = "GOST type A";
+            fontcolor = 153;
+            fonttype = 2;
+            fontsize = 3.5;
+            fontratio = 1;
+            fontstyle = 0;
+            fontslant = 0;
+            pen = -1;
+            oncombine = NONE;
+            aligncontenttotop = FALSE;
+        };
+
+        text _tmp_7
+        {
+            name = "Текст_3";
+            x1 = 9;
+            y1 = 0;
+            x2 = 9;
+            y2 = 0;
+            string = "\\t";
+            fontname = "GOST type A";
+            fontcolor = 153;
+            fonttype = 2;
+            fontsize = 2.5;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        text _tmp_8
+        {
+            name = "Текст_4";
+            x1 = 27;
+            y1 = 0;
+            x2 = 27;
+            y2 = 0;
+            string = "\\t";
+            fontname = "GOST type A";
+            fontcolor = 153;
+            fonttype = 2;
+            fontsize = 2.5;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        text _tmp_9
+        {
+            name = "Текст_5";
+            x1 = 47;
+            y1 = 0;
+            x2 = 47;
+            y2 = 0;
+            string = "\\t";
+            fontname = "GOST type A";
+            fontcolor = 153;
+            fonttype = 2;
+            fontsize = 2.5;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+
+        valuefield _tmp_7
+        {
+            name = "ID_field";
+            location = (65, 0);
+            formula = "GetValue(\"ID\")";
+            maxnumoflines = 1;
+            datatype = INTEGER;
+            class = "";
+            cacheable = TRUE;
+            formatzeroasempty = FALSE;
+            justify = LEFT;
+            visibility = TRUE;
+            angle = 0;
+            length = 10;
+            decimals = 0;
+            sortdirection = ASCENDING;
+            fontname = "GOST type A";
+            fontcolor = 153;
+            fonttype = 2;
+            fontsize = 3.5;
+            fontratio = 1;
+            fontstyle = 0;
+            fontslant = 0;
+            pen = -1;
+            oncombine = NONE;
+            aligncontenttotop = FALSE;
+        };
+
+        text _tmp_10
+        {
+            name = "Текст_45";
+            x1 = 63;
+            y1 = 0;
+            x2 = 63;
+            y2 = 0;
+            string = "\\t";
+            fontname = "GOST type A";
+            fontcolor = 153;
+            fonttype = 2;
+            fontsize = 2.5;
+            fontratio = 1;
+            fontslant = 0;
+            fontstyle = 0;
+            angle = 0;
+            justify = LEFT;
+            pen = -1;
+        };
+    };
+
+    row _tmp_0
+    {
+        name = "ASSEMBLY";
+        height = 1;
+        visibility = FALSE;
+        usecolumns = FALSE;
+        rule = "";
+        contenttype = "ASSEMBLY";
+        sorttype = COMBINE;
+
+        valuefield _tmp_6
+        {
+            name = "ASSEMBLY_POS_поле";
+            location = (0, 0);
+            formula = "GetValue(\"ASSEMBLY_POS\")";
+            maxnumoflines = 1;
+            datatype = STRING;
+            class = "";
+            cacheable = TRUE;
+            formatzeroasempty = FALSE;
+            justify = LEFT;
+            visibility = TRUE;
+            angle = 0;
+            length = 10;
+            decimals = 0;
+            sortdirection = ASCENDING;
+            fontname = "GOST type A";
+            fontcolor = 153;
+            fonttype = 2;
+            fontsize = 1;
+            fontratio = 1;
+            fontstyle = 0;
+            fontslant = 0;
+            pen = -1;
+            oncombine = NONE;
+        };
+
+        row _tmp_1118
+        {
+            name = "Деталь_1";
+            height = 1;
+            visibility = TRUE;
+            usecolumns = FALSE;
+            rule = "";
+            contenttype = "PART";
+            sorttype = COMBINE;
+
+            valuefield _tmp_19253
+            {
+                name = "var1";
+                location = (119, 0);
+                formula = "GetValue(\"ASSEMBLY_POS\")";
+                datatype = STRING;
+                class = "";
+                cacheable = TRUE;
+                justify = LEFT;
+                visibility = FALSE;
+                angle = 0;
+                length = 1;
+                decimals = 0;
+                sortdirection = ASCENDING;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 1;
+                fontratio = 1;
+                fontstyle = 2;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+            };
+
+            valuefield _tmp_8329
+            {
+                name = "поз_дет";
+                location = (21, 0);
+                formula = "GetValue(\"PART_SERIAL_NUMBER\")";
+                maxnumoflines = 1;
+                datatype = INTEGER;
+                class = "";
+                cacheable = TRUE;
+                formatzeroasempty = FALSE;
+                justify = LEFT;
+                visibility = TRUE;
+                angle = 0;
+                length = 4;
+                decimals = 0;
+                sortdirection = ASCENDING;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 1;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+            };
+
+            valuefield _tmp_23222
+            {
+                name = "var2";
+                location = (118, 0);
+                formula = "GetValue(\"SIMILAR_TO_MAIN_PART\")";
+                datatype = INTEGER;
+                class = "";
+                cacheable = TRUE;
+                justify = LEFT;
+                visibility = FALSE;
+                angle = 0;
+                length = 1;
+                decimals = 0;
+                sortdirection = DESCENDING;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 1;
+                fontratio = 1;
+                fontstyle = 2;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+            };
+
+            valuefield _tmp_27191
+            {
+                name = "кол";
+                location = (28, 0);
+                formula = "GetValue(\"NUMBER\")\n";
+                maxnumoflines = 1;
+                datatype = INTEGER;
+                class = "";
+                cacheable = TRUE;
+                formatzeroasempty = FALSE;
+                justify = LEFT;
+                visibility = TRUE;
+                angle = 0;
+                length = 4;
+                decimals = 0;
+                sortdirection = NONE;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 1;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = SUM;
+            };
+
+            valuefield _tmp_38197
+            {
+                name = "var10";
+                location = (121, 0);
+                formula = "mid(GetValue(\"PROFILE\"), 2, find(GetValue(\"PROFILE\"),\"*\") - 2)";
+                datatype = STRING;
+                class = "";
+                cacheable = TRUE;
+                justify = LEFT;
+                visibility = FALSE;
+                angle = 0;
+                length = 1;
+                decimals = 0;
+                sortdirection = NONE;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 1;
+                fontratio = 1;
+                fontstyle = 2;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+            };
+
+            valuefield _tmp_43159
+            {
+                name = "var11";
+                location = (122, 0);
+                formula = "round(mid(GetValue(\"PROFILE\"), 1 + find(GetValue(\"PROFILE\"),\"*\"), length(GetValue(\"PROFILE\")) - find(GetValue(\"PROFILE\"),\"*\")), 1)";
+                datatype = STRING;
+                class = "";
+                cacheable = TRUE;
+                justify = LEFT;
+                visibility = FALSE;
+                angle = 0;
+                length = 1;
+                decimals = 0;
+                sortdirection = NONE;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 1;
+                fontratio = 1;
+                fontstyle = 2;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+            };
+
+            valuefield _tmp_47179
+            {
+                name = "var12";
+                location = (123, 0);
+                formula = "GetValue(\"HEIGHT\")";
+                datatype = INTEGER;
+                class = "Length";
+                cacheable = TRUE;
+                justify = LEFT;
+                visibility = FALSE;
+                angle = 0;
+                length = 1;
+                decimals = 0;
+                sortdirection = NONE;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 1;
+                fontratio = 1;
+                fontstyle = 2;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+                unit = "mm";
+            };
+
+            valuefield _tmp_1
+            {
+                name = "профиль";
+                location = (35, 0);
+                formula = "if (find(GetValue(\"PROFILE\"),\"*\") != -1) then\n if ( find(GetValue(\"PROFILE\"),\"PL\") != -1 ) then \"-\" + GetFieldFormula(\"var10\") + \"x\" + GetFieldFormula(\"var11\")\n  else\n   if ( mid(GetValue(\"PROFILE\"),0,2) == \"ПВ\") then \"ПВ \" + mid(GetValue(\"MATERIAL\"),2) + \"x\" + GetFieldFormula(\"var12\")\n   else\n   if ( mid(GetValue(\"PROFILE\"),0,3) == \"Риф\") then \"Риф \" + GetFieldFormula(\"var12\") + \"x\" + mid(GetValue(\"MATERIAL\"),3)\n   else\n   if ( mid(GetValue(\"PROFILE\"),0,4) == \"ЧРиф\") then \"ЧРиф \" + GetFieldFormula(\"var12\") + \"x\" + mid(GetValue(\"MATERIAL\"),4)\n   else\n   setat(GetValue(\"PROFILE\"),find(GetValue(\"PROFILE\"),\"*\"),\"x\")\n   endif endif endif endif\nelse\n  if GetValue(\"PROFILE.TPL_NAME_FULL\") !=\"\" then GetValue(\"PROFILE.TPL_NAME_FULL\") else GetValue(\"PROFILE\") endif\nendif";
+                maxnumoflines = 1;
+                datatype = STRING;
+                class = "";
+                cacheable = TRUE;
+                formatzeroasempty = FALSE;
+                justify = LEFT;
+                visibility = TRUE;
+                angle = 0;
+                length = 17;
+                decimals = 0;
+                sortdirection = NONE;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 1;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+            };
+
+            valuefield _tmp_56237
+            {
+                name = "длина";
+                location = (55, 0);
+                formula = "GetValue(\"LENGTH\")";
+                maxnumoflines = 1;
+                datatype = DOUBLE;
+                class = "Length";
+                cacheable = TRUE;
+                formatzeroasempty = FALSE;
+                justify = LEFT;
+                visibility = TRUE;
+                angle = 0;
+                length = 6;
+                decimals = 0;
+                sortdirection = NONE;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 1;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+                unit = "mm";
+            };
+
+            valuefield _tmp_60286
+            {
+                name = "вес_шт";
+                location = (64, 0);
+                formula = "round(GetValue(\"WEIGHT\"),0.1)";
+                maxnumoflines = 1;
+                datatype = DOUBLE;
+                class = "Weight";
+                cacheable = TRUE;
+                formatzeroasempty = FALSE;
+                justify = LEFT;
+                visibility = TRUE;
+                angle = 0;
+                length = 8;
+                decimals = 3;
+                sortdirection = NONE;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 1;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+                aligncontenttotop = FALSE;
+            };
+
+            valuefield _tmp_69281
+            {
+                name = "общ_вес";
+                location = (75, 0);
+                formula = "round(GetValue(\"WEIGHT\"),0.1)";
+                maxnumoflines = 1;
+                datatype = DOUBLE;
+                class = "Weight";
+                cacheable = TRUE;
+                formatzeroasempty = FALSE;
+                justify = LEFT;
+                visibility = TRUE;
+                angle = 0;
+                length = 9;
+                decimals = 3;
+                sortdirection = NONE;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 1;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = SUM;
+                unit = "kg";
+                aligncontenttotop = FALSE;
+            };
+
+            valuefield _tmp_80231
+            {
+                name = "общ_вес_1";
+                location = (125, 0);
+                formula = "round(GetValue(\"WEIGHT\"),0.1)";
+                datatype = DOUBLE;
+                class = "Weight";
+                cacheable = TRUE;
+                justify = LEFT;
+                visibility = FALSE;
+                angle = 0;
+                length = 1;
+                decimals = 1;
+                sortdirection = NONE;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 1;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = SUM;
+                unit = "kg";
+            };
+
+            valuefield _tmp_136094
+            {
+                name = "общ_вес_2";
+                location = (126, 0);
+                formula = "round(GetValue(\"WEIGHT\"),0.1)";
+                maxnumoflines = 1;
+                datatype = DOUBLE;
+                class = "Weight";
+                cacheable = TRUE;
+                formatzeroasempty = FALSE;
+                justify = LEFT;
+                visibility = FALSE;
+                angle = 0;
+                length = 1;
+                decimals = 1;
+                sortdirection = NONE;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 1;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = SUM;
+                unit = "kg";
+            };
+
+            valuefield _tmp_85222
+            {
+                name = "сталь";
+                location = (87, 0);
+                formula = "if ( mid(GetValue(\"MATERIAL\"),0,2) == \"ПВ\" || mid(GetValue(\"MATERIAL\"),0,3) == \"Риф\" || mid(GetValue(\"MATERIAL\"),0,4) == \"ЧРиф\") then\n    GetValue(\"MATERIAL.MATERIAL_NAME\")\n  else\n    GetValue(\"MATERIAL\")\nendif\n";
+                maxnumoflines = 1;
+                datatype = STRING;
+                class = "";
+                cacheable = TRUE;
+                formatzeroasempty = FALSE;
+                justify = LEFT;
+                visibility = TRUE;
+                angle = 0;
+                length = 7;
+                decimals = 0;
+                sortdirection = NONE;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 1;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+            };
+
+            valuefield _tmp_2
+            {
+                name = "FINISH_поле";
+                location = (97, 0);
+                formula = "GetValue(\"FINISH\")";
+                maxnumoflines = 1;
+                datatype = STRING;
+                class = "";
+                cacheable = TRUE;
+                formatzeroasempty = TRUE;
+                justify = LEFT;
+                visibility = TRUE;
+                angle = 0;
+                length = 19;
+                decimals = 0;
+                sortdirection = NONE;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 3.5;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+            };
+
+            text _tmp_3
+            {
+                name = "Деталь";
+                x1 = 0;
+                y1 = 0;
+                x2 = 0;
+                y2 = 0;
+                string = "PART";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+
+            row _tmp_1209
+            {
+                name = "Сварной_шов";
+                height = 1;
+                visibility = FALSE;
+                usecolumns = FALSE;
+                rule = "";
+                contenttype = "WELD";
+                sorttype = COMBINE;
+
+                valuefield _tmp_95978
+                {
+                    name = "var3";
+                    location = (5, 0);
+                    formula = "1";
+                    maxnumoflines = 1;
+                    datatype = INTEGER;
+                    class = "";
+                    cacheable = TRUE;
+                    formatzeroasempty = FALSE;
+                    justify = LEFT;
+                    visibility = FALSE;
+                    angle = 0;
+                    length = 1;
+                    decimals = 2;
+                    sortdirection = NONE;
+                    fontname = "GOST type A";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 1;
+                    fontratio = 1;
+                    fontstyle = 0;
+                    fontslant = 0;
+                    pen = -1;
+                    oncombine = SUM;
+                    aligncontenttotop = FALSE;
+                };
+
+                valuefield _tmp_98435
+                {
+                    name = "var4";
+                    location = (2, 0);
+                    formula = "1";
+                    maxnumoflines = 1;
+                    datatype = INTEGER;
+                    class = "";
+                    cacheable = TRUE;
+                    formatzeroasempty = FALSE;
+                    justify = LEFT;
+                    visibility = FALSE;
+                    angle = 0;
+                    length = 1;
+                    decimals = 2;
+                    sortdirection = NONE;
+                    fontname = "GOST type A";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 1;
+                    fontratio = 1;
+                    fontstyle = 0;
+                    fontslant = 0;
+                    pen = -1;
+                    oncombine = SUM;
+                    aligncontenttotop = FALSE;
+                };
+
+                valuefield _tmp_104864
+                {
+                    name = "var15";
+                    location = (1, 0);
+                    formula = "1";
+                    maxnumoflines = 1;
+                    datatype = INTEGER;
+                    class = "";
+                    cacheable = TRUE;
+                    formatzeroasempty = FALSE;
+                    justify = LEFT;
+                    visibility = FALSE;
+                    angle = 0;
+                    length = 1;
+                    decimals = 2;
+                    sortdirection = NONE;
+                    fontname = "GOST type A";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 1;
+                    fontratio = 1;
+                    fontstyle = 0;
+                    fontslant = 0;
+                    pen = -1;
+                    oncombine = SUM;
+                    aligncontenttotop = FALSE;
+                };
+
+                valuefield _tmp_41439
+                {
+                    name = "var16";
+                    location = (4, 0);
+                    formula = "1";
+                    maxnumoflines = 1;
+                    datatype = INTEGER;
+                    class = "";
+                    cacheable = TRUE;
+                    formatzeroasempty = FALSE;
+                    justify = LEFT;
+                    visibility = FALSE;
+                    angle = 0;
+                    length = 1;
+                    decimals = 2;
+                    sortdirection = NONE;
+                    fontname = "GOST type A";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 1;
+                    fontratio = 1;
+                    fontstyle = 0;
+                    fontslant = 0;
+                    pen = -1;
+                    oncombine = SUM;
+                    aligncontenttotop = FALSE;
+                };
+            };
+
+            row _tmp_1300
+            {
+                name = "Деталь_2";
+                height = 1;
+                visibility = TRUE;
+                usecolumns = FALSE;
+                rule = "if GetValue(\"ASSEMBLY_POS\")!=NextValue(\"ASSEMBLY_POS\") then\n  Output()\nelse\n  StepOver()\nendif\n";
+                contenttype = "PART";
+                sorttype = COMBINE;
+
+                valuefield _tmp_99945
+                {
+                    name = "var5";
+                    location = (57, 0);
+                    formula = "round(Sum(\"общ_вес_1\"),0.1)";
+                    datatype = DOUBLE;
+                    class = "Weight";
+                    cacheable = TRUE;
+                    justify = LEFT;
+                    visibility = FALSE;
+                    angle = 0;
+                    length = 1;
+                    decimals = 1;
+                    sortdirection = NONE;
+                    fontname = "Arial Narrow";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 1;
+                    fontratio = 1;
+                    fontstyle = 0;
+                    fontslant = 0;
+                    pen = -1;
+                    oncombine = NONE;
+                    unit = "kg";
+                };
+
+                valuefield _tmp_6122
+                {
+                    name = "var6";
+                    location = (58, 0);
+                    formula = "if GetValue(\"PROJECT.USERDEFINED.naplavka\") != 0 then GetValue(\"PROJECT.USERDEFINED.naplavka\") else 1 endif";
+                    datatype = DOUBLE;
+                    class = "";
+                    cacheable = TRUE;
+                    justify = LEFT;
+                    visibility = FALSE;
+                    angle = 0;
+                    length = 1;
+                    decimals = 1;
+                    sortdirection = NONE;
+                    fontname = "Arial Narrow";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 1;
+                    fontratio = 1;
+                    fontstyle = 0;
+                    fontslant = 0;
+                    pen = -1;
+                    oncombine = NONE;
+                };
+
+                valuefield _tmp_185326
+                {
+                    name = "var7";
+                    location = (59, 0);
+                    formula = "round((Sum(\"общ_вес\")/100),0.1)*GetFieldFormula(\"var6\")";
+                    datatype = DOUBLE;
+                    class = "Weight";
+                    cacheable = TRUE;
+                    justify = LEFT;
+                    visibility = FALSE;
+                    angle = 0;
+                    length = 1;
+                    decimals = 2;
+                    sortdirection = NONE;
+                    fontname = "Arial Narrow";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 1;
+                    fontratio = 1;
+                    fontstyle = 0;
+                    fontslant = 0;
+                    pen = -1;
+                    oncombine = NONE;
+                    unit = "kg";
+                };
+
+                valuefield _tmp_22668
+                {
+                    name = "var8";
+                    location = (60, 0);
+                    formula = "if GetValue(\"PROJECT.USERDEFINED.raskroi\") != 0 then GetValue(\"PROJECT.USERDEFINED.raskroi\") else 0 endif";
+                    datatype = DOUBLE;
+                    class = "";
+                    cacheable = TRUE;
+                    justify = LEFT;
+                    visibility = FALSE;
+                    angle = 0;
+                    length = 1;
+                    decimals = 2;
+                    sortdirection = NONE;
+                    fontname = "Arial Narrow";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 1;
+                    fontratio = 1;
+                    fontstyle = 0;
+                    fontslant = 0;
+                    pen = -1;
+                    oncombine = NONE;
+                };
+
+                valuefield _tmp_98706
+                {
+                    name = "var14";
+                    location = (61, 0);
+                    formula = "if GetValue(\"PROJECT.USERDEFINED.raskroi\") != 0 then GetValue(\"PROJECT.USERDEFINED.raskroi\") else 0 endif";
+                    datatype = DOUBLE;
+                    class = "";
+                    cacheable = TRUE;
+                    justify = LEFT;
+                    visibility = FALSE;
+                    angle = 0;
+                    length = 1;
+                    decimals = 2;
+                    sortdirection = NONE;
+                    fontname = "Arial Narrow";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 1;
+                    fontratio = 1;
+                    fontstyle = 0;
+                    fontslant = 0;
+                    pen = -1;
+                    oncombine = NONE;
+                };
+
+                valuefield _tmp_134028
+                {
+                    name = "var9";
+                    location = (62, 0);
+                    formula = "round((Sum(\"общ_вес_2\")/100),0.1)*GetFieldFormula(\"var8\")";
+                    datatype = DOUBLE;
+                    class = "";
+                    cacheable = TRUE;
+                    justify = LEFT;
+                    visibility = FALSE;
+                    angle = 0;
+                    length = 1;
+                    decimals = 3;
+                    sortdirection = NONE;
+                    fontname = "Arial Narrow";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 1;
+                    fontratio = 1;
+                    fontstyle = 0;
+                    fontslant = 0;
+                    pen = -1;
+                    oncombine = NONE;
+                };
+
+                valuefield _tmp_43010
+                {
+                    name = "var17";
+                    location = (63, 0);
+                    formula = "if GetValue(\"PROJECT.USERDEFINED.raskroi\") != 0 then GetValue(\"PROJECT.USERDEFINED.raskroi\") else 0 endif";
+                    datatype = DOUBLE;
+                    class = "";
+                    cacheable = TRUE;
+                    justify = LEFT;
+                    visibility = FALSE;
+                    angle = 0;
+                    length = 1;
+                    decimals = 2;
+                    sortdirection = NONE;
+                    fontname = "Arial Narrow";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 1;
+                    fontratio = 1;
+                    fontstyle = 0;
+                    fontslant = 0;
+                    pen = -1;
+                    oncombine = NONE;
+                };
+
+                valuefield _tmp_155818
+                {
+                    name = "var13";
+                    location = (64, 0);
+                    formula = "GetFieldFormula(\"var7\")+GetFieldFormula(\"var9\")";
+                    maxnumoflines = 1;
+                    datatype = DOUBLE;
+                    class = "Weight";
+                    cacheable = TRUE;
+                    formatzeroasempty = FALSE;
+                    justify = LEFT;
+                    visibility = FALSE;
+                    angle = 0;
+                    length = 1;
+                    decimals = 2;
+                    sortdirection = NONE;
+                    fontname = "Arial Narrow";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 1;
+                    fontratio = 1;
+                    fontstyle = 0;
+                    fontslant = 0;
+                    pen = -1;
+                    oncombine = NONE;
+                    unit = "kg";
+                };
+
+                valuefield _tmp_80866
+                {
+                    name = "масса_шва_текст_2";
+                    location = (33, 0);
+                    formula = "if (Count(\"var3\")!=0 && GetFieldFormula(\"var8\") ==0) then \n\"Напл:\" + GetFieldFormula(\"var6\")+\";\"+GetFieldFormula(\"var7\")\nelse\n\"\"\nendif+\nif (Count(\"var15\")!=0 && GetFieldFormula(\"var14\") !=0) then \n\"Напл:\" + GetFieldFormula(\"var6\")+\";\"+\"Раскрой:\" + GetFieldFormula(\"var8\")+\";\"+GetFieldFormula(\"var13\")\nelse\n\"\"\nendif+\nif (Count(\"var16\")==0 && GetFieldFormula(\"var17\") !=0) then \n\"Раскрой:\" + GetFieldFormula(\"var8\")+\";\"+GetFieldFormula(\"var9\")+\" кг\"\nelse\n\"\"\nendif";
+                    maxnumoflines = 1;
+                    datatype = STRING;
+                    class = "";
+                    cacheable = TRUE;
+                    formatzeroasempty = FALSE;
+                    justify = RIGHT;
+                    visibility = TRUE;
+                    angle = 0;
+                    length = 20;
+                    decimals = 0;
+                    sortdirection = NONE;
+                    fontname = "GOST type A";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 1;
+                    fontratio = 1;
+                    fontstyle = 0;
+                    fontslant = 0;
+                    pen = -1;
+                    oncombine = NONE;
+                    aligncontenttotop = FALSE;
+                };
+
+                valuefield _tmp_114961
+                {
+                    name = "масса_марки";
+                    location = (22, 0);
+                    formula = "if Count(\"var4\") != 0 then\n   GetFieldFormula(\"var5\")+GetFieldFormula(\"var7\")+GetFieldFormula(\"var9\")\nelse\n   GetFieldFormula(\"var5\")+GetFieldFormula(\"var9\")\nendif\n\n\n";
+                    maxnumoflines = 1;
+                    datatype = DOUBLE;
+                    class = "Weight";
+                    cacheable = TRUE;
+                    formatzeroasempty = FALSE;
+                    justify = LEFT;
+                    visibility = TRUE;
+                    angle = 0;
+                    length = 8;
+                    decimals = 3;
+                    sortdirection = NONE;
+                    fontname = "GOST type A";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 1;
+                    fontratio = 1;
+                    fontstyle = 0;
+                    fontslant = 0;
+                    pen = -1;
+                    oncombine = SUM;
+                    unit = "kg";
+                    aligncontenttotop = FALSE;
+                };
+
+                text _tmp_105
+                {
+                    name = "Общий вес";
+                    x1 = 0;
+                    y1 = 0;
+                    x2 = 0;
+                    y2 = 0;
+                    string = "WEIGHT";
+                    fontname = "GOST type A";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 2.5;
+                    fontratio = 1;
+                    fontslant = 0;
+                    fontstyle = 0;
+                    angle = 0;
+                    justify = LEFT;
+                    pen = -1;
+                };
+
+                valuefield _tmp_146
+                {
+                    name = "ASSEMBLY_POS_field_10";
+                    location = (8, 0);
+                    formula = "GetValue(\"ASSEMBLY_POS\")";
+                    maxnumoflines = 1;
+                    datatype = STRING;
+                    class = "";
+                    cacheable = TRUE;
+                    formatzeroasempty = FALSE;
+                    justify = LEFT;
+                    visibility = TRUE;
+                    angle = 0;
+                    length = 10;
+                    decimals = 0;
+                    sortdirection = NONE;
+                    fontname = "GOST type A";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 3.5;
+                    fontratio = 1;
+                    fontstyle = 0;
+                    fontslant = 0;
+                    pen = -1;
+                    oncombine = NONE;
+                    aligncontenttotop = FALSE;
+                };
+
+                text _tmp_37
+                {
+                    name = "Текст_14";
+                    x1 = 6;
+                    y1 = 0;
+                    x2 = 6;
+                    y2 = 0;
+                    string = "\\t";
+                    fontname = "GOST type A";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 2.5;
+                    fontratio = 1;
+                    fontslant = 0;
+                    fontstyle = 0;
+                    angle = 0;
+                    justify = LEFT;
+                    pen = -1;
+                };
+
+                text _tmp_39
+                {
+                    name = "Текст_15";
+                    x1 = 20;
+                    y1 = 0;
+                    x2 = 20;
+                    y2 = 0;
+                    string = "\\t";
+                    fontname = "GOST type A";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 2.5;
+                    fontratio = 1;
+                    fontslant = 0;
+                    fontstyle = 0;
+                    angle = 0;
+                    justify = LEFT;
+                    pen = -1;
+                };
+
+                text _tmp_41
+                {
+                    name = "Текст_16";
+                    x1 = 31;
+                    y1 = 0;
+                    x2 = 31;
+                    y2 = 0;
+                    string = "\\t";
+                    fontname = "GOST type A";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 2.5;
+                    fontratio = 1;
+                    fontslant = 0;
+                    fontstyle = 0;
+                    angle = 0;
+                    justify = LEFT;
+                    pen = -1;
+                };
+            };
+
+            valuefield _tmp_145
+            {
+                name = "ASSEMBLY_POS_field_9";
+                location = (7, 0);
+                formula = "GetValue(\"ASSEMBLY_POS\")";
+                maxnumoflines = 1;
+                datatype = STRING;
+                class = "";
+                cacheable = TRUE;
+                formatzeroasempty = FALSE;
+                justify = LEFT;
+                visibility = TRUE;
+                angle = 0;
+                length = 10;
+                decimals = 0;
+                sortdirection = NONE;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 3.5;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+                aligncontenttotop = FALSE;
+            };
+
+            text _tmp_16
+            {
+                name = "\\t_1";
+                x1 = 4;
+                y1 = 0;
+                x2 = 4;
+                y2 = 0;
+                string = "\\t";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+
+            text _tmp_20
+            {
+                name = "Текст_6";
+                x1 = 19;
+                y1 = 0;
+                x2 = 19;
+                y2 = 0;
+                string = "\\t";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+
+            text _tmp_22
+            {
+                name = "Текст_7";
+                x1 = 26;
+                y1 = 0;
+                x2 = 26;
+                y2 = 0;
+                string = "\\t";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+
+            text _tmp_24
+            {
+                name = "Текст_8";
+                x1 = 33;
+                y1 = 0;
+                x2 = 33;
+                y2 = 0;
+                string = "\\t";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+
+            text _tmp_27
+            {
+                name = "Текст_9";
+                x1 = 53;
+                y1 = 0;
+                x2 = 53;
+                y2 = 0;
+                string = "\\t";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+
+            text _tmp_29
+            {
+                name = "Текст_10";
+                x1 = 62;
+                y1 = 0;
+                x2 = 62;
+                y2 = 0;
+                string = "\\t";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+
+            text _tmp_31
+            {
+                name = "Текст_11";
+                x1 = 73;
+                y1 = 0;
+                x2 = 73;
+                y2 = 0;
+                string = "\\t";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+
+            text _tmp_33
+            {
+                name = "Текст_12";
+                x1 = 85;
+                y1 = 0;
+                x2 = 85;
+                y2 = 0;
+                string = "\\t";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+
+            text _tmp_35
+            {
+                name = "Текст_13";
+                x1 = 95;
+                y1 = 0;
+                x2 = 95;
+                y2 = 0;
+                string = "\\t";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+        };
+    };
+
+    row _tmp_73
+    {
+        name = "WELD_1";
+        height = 1;
+        visibility = FALSE;
+        usecolumns = FALSE;
+        rule = "";
+        contenttype = "WELD";
+        sorttype = COMBINE;
+
+        valuefield _tmp_82
+        {
+            name = "PRIMARY.ASSEMBLY_POS_field";
+            location = (0, 0);
+            formula = "GetValue(\"PRIMARY.ASSEMBLY_POS\")";
+            maxnumoflines = 1;
+            datatype = STRING;
+            class = "";
+            cacheable = TRUE;
+            formatzeroasempty = FALSE;
+            justify = LEFT;
+            visibility = TRUE;
+            angle = 0;
+            length = 10;
+            decimals = 0;
+            sortdirection = ASCENDING;
+            fontname = "GOST type A";
+            fontcolor = 153;
+            fonttype = 2;
+            fontsize = 3.5;
+            fontratio = 1;
+            fontstyle = 0;
+            fontslant = 0;
+            pen = -1;
+            oncombine = NONE;
+            aligncontenttotop = FALSE;
+        };
+
+        row _tmp_11
+        {
+            name = "WELD";
+            height = 1;
+            visibility = TRUE;
+            usecolumns = FALSE;
+            rule = "";
+            contenttype = "WELD";
+            sorttype = COMBINE;
+
+            text _tmp_60
+            {
+                name = "Текст_89";
+                x1 = 0;
+                y1 = 0;
+                x2 = 0;
+                y2 = 0;
+                string = "WELD";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+
+            valuefield _tmp_61
+            {
+                name = "ValueField_1";
+                location = (24, 0);
+                formula = "GetValue(\"WELD_SIZE1\")";
+                maxnumoflines = 1;
+                datatype = DOUBLE;
+                class = "";
+                cacheable = TRUE;
+                formatzeroasempty = FALSE;
+                justify = LEFT;
+                visibility = TRUE;
+                angle = 0;
+                length = 5;
+                decimals = 1;
+                sortdirection = ASCENDING;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 3.5;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+                aligncontenttotop = FALSE;
+            };
+
+            valuefield _tmp_66
+            {
+                name = "ValueField_2";
+                location = (32, 0);
+                formula = "GetValue(\"LENGTH\")";
+                maxnumoflines = 1;
+                datatype = DOUBLE;
+                class = "Length";
+                cacheable = TRUE;
+                formatzeroasempty = FALSE;
+                justify = RIGHT;
+                visibility = TRUE;
+                angle = 0;
+                length = 8;
+                decimals = 0;
+                sortdirection = NONE;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 3.5;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = SUM;
+                unit = "mm";
+                aligncontenttotop = FALSE;
+            };
+
+            valuefield _tmp_67
+            {
+                name = "ValueField_3";
+                location = (43, 0);
+                formula = "GetValue(\"NUMBER\")";
+                maxnumoflines = 1;
+                datatype = INTEGER;
+                class = "";
+                cacheable = TRUE;
+                formatzeroasempty = FALSE;
+                justify = LEFT;
+                visibility = TRUE;
+                angle = 0;
+                length = 5;
+                decimals = 0;
+                sortdirection = NONE;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 3.5;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = SUM;
+                aligncontenttotop = FALSE;
+            };
+
+            valuefield _tmp_87
+            {
+                name = "PRIMARY.ASSEMBLY_POS_field_1";
+                location = (9, 0);
+                formula = "GetValue(\"PRIMARY.ASSEMBLY_POS\")";
+                maxnumoflines = 1;
+                datatype = STRING;
+                class = "";
+                cacheable = TRUE;
+                formatzeroasempty = FALSE;
+                justify = LEFT;
+                visibility = TRUE;
+                angle = 0;
+                length = 10;
+                decimals = 0;
+                sortdirection = NONE;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 3.5;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+                aligncontenttotop = FALSE;
+            };
+
+            text _tmp_43
+            {
+                name = "Текст_17";
+                x1 = 7;
+                y1 = 0;
+                x2 = 7;
+                y2 = 0;
+                string = "\\t";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+
+            text _tmp_45
+            {
+                name = "Текст_18";
+                x1 = 22;
+                y1 = 0;
+                x2 = 22;
+                y2 = 0;
+                string = "\\t";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+
+            text _tmp_48
+            {
+                name = "Текст_19";
+                x1 = 30;
+                y1 = 0;
+                x2 = 30;
+                y2 = 0;
+                string = "\\t";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+
+            text _tmp_50
+            {
+                name = "Текст_20";
+                x1 = 41;
+                y1 = 0;
+                x2 = 41;
+                y2 = 0;
+                string = "\\t";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+        };
+    };
+
+    row _tmp_88
+    {
+        name = "BOLT_1";
+        height = 1;
+        visibility = FALSE;
+        usecolumns = FALSE;
+        rule = "";
+        contenttype = "BOLT";
+        sorttype = COMBINE;
+
+        valuefield _tmp_89
+        {
+            name = "ASSEMBLY_POS_field_2";
+            location = (0, 0);
+            formula = "GetValue(\"ASSEMBLY_POS\")";
+            maxnumoflines = 1;
+            datatype = STRING;
+            class = "";
+            cacheable = TRUE;
+            formatzeroasempty = FALSE;
+            justify = LEFT;
+            visibility = TRUE;
+            angle = 0;
+            length = 10;
+            decimals = 0;
+            sortdirection = ASCENDING;
+            fontname = "GOST type A";
+            fontcolor = 153;
+            fonttype = 2;
+            fontsize = 3.5;
+            fontratio = 1;
+            fontstyle = 0;
+            fontslant = 0;
+            pen = -1;
+            oncombine = NONE;
+            aligncontenttotop = FALSE;
+        };
+
+        row _tmp_1
+        {
+            name = "BOLT";
+            height = 1;
+            visibility = TRUE;
+            usecolumns = FALSE;
+            rule = "";
+            contenttype = "BOLT";
+            sorttype = COMBINE;
+
+            valuefield _tmp_2
+            {
+                name = "NUMBER_поле";
+                location = (56, 0);
+                formula = "GetValue(\"NUMBER\")";
+                maxnumoflines = 1;
+                datatype = INTEGER;
+                class = "";
+                cacheable = TRUE;
+                formatzeroasempty = FALSE;
+                justify = LEFT;
+                visibility = TRUE;
+                angle = 0;
+                length = 5;
+                decimals = 0;
+                sortdirection = NONE;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 3.5;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+            };
+
+            valuefield _tmp_15
+            {
+                name = "DIAMETER_поле_1";
+                location = (22, 0);
+                formula = "GetValue(\"DIAMETER\")";
+                maxnumoflines = 1;
+                datatype = DOUBLE;
+                class = "Length";
+                cacheable = TRUE;
+                formatzeroasempty = FALSE;
+                justify = RIGHT;
+                visibility = TRUE;
+                angle = 0;
+                length = 2;
+                decimals = 0;
+                sortdirection = ASCENDING;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 3.5;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+                unit = "mm";
+                aligncontenttotop = FALSE;
+            };
+
+            valuefield _tmp_16
+            {
+                name = "TYPE_поле";
+                location = (33, 0);
+                formula = "GetValue(\"TYPE\")";
+                maxnumoflines = 1;
+                datatype = STRING;
+                class = "";
+                cacheable = TRUE;
+                formatzeroasempty = FALSE;
+                justify = LEFT;
+                visibility = TRUE;
+                angle = 0;
+                length = 20;
+                decimals = 0;
+                sortdirection = NONE;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 3.5;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+            };
+
+            valuefield _tmp_26
+            {
+                name = "ValueField";
+                location = (64, 0);
+                formula = "GetValue(\"NUMBER\")*GetValue(\"WEIGHT\")";
+                maxnumoflines = 1;
+                datatype = DOUBLE;
+                class = "";
+                cacheable = TRUE;
+                formatzeroasempty = FALSE;
+                justify = LEFT;
+                visibility = TRUE;
+                angle = 0;
+                length = 8;
+                decimals = 3;
+                sortdirection = NONE;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 3.5;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+                aligncontenttotop = FALSE;
+            };
+
+            text _tmp_27
+            {
+                name = "х";
+                x1 = 24;
+                y1 = 0;
+                x2 = 24;
+                y2 = 0;
+                string = "X";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+
+            valuefield _tmp_28
+            {
+                name = "LENGTH_поле_1";
+                location = (25, 0);
+                formula = "GetValue(\"LENGTH\")";
+                maxnumoflines = 1;
+                datatype = DOUBLE;
+                class = "Length";
+                cacheable = TRUE;
+                formatzeroasempty = FALSE;
+                justify = RIGHT;
+                visibility = TRUE;
+                angle = 0;
+                length = 5;
+                decimals = 0;
+                sortdirection = ASCENDING;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 3.5;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+                unit = "mm";
+                aligncontenttotop = FALSE;
+            };
+
+            text _tmp_6
+            {
+                name = "Болт";
+                x1 = 0;
+                y1 = 0;
+                x2 = 0;
+                y2 = 0;
+                string = "BOLT";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+
+            valuefield _tmp_94
+            {
+                name = "ASSEMBLY_POS_field_3";
+                location = (7, 0);
+                formula = "GetValue(\"ASSEMBLY_POS\")";
+                maxnumoflines = 1;
+                datatype = STRING;
+                class = "";
+                cacheable = TRUE;
+                formatzeroasempty = FALSE;
+                justify = LEFT;
+                visibility = TRUE;
+                angle = 0;
+                length = 10;
+                decimals = 0;
+                sortdirection = NONE;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 3.5;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+                aligncontenttotop = FALSE;
+            };
+
+            text _tmp_52
+            {
+                name = "Текст_21";
+                x1 = 5;
+                y1 = 0;
+                x2 = 5;
+                y2 = 0;
+                string = "\\t";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+
+            text _tmp_54
+            {
+                name = "Текст_22";
+                x1 = 18;
+                y1 = 0;
+                x2 = 18;
+                y2 = 0;
+                string = "\\t";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+
+            text _tmp_56
+            {
+                name = "Текст_23";
+                x1 = 31;
+                y1 = 0;
+                x2 = 31;
+                y2 = 0;
+                string = "\\t";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+
+            text _tmp_58
+            {
+                name = "Текст_24";
+                x1 = 54;
+                y1 = 0;
+                x2 = 54;
+                y2 = 0;
+                string = "\\t";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+
+            text _tmp_60
+            {
+                name = "Текст_25";
+                x1 = 62;
+                y1 = 0;
+                x2 = 62;
+                y2 = 0;
+                string = "\\t";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+        };
+    };
+
+    row _tmp_95
+    {
+        name = "NUT_1";
+        height = 1;
+        visibility = FALSE;
+        usecolumns = FALSE;
+        rule = "";
+        contenttype = "NUT";
+        sorttype = COMBINE;
+
+        valuefield _tmp_96
+        {
+            name = "ASSEMBLY_POS_field_4";
+            location = (0, 0);
+            formula = "GetValue(\"ASSEMBLY_POS\")";
+            maxnumoflines = 1;
+            datatype = STRING;
+            class = "";
+            cacheable = TRUE;
+            formatzeroasempty = FALSE;
+            justify = LEFT;
+            visibility = TRUE;
+            angle = 0;
+            length = 10;
+            decimals = 0;
+            sortdirection = ASCENDING;
+            fontname = "GOST type A";
+            fontcolor = 153;
+            fonttype = 2;
+            fontsize = 3.5;
+            fontratio = 1;
+            fontstyle = 0;
+            fontslant = 0;
+            pen = -1;
+            oncombine = NONE;
+            aligncontenttotop = FALSE;
+        };
+
+        row _tmp_33
+        {
+            name = "NUT";
+            height = 1;
+            visibility = TRUE;
+            usecolumns = FALSE;
+            rule = "";
+            contenttype = "NUT";
+            sorttype = COMBINE;
+
+            valuefield _tmp_76
+            {
+                name = "DIAMETER_поле_2";
+                location = (21, 0);
+                formula = "GetValue(\"DIAMETER\")";
+                maxnumoflines = 1;
+                datatype = DOUBLE;
+                class = "Length";
+                cacheable = TRUE;
+                formatzeroasempty = FALSE;
+                justify = RIGHT;
+                visibility = TRUE;
+                angle = 0;
+                length = 5;
+                decimals = 0;
+                sortdirection = ASCENDING;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 3.5;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+                unit = "mm";
+            };
+
+            valuefield _tmp_77
+            {
+                name = "TYPE_поле_1";
+                location = (29, 0);
+                formula = "GetValue(\"TYPE\")";
+                maxnumoflines = 1;
+                datatype = STRING;
+                class = "";
+                cacheable = TRUE;
+                formatzeroasempty = FALSE;
+                justify = LEFT;
+                visibility = TRUE;
+                angle = 0;
+                length = 20;
+                decimals = 0;
+                sortdirection = NONE;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 3.5;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+            };
+
+            valuefield _tmp_78
+            {
+                name = "NUMBER_поле_1";
+                location = (52, 0);
+                formula = "GetValue(\"NUMBER\")";
+                maxnumoflines = 1;
+                datatype = INTEGER;
+                class = "";
+                cacheable = TRUE;
+                formatzeroasempty = FALSE;
+                justify = LEFT;
+                visibility = TRUE;
+                angle = 0;
+                length = 5;
+                decimals = 0;
+                sortdirection = NONE;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 3.5;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+            };
+
+            valuefield _tmp_79
+            {
+                name = "ValueField (Поле значения)_1";
+                location = (60, 0);
+                formula = "GetValue(\"NUMBER\")*GetValue(\"WEIGHT\")";
+                maxnumoflines = 1;
+                datatype = DOUBLE;
+                class = "";
+                cacheable = TRUE;
+                formatzeroasempty = FALSE;
+                justify = LEFT;
+                visibility = TRUE;
+                angle = 0;
+                length = 8;
+                decimals = 3;
+                sortdirection = NONE;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 3.5;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+                aligncontenttotop = FALSE;
+            };
+
+            text _tmp_7
+            {
+                name = "Гайка";
+                x1 = 0;
+                y1 = 0;
+                x2 = 0;
+                y2 = 0;
+                string = "NUT";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+
+            valuefield _tmp_101
+            {
+                name = "ASSEMBLY_POS_field_5";
+                location = (8, 0);
+                formula = "GetValue(\"ASSEMBLY_POS\")";
+                maxnumoflines = 1;
+                datatype = STRING;
+                class = "";
+                cacheable = TRUE;
+                formatzeroasempty = FALSE;
+                justify = LEFT;
+                visibility = TRUE;
+                angle = 0;
+                length = 10;
+                decimals = 0;
+                sortdirection = NONE;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 3.5;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+                aligncontenttotop = FALSE;
+            };
+
+            text _tmp_62
+            {
+                name = "Текст_26";
+                x1 = 6;
+                y1 = 0;
+                x2 = 6;
+                y2 = 0;
+                string = "\\t";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+
+            text _tmp_64
+            {
+                name = "Текст_27";
+                x1 = 19;
+                y1 = 0;
+                x2 = 19;
+                y2 = 0;
+                string = "\\t";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+
+            text _tmp_66
+            {
+                name = "Текст_28";
+                x1 = 27;
+                y1 = 0;
+                x2 = 27;
+                y2 = 0;
+                string = "\\t";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+
+            text _tmp_68
+            {
+                name = "Текст_29";
+                x1 = 50;
+                y1 = 0;
+                x2 = 50;
+                y2 = 0;
+                string = "\\t";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+
+            text _tmp_70
+            {
+                name = "Текст_30";
+                x1 = 58;
+                y1 = 0;
+                x2 = 58;
+                y2 = 0;
+                string = "\\t";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+        };
+    };
+
+    row _tmp_102
+    {
+        name = "WASHER_1";
+        height = 1;
+        visibility = FALSE;
+        usecolumns = FALSE;
+        rule = "";
+        contenttype = "WASHER";
+        sorttype = COMBINE;
+
+        valuefield _tmp_103
+        {
+            name = "ASSEMBLY_POS_field_6";
+            location = (0, 0);
+            formula = "GetValue(\"ASSEMBLY_POS\")";
+            maxnumoflines = 1;
+            datatype = STRING;
+            class = "";
+            cacheable = TRUE;
+            formatzeroasempty = FALSE;
+            justify = LEFT;
+            visibility = TRUE;
+            angle = 0;
+            length = 10;
+            decimals = 0;
+            sortdirection = ASCENDING;
+            fontname = "GOST type A";
+            fontcolor = 153;
+            fonttype = 2;
+            fontsize = 3.5;
+            fontratio = 1;
+            fontstyle = 0;
+            fontslant = 0;
+            pen = -1;
+            oncombine = NONE;
+            aligncontenttotop = FALSE;
+        };
+
+        row _tmp_80
+        {
+            name = "WASHER";
+            height = 1;
+            visibility = TRUE;
+            usecolumns = FALSE;
+            rule = "";
+            contenttype = "WASHER";
+            sorttype = COMBINE;
+
+            valuefield _tmp_95
+            {
+                name = "DIAMETER_поле_3";
+                location = (23, 0);
+                formula = "GetValue(\"DIAMETER\")";
+                maxnumoflines = 1;
+                datatype = DOUBLE;
+                class = "Length";
+                cacheable = TRUE;
+                formatzeroasempty = FALSE;
+                justify = RIGHT;
+                visibility = TRUE;
+                angle = 0;
+                length = 5;
+                decimals = 0;
+                sortdirection = ASCENDING;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 3.5;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+                unit = "mm";
+            };
+
+            valuefield _tmp_97
+            {
+                name = "NUMBER_поле_2";
+                location = (54, 0);
+                formula = "GetValue(\"NUMBER\")";
+                maxnumoflines = 1;
+                datatype = INTEGER;
+                class = "";
+                cacheable = TRUE;
+                formatzeroasempty = FALSE;
+                justify = LEFT;
+                visibility = TRUE;
+                angle = 0;
+                length = 5;
+                decimals = 0;
+                sortdirection = NONE;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 3.5;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+            };
+
+            valuefield _tmp_98
+            {
+                name = "ValueField (Поле значения)_2";
+                location = (62, 0);
+                formula = "GetValue(\"NUMBER\")*GetValue(\"WEIGHT\")";
+                maxnumoflines = 1;
+                datatype = DOUBLE;
+                class = "";
+                cacheable = TRUE;
+                formatzeroasempty = FALSE;
+                justify = LEFT;
+                visibility = TRUE;
+                angle = 0;
+                length = 8;
+                decimals = 3;
+                sortdirection = NONE;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 3.5;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+                aligncontenttotop = FALSE;
+            };
+
+            valuefield _tmp_99
+            {
+                name = "TYPE_поле_2";
+                location = (31, 0);
+                formula = "GetValue(\"TYPE\")";
+                maxnumoflines = 1;
+                datatype = STRING;
+                class = "";
+                cacheable = TRUE;
+                formatzeroasempty = FALSE;
+                justify = LEFT;
+                visibility = TRUE;
+                angle = 0;
+                length = 20;
+                decimals = 0;
+                sortdirection = NONE;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 3.5;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+            };
+
+            text _tmp_8
+            {
+                name = "Шайба";
+                x1 = 0;
+                y1 = 0;
+                x2 = 0;
+                y2 = 0;
+                string = "WASHER";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+
+            valuefield _tmp_108
+            {
+                name = "ASSEMBLY_POS_field_7";
+                location = (10, 0);
+                formula = "GetValue(\"ASSEMBLY_POS\")";
+                maxnumoflines = 1;
+                datatype = STRING;
+                class = "";
+                cacheable = TRUE;
+                formatzeroasempty = FALSE;
+                justify = LEFT;
+                visibility = TRUE;
+                angle = 0;
+                length = 10;
+                decimals = 0;
+                sortdirection = NONE;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 3.5;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+                aligncontenttotop = FALSE;
+            };
+
+            text _tmp_72
+            {
+                name = "Текст_31";
+                x1 = 8;
+                y1 = 0;
+                x2 = 8;
+                y2 = 0;
+                string = "\\t";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+
+            text _tmp_74
+            {
+                name = "Текст_32";
+                x1 = 21;
+                y1 = 0;
+                x2 = 21;
+                y2 = 0;
+                string = "\\t";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+
+            text _tmp_76
+            {
+                name = "Текст_33";
+                x1 = 29;
+                y1 = 0;
+                x2 = 29;
+                y2 = 0;
+                string = "\\t";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+
+            text _tmp_79
+            {
+                name = "Текст_34";
+                x1 = 52;
+                y1 = 0;
+                x2 = 52;
+                y2 = 0;
+                string = "\\t";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+
+            text _tmp_81
+            {
+                name = "Текст_35";
+                x1 = 60;
+                y1 = 0;
+                x2 = 60;
+                y2 = 0;
+                string = "\\t";
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 2.5;
+                fontratio = 1;
+                fontslant = 0;
+                fontstyle = 0;
+                angle = 0;
+                justify = LEFT;
+                pen = -1;
+            };
+        };
+    };
+
+    row _tmp_122
+    {
+        name = "ASSEMBLY_3";
+        height = 1;
+        visibility = FALSE;
+        usecolumns = FALSE;
+        rule = "";
+        contenttype = "ASSEMBLY";
+        sorttype = COMBINE;
+
+        valuefield _tmp_123
+        {
+            name = "ASSEMBLY_POS_field_8";
+            location = (0, 0);
+            formula = "GetValue(\"ASSEMBLY_POS\")";
+            maxnumoflines = 1;
+            datatype = STRING;
+            class = "";
+            cacheable = TRUE;
+            formatzeroasempty = FALSE;
+            justify = LEFT;
+            visibility = TRUE;
+            angle = 0;
+            length = 10;
+            decimals = 0;
+            sortdirection = ASCENDING;
+            fontname = "GOST type A";
+            fontcolor = 153;
+            fonttype = 2;
+            fontsize = 3.5;
+            fontratio = 1;
+            fontstyle = 0;
+            fontslant = 0;
+            pen = -1;
+            oncombine = NONE;
+            aligncontenttotop = FALSE;
+        };
+
+        row _tmp_124
+        {
+            name = "PART";
+            height = 1;
+            visibility = FALSE;
+            usecolumns = FALSE;
+            rule = "";
+            contenttype = "PART";
+            sorttype = COMBINE;
+
+            valuefield _tmp_125
+            {
+                name = "PART_POS_field";
+                location = (0, 0);
+                formula = "GetValue(\"PART_POS\")";
+                maxnumoflines = 1;
+                datatype = STRING;
+                class = "";
+                cacheable = TRUE;
+                formatzeroasempty = FALSE;
+                justify = LEFT;
+                visibility = TRUE;
+                angle = 0;
+                length = 10;
+                decimals = 0;
+                sortdirection = ASCENDING;
+                fontname = "GOST type A";
+                fontcolor = 153;
+                fonttype = 2;
+                fontsize = 3.5;
+                fontratio = 1;
+                fontstyle = 0;
+                fontslant = 0;
+                pen = -1;
+                oncombine = NONE;
+                aligncontenttotop = FALSE;
+            };
+
+            row _tmp_79
+            {
+                name = "HOLE";
+                height = 1;
+                visibility = TRUE;
+                usecolumns = FALSE;
+                rule = "";
+                contenttype = "HOLE";
+                sorttype = COMBINE;
+
+                valuefield _tmp_100
+                {
+                    name = "NUMBER_поле_3";
+                    location = (41, 0);
+                    formula = "GetValue(\"NUMBER\")";
+                    maxnumoflines = 1;
+                    datatype = INTEGER;
+                    class = "";
+                    cacheable = TRUE;
+                    formatzeroasempty = FALSE;
+                    justify = LEFT;
+                    visibility = TRUE;
+                    angle = 0;
+                    length = 5;
+                    decimals = 0;
+                    sortdirection = NONE;
+                    fontname = "GOST type A";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 3.5;
+                    fontratio = 1;
+                    fontstyle = 0;
+                    fontslant = 0;
+                    pen = -1;
+                    oncombine = SUM;
+                };
+
+                text _tmp_19
+                {
+                    name = "Отверстия";
+                    x1 = 0;
+                    y1 = 0;
+                    x2 = 0;
+                    y2 = 0;
+                    string = "HOLE";
+                    fontname = "GOST type A";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 2.5;
+                    fontratio = 1;
+                    fontslant = 0;
+                    fontstyle = 0;
+                    angle = 0;
+                    justify = LEFT;
+                    pen = -1;
+                };
+
+                valuefield _tmp_20
+                {
+                    name = "DIAMETER_field";
+                    location = (33, 0);
+                    formula = "GetValue(\"DIAMETER\")";
+                    maxnumoflines = 1;
+                    datatype = DOUBLE;
+                    class = "Length";
+                    cacheable = TRUE;
+                    formatzeroasempty = FALSE;
+                    justify = RIGHT;
+                    visibility = TRUE;
+                    angle = 0;
+                    length = 5;
+                    decimals = 0;
+                    sortdirection = ASCENDING;
+                    fontname = "GOST type A";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 3.5;
+                    fontratio = 1;
+                    fontstyle = 0;
+                    fontslant = 0;
+                    pen = -1;
+                    oncombine = NONE;
+                    unit = "mm";
+                    aligncontenttotop = FALSE;
+                };
+
+                valuefield _tmp_17
+                {
+                    name = "BOLT_MATERIAL_LENGTH_field";
+                    location = (49, 0);
+                    formula = "GetValue(\"BOLT_MATERIAL_LENGTH\")";
+                    maxnumoflines = 1;
+                    datatype = DOUBLE;
+                    class = "Length";
+                    cacheable = TRUE;
+                    formatzeroasempty = FALSE;
+                    justify = LEFT;
+                    visibility = TRUE;
+                    angle = 0;
+                    length = 4;
+                    decimals = 0;
+                    sortdirection = NONE;
+                    fontname = "GOST type A";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 3.5;
+                    fontratio = 1;
+                    fontstyle = 0;
+                    fontslant = 0;
+                    pen = -1;
+                    oncombine = NONE;
+                    unit = "mm";
+                    aligncontenttotop = FALSE;
+                };
+
+                valuefield _tmp_136
+                {
+                    name = "ValueField_4";
+                    location = (20, 0);
+                    formula = "CopyField(\"PART_POS_field\")";
+                    maxnumoflines = 1;
+                    datatype = STRING;
+                    class = "";
+                    cacheable = TRUE;
+                    formatzeroasempty = FALSE;
+                    justify = LEFT;
+                    visibility = TRUE;
+                    angle = 0;
+                    length = 10;
+                    decimals = 0;
+                    sortdirection = NONE;
+                    fontname = "GOST type A";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 3.5;
+                    fontratio = 1;
+                    fontstyle = 0;
+                    fontslant = 0;
+                    pen = -1;
+                    oncombine = NONE;
+                    aligncontenttotop = FALSE;
+                };
+
+                valuefield _tmp_138
+                {
+                    name = "ValueField_5";
+                    location = (7, 0);
+                    formula = "CopyField(\"ASSEMBLY_POS_field_8\")";
+                    maxnumoflines = 1;
+                    datatype = STRING;
+                    class = "";
+                    cacheable = TRUE;
+                    formatzeroasempty = FALSE;
+                    justify = LEFT;
+                    visibility = TRUE;
+                    angle = 0;
+                    length = 10;
+                    decimals = 0;
+                    sortdirection = NONE;
+                    fontname = "GOST type A";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 3.5;
+                    fontratio = 1;
+                    fontstyle = 0;
+                    fontslant = 0;
+                    pen = -1;
+                    oncombine = NONE;
+                    aligncontenttotop = FALSE;
+                };
+
+                text _tmp_83
+                {
+                    name = "Текст_36";
+                    x1 = 5;
+                    y1 = 0;
+                    x2 = 5;
+                    y2 = 0;
+                    string = "\\t";
+                    fontname = "GOST type A";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 2.5;
+                    fontratio = 1;
+                    fontslant = 0;
+                    fontstyle = 0;
+                    angle = 0;
+                    justify = LEFT;
+                    pen = -1;
+                };
+
+                text _tmp_85
+                {
+                    name = "Текст_37";
+                    x1 = 18;
+                    y1 = 0;
+                    x2 = 18;
+                    y2 = 0;
+                    string = "\\t";
+                    fontname = "GOST type A";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 2.5;
+                    fontratio = 1;
+                    fontslant = 0;
+                    fontstyle = 0;
+                    angle = 0;
+                    justify = LEFT;
+                    pen = -1;
+                };
+
+                text _tmp_87
+                {
+                    name = "Текст_38";
+                    x1 = 31;
+                    y1 = 0;
+                    x2 = 31;
+                    y2 = 0;
+                    string = "\\t";
+                    fontname = "GOST type A";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 2.5;
+                    fontratio = 1;
+                    fontslant = 0;
+                    fontstyle = 0;
+                    angle = 0;
+                    justify = LEFT;
+                    pen = -1;
+                };
+
+                text _tmp_89
+                {
+                    name = "Текст_39";
+                    x1 = 39;
+                    y1 = 0;
+                    x2 = 39;
+                    y2 = 0;
+                    string = "\\t";
+                    fontname = "GOST type A";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 2.5;
+                    fontratio = 1;
+                    fontslant = 0;
+                    fontstyle = 0;
+                    angle = 0;
+                    justify = LEFT;
+                    pen = -1;
+                };
+
+                text _tmp_91
+                {
+                    name = "Текст_40";
+                    x1 = 47;
+                    y1 = 0;
+                    x2 = 47;
+                    y2 = 0;
+                    string = "\\t";
+                    fontname = "GOST type A";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 2.5;
+                    fontratio = 1;
+                    fontslant = 0;
+                    fontstyle = 0;
+                    angle = 0;
+                    justify = LEFT;
+                    pen = -1;
+                };
+            };
+
+            row _tmp_7
+            {
+                name = "CHAMFER";
+                height = 1;
+                visibility = TRUE;
+                usecolumns = FALSE;
+                rule = "";
+                contenttype = "CHAMFER";
+                sorttype = COMBINE;
+
+                valuefield _tmp_8
+                {
+                    name = "LENGTH_поле";
+                    location = (35, 0);
+                    formula = "GetValue(\"LENGTH\")";
+                    maxnumoflines = 1;
+                    datatype = DOUBLE;
+                    class = "Length";
+                    cacheable = TRUE;
+                    formatzeroasempty = FALSE;
+                    justify = RIGHT;
+                    visibility = TRUE;
+                    angle = 0;
+                    length = 8;
+                    decimals = 0;
+                    sortdirection = NONE;
+                    fontname = "GOST type A";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 3.5;
+                    fontratio = 1;
+                    fontstyle = 0;
+                    fontslant = 0;
+                    pen = -1;
+                    oncombine = NONE;
+                    unit = "mm";
+                };
+
+                text _tmp_121
+                {
+                    name = "Фаска";
+                    x1 = 0;
+                    y1 = 0;
+                    x2 = 0;
+                    y2 = 0;
+                    string = "CHAMFER";
+                    fontname = "GOST type A";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 2.5;
+                    fontratio = 1;
+                    fontslant = 0;
+                    fontstyle = 0;
+                    angle = 0;
+                    justify = LEFT;
+                    pen = -1;
+                };
+
+                valuefield _tmp_127
+                {
+                    name = "PART_POS_field_1";
+                    location = (22, 0);
+                    formula = "CopyField(\"PART_POS_field\")";
+                    maxnumoflines = 1;
+                    datatype = STRING;
+                    class = "";
+                    cacheable = TRUE;
+                    formatzeroasempty = FALSE;
+                    justify = LEFT;
+                    visibility = TRUE;
+                    angle = 0;
+                    length = 10;
+                    decimals = 0;
+                    sortdirection = NONE;
+                    fontname = "GOST type A";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 3.5;
+                    fontratio = 1;
+                    fontstyle = 0;
+                    fontslant = 0;
+                    pen = -1;
+                    oncombine = NONE;
+                    aligncontenttotop = FALSE;
+                };
+
+                valuefield _tmp_128
+                {
+                    name = "PART_POS_field_2";
+                    location = (9, 0);
+                    formula = "CopyField(\"ASSEMBLY_POS_field_8\")";
+                    maxnumoflines = 1;
+                    datatype = STRING;
+                    class = "";
+                    cacheable = TRUE;
+                    formatzeroasempty = FALSE;
+                    justify = LEFT;
+                    visibility = TRUE;
+                    angle = 0;
+                    length = 10;
+                    decimals = 0;
+                    sortdirection = NONE;
+                    fontname = "GOST type A";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 3.5;
+                    fontratio = 1;
+                    fontstyle = 0;
+                    fontslant = 0;
+                    pen = -1;
+                    oncombine = NONE;
+                    aligncontenttotop = FALSE;
+                };
+
+                text _tmp_93
+                {
+                    name = "Текст_41";
+                    x1 = 7;
+                    y1 = 0;
+                    x2 = 7;
+                    y2 = 0;
+                    string = "\\t";
+                    fontname = "GOST type A";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 2.5;
+                    fontratio = 1;
+                    fontslant = 0;
+                    fontstyle = 0;
+                    angle = 0;
+                    justify = LEFT;
+                    pen = -1;
+                };
+
+                text _tmp_95
+                {
+                    name = "Текст_42";
+                    x1 = 20;
+                    y1 = 0;
+                    x2 = 20;
+                    y2 = 0;
+                    string = "\\t";
+                    fontname = "GOST type A";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 2.5;
+                    fontratio = 1;
+                    fontslant = 0;
+                    fontstyle = 0;
+                    angle = 0;
+                    justify = LEFT;
+                    pen = -1;
+                };
+
+                text _tmp_97
+                {
+                    name = "Текст_43";
+                    x1 = 33;
+                    y1 = 0;
+                    x2 = 33;
+                    y2 = 0;
+                    string = "\\t";
+                    fontname = "GOST type A";
+                    fontcolor = 153;
+                    fonttype = 2;
+                    fontsize = 2.5;
+                    fontratio = 1;
+                    fontslant = 0;
+                    fontstyle = 0;
+                    angle = 0;
+                    justify = LEFT;
+                    pen = -1;
+                };
+            };
+        };
+    };
+};

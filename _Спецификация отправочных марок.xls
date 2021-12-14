@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="windows-1251">
+<title>              Файл                              </title>
+</head>
+<body>
+<table>
+<tr>
+<td>                DRAWING                         </td>
+<td>                Б-4                             </td>
+<td>                [Б.4]                           </td>
+<td>                1                               </td>
+<td>                   9.458                        </td>
+</tr>
+<tr>
+<td>                DRAWING                         </td>
+<td>                Б-5                             </td>
+<td>                [Б.5]                           </td>
+<td>                1                               </td>
+<td>                  77.408                        </td>
+</tr>
+<tr>
+<td>                DRAWING                         </td>
+<td>                Б-7                             </td>
+<td>                [Б.7]                           </td>
+<td>                1                               </td>
+<td>                   7.094                        </td>
+</tr>
+<tr>
+<td>                DRAWING                         </td>
+<td>                Б-9                             </td>
+<td>                [Б.9]                           </td>
+<td>                0                               </td>
+<td>                   7.192                        </td>
+</tr>
+<tr>
+<td>                DRAWING                         </td>
+<td>                П-4                             </td>
+<td>                [П.4]                           </td>
+<td>                0                               </td>
+<td>                   0.155                        </td>
+</tr>
+<tr>
+<td>                DRAWING                         </td>
+<td>                П-5                             </td>
+<td>                [П.5]                           </td>
+<td>                0                               </td>
+<td>                  72.240                        </td>
+</tr>
+<tr>
+<td>                DRAWING                         </td>
+<td>                П-6                             </td>
+<td>                [П.6]                           </td>
+<td>                0                               </td>
+<td>                  36.162                        </td>
+</tr>
+<tr>
+<td>                DRAWING                         </td>
+<td>                П-7                             </td>
+<td>                [П.7]                           </td>
+<td>                0                               </td>
+<td>                  14.329                        </td>
+</tr>
+<tr>
+<td>                DRAWING                         </td>
+<td>                П-8                             </td>
+<td>                [П.8]                           </td>
+<td>                0                               </td>
+<td>                   0.169                        </td>
+</tr>
+<tr>
+<td>                DRAWING                         </td>
+<td>                П-9                             </td>
+<td>                [П.9]                           </td>
+<td>                0                               </td>
+<td>                   9.789                        </td>
+</tr>
+<tr>
+<td>           ASSEMBLY                             </td>
+<td>           Б-4                                  </td>
+<td>            -0.396                              </td>
+<td>           1-2/В                                </td>
+</tr>
+<tr>
+<td>           ASSEMBLY                             </td>
+<td>           Б-5                                  </td>
+<td>            +0.000                              </td>
+<td>           3-4/В                                </td>
+</tr>
+<tr>
+<td>           ASSEMBLY                             </td>
+<td>           Б-7                                  </td>
+<td>            +0.000                              </td>
+<td>           1-2/В-Г                              </td>
+</tr>
+<tr>
+<td>           ASSEMBLY                             </td>
+<td>           Б-7                                  </td>
+<td>            -0.298                              </td>
+<td>           1-2/В-Г                              </td>
+</tr>
+<tr>
+<td>           ASSEMBLY                             </td>
+<td>           Б-9                                  </td>
+<td>            +0.000                              </td>
+<td>           2-3/Д                                </td>
+</tr>
+<tr>
+<td>           ASSEMBLY                             </td>
+<td>           П-4                                  </td>
+<td>            -0.000                              </td>
+<td>           1-2/В                                </td>
+</tr>
+<tr>
+<td>           ASSEMBLY                             </td>
+<td>           П-5                                  </td>
+<td>            -0.010                              </td>
+<td>           2-3/А-Б                              </td>
+</tr>
+<tr>
+<td>           ASSEMBLY                             </td>
+<td>           П-6                                  </td>
+<td>            -0.000                              </td>
+<td>           2-3/А-Б                              </td>
+</tr>
+<tr>
+<td>           ASSEMBLY                             </td>
+<td>           П-7                                  </td>
+<td>            -0.008                              </td>
+<td>           2-3/А-Б                              </td>
+</tr>
+<tr>
+<td>           ASSEMBLY                             </td>
+<td>           П-8                                  </td>
+<td>            +0.000                              </td>
+<td>           1-2/В                                </td>
+</tr>
+<tr>
+<td>           ASSEMBLY                             </td>
+<td>           П-9                                  </td>
+<td>            +0.010                              </td>
+<td>           4-5/А-Б                              </td>
+</tr>
+<tr>
+<td>           ASSEMBLY                             </td>
+<td>           П-9                                  </td>
+<td>            -0.010                              </td>
+<td>           4-5/А-Б                              </td>
+</tr>
+<tr>
+<td>            PART                                       </td>
+<td>            Б-4                                        </td>
+<td>            4                                          </td>
+<td>            1                                          </td>
+<td>            I40Б1                                      </td>
+<td>            6000                                       </td>
+<td>            339.900                                    </td>
+<td>            339.900                                    </td>
+<td>            C245                                       </td>
+<td>            фрез                                       </td>
+<td>                                                       </td>
+</tr>
+<tr>
+<td>                         WEIGHT                        </td>
+<td>                      Б-4                              </td>
+<td>                      339.900                          </td>
+<td>                                                       </td>
+</tr>
+<tr>
+<td>            PART                                       </td>
+<td>            Б-5                                        </td>
+<td>            1                                          </td>
+<td>            4                                          </td>
+<td>            I30К1                                      </td>
+<td>            7000                                       </td>
+<td>            608.800                                    </td>
+<td>            2435.200                                   </td>
+<td>            C245                                       </td>
+<td>                                                       </td>
+<td>                                                       </td>
+</tr>
+<tr>
+<td>            PART                                       </td>
+<td>            Б-5                                        </td>
+<td>            2                                          </td>
+<td>            2                                          </td>
+<td>            I30Б1                                      </td>
+<td>            5702                                       </td>
+<td>            182.600                                    </td>
+<td>            365.200                                    </td>
+<td>            C245                                       </td>
+<td>                                                       </td>
+<td>                                                       </td>
+</tr>
+<tr>
+<td>            PART                                       </td>
+<td>            Б-5                                        </td>
+<td>            6                                          </td>
+<td>            2                                          </td>
+<td>            I30Б1                                      </td>
+<td>            5991                                       </td>
+<td>            191.900                                    </td>
+<td>            383.800                                    </td>
+<td>            C245                                       </td>
+<td>                                                       </td>
+<td>                                                       </td>
+</tr>
+<tr>
+<td>                         WEIGHT                        </td>
+<td>                      Б-5                              </td>
+<td>                      3216.000                         </td>
+<td>                           Напл:1.0;31.8               </td>
+</tr>
+<tr>
+<td>            PART                                       </td>
+<td>            Б-7                                        </td>
+<td>            12                                         </td>
+<td>            2                                          </td>
+<td>            I30Б1                                      </td>
+<td>            6000                                       </td>
+<td>            192.200                                    </td>
+<td>            384.400                                    </td>
+<td>            C245                                       </td>
+<td>                                                       </td>
+<td>                                                       </td>
+</tr>
+<tr>
+<td>                         WEIGHT                        </td>
+<td>                      Б-7                              </td>
+<td>                      384.400                          </td>
+<td>                                                       </td>
+</tr>
+<tr>
+<td>            PART                                       </td>
+<td>            Б-9                                        </td>
+<td>            16                                         </td>
+<td>            1                                          </td>
+<td>            I30Б1                                      </td>
+<td>            6000                                       </td>
+<td>            192.200                                    </td>
+<td>            192.200                                    </td>
+<td>            C245                                       </td>
+<td>                                                       </td>
+<td>                                                       </td>
+</tr>
+<tr>
+<td>            PART                                       </td>
+<td>            Б-9                                        </td>
+<td>            17                                         </td>
+<td>            1                                          </td>
+<td>            -10x149                                    </td>
+<td>            298                                        </td>
+<td>            3.500                                      </td>
+<td>            3.500                                      </td>
+<td>            C245                                       </td>
+<td>                                                       </td>
+<td>                                                       </td>
+</tr>
+<tr>
+<td>                         WEIGHT                        </td>
+<td>                      Б-9                              </td>
+<td>                      197.700                          </td>
+<td>                            Напл:1.0;2.0               </td>
+</tr>
+<tr>
+<td>            PART                                       </td>
+<td>            П-4                                        </td>
+<td>            7                                          </td>
+<td>            1                                          </td>
+<td>            -20x253                                    </td>
+<td>            272                                        </td>
+<td>            10.600                                     </td>
+<td>            10.600                                     </td>
+<td>            C245                                       </td>
+<td>                                                       </td>
+<td>                                                       </td>
+</tr>
+<tr>
+<td>                         WEIGHT                        </td>
+<td>                      П-4                              </td>
+<td>                      10.600                           </td>
+<td>                                                       </td>
+</tr>
+<tr>
+<td>            PART                                       </td>
+<td>            П-5                                        </td>
+<td>            8                                          </td>
+<td>            1                                          </td>
+<td>            -10x6000                                   </td>
+<td>            6000                                       </td>
+<td>            2826.000                                   </td>
+<td>            2826.000                                   </td>
+<td>            C245                                       </td>
+<td>                                                       </td>
+<td>                                                       </td>
+</tr>
+<tr>
+<td>                         WEIGHT                        </td>
+<td>                      П-5                              </td>
+<td>                      2826.000                         </td>
+<td>                                                       </td>
+</tr>
+<tr>
+<td>            PART                                       </td>
+<td>            П-6                                        </td>
+<td>            9                                          </td>
+<td>            1                                          </td>
+<td>            -10x3000                                   </td>
+<td>            6000                                       </td>
+<td>            1411.800                                   </td>
+<td>            1411.800                                   </td>
+<td>            C245                                       </td>
+<td>                                                       </td>
+<td>                                                       </td>
+</tr>
+<tr>
+<td>                         WEIGHT                        </td>
+<td>                      П-6                              </td>
+<td>                      1411.800                         </td>
+<td>                                                       </td>
+</tr>
+<tr>
+<td>            PART                                       </td>
+<td>            П-7                                        </td>
+<td>            11                                         </td>
+<td>            1                                          </td>
+<td>            -30x3000                                   </td>
+<td>            3000                                       </td>
+<td>            1648.900                                   </td>
+<td>            1648.900                                   </td>
+<td>            C245                                       </td>
+<td>                                                       </td>
+<td>                                                       </td>
+</tr>
+<tr>
+<td>                         WEIGHT                        </td>
+<td>                      П-7                              </td>
+<td>                      1648.900                         </td>
+<td>                                                       </td>
+</tr>
+<tr>
+<td>            PART                                       </td>
+<td>            П-8                                        </td>
+<td>            14                                         </td>
+<td>            1                                          </td>
+<td>            -20x247                                    </td>
+<td>            301                                        </td>
+<td>            11.600                                     </td>
+<td>            11.600                                     </td>
+<td>            C245                                       </td>
+<td>                                                       </td>
+<td>                                                       </td>
+</tr>
+<tr>
+<td>                         WEIGHT                        </td>
+<td>                      П-8                              </td>
+<td>                      11.600                           </td>
+<td>                                                       </td>
+</tr>
+<tr>
+<td>            PART                                       </td>
+<td>            П-9                                        </td>
+<td>            15                                         </td>
+<td>            2                                          </td>
+<td>            -20x2100                                   </td>
+<td>            2500                                       </td>
+<td>            754.500                                    </td>
+<td>            1509.000                                   </td>
+<td>            C245                                       </td>
+<td>                                                       </td>
+<td>                                                       </td>
+</tr>
+<tr>
+<td>                         WEIGHT                        </td>
+<td>                      П-9                              </td>
+<td>                      1509.000                         </td>
+<td>                                                       </td>
+</tr>
+<tr>
+<td>             WELD              </td>
+<td>         Б-5                   </td>
+<td>          5.0                  </td>
+<td>               1128            </td>
+<td>          4                    </td>
+</tr>
+<tr>
+<td>             WELD              </td>
+<td>         Б-5                   </td>
+<td>          6.0                  </td>
+<td>               3384            </td>
+<td>          12                   </td>
+</tr>
+<tr>
+<td>             WELD              </td>
+<td>         Б-5                   </td>
+<td>          8.0                  </td>
+<td>               3637            </td>
+<td>          41                   </td>
+</tr>
+<tr>
+<td>             WELD              </td>
+<td>         Б-9                   </td>
+<td>          6.0                  </td>
+<td>                564            </td>
+<td>          2                    </td>
+</tr>
+<tr>
+<td>             WELD              </td>
+<td>         Б-9                   </td>
+<td>          8.0                  </td>
+<td>                287            </td>
+<td>          4                    </td>
+</tr>
+<tr>
+<td>            BOLT                </td>
+<td>            Б-4                 </td>
+<td>            20X   60            </td>
+<td>           7798                 </td>
+<td>            4                   </td>
+<td>            0.864               </td>
+</tr>
+<tr>
+<td>            BOLT                </td>
+<td>            Б-7                 </td>
+<td>            20X   45            </td>
+<td>           7798                 </td>
+<td>            4                   </td>
+<td>            0.718               </td>
+</tr>
+<tr>
+<td>            BOLT                </td>
+<td>            П-4                 </td>
+<td>            20X   60            </td>
+<td>           7798                 </td>
+<td>            4                   </td>
+<td>            0.864               </td>
+</tr>
+<tr>
+<td>            BOLT                </td>
+<td>            П-5                 </td>
+<td>            20X   50            </td>
+<td>           7798                 </td>
+<td>            4                   </td>
+<td>            0.764               </td>
+</tr>
+<tr>
+<td>            BOLT                </td>
+<td>            П-5                 </td>
+<td>            30X   75            </td>
+<td>           7798                 </td>
+<td>            4                   </td>
+<td>            2.639               </td>
+</tr>
+<tr>
+<td>            BOLT                </td>
+<td>            П-9                 </td>
+<td>            20X   70            </td>
+<td>           7798                 </td>
+<td>            4                   </td>
+<td>            0.963               </td>
+</tr>
+<tr>
+<td>              NUT               </td>
+<td>              Б-4               </td>
+<td>                 20             </td>
+<td>        5915                    </td>
+<td>             4                  </td>
+<td>             0.286              </td>
+</tr>
+<tr>
+<td>              NUT               </td>
+<td>              Б-7               </td>
+<td>                 20             </td>
+<td>        5915                    </td>
+<td>             4                  </td>
+<td>             0.286              </td>
+</tr>
+<tr>
+<td>              NUT               </td>
+<td>              П-4               </td>
+<td>                 20             </td>
+<td>        5915                    </td>
+<td>             4                  </td>
+<td>             0.286              </td>
+</tr>
+<tr>
+<td>              NUT               </td>
+<td>              П-5               </td>
+<td>                 20             </td>
+<td>        5915                    </td>
+<td>             4                  </td>
+<td>             0.286              </td>
+</tr>
+<tr>
+<td>              NUT               </td>
+<td>              П-5               </td>
+<td>                 30             </td>
+<td>        5915                    </td>
+<td>             4                  </td>
+<td>             0.970              </td>
+</tr>
+<tr>
+<td>              NUT               </td>
+<td>              П-9               </td>
+<td>                 20             </td>
+<td>        5915                    </td>
+<td>             4                  </td>
+<td>             0.286              </td>
+</tr>
+<tr>
+<td>            WASHER              </td>
+<td>            Б-4                 </td>
+<td>               20               </td>
+<td>            11371               </td>
+<td>            4                   </td>
+<td>            0.069               </td>
+</tr>
+<tr>
+<td>            WASHER              </td>
+<td>            Б-7                 </td>
+<td>               20               </td>
+<td>            11371               </td>
+<td>            4                   </td>
+<td>            0.069               </td>
+</tr>
+<tr>
+<td>            WASHER              </td>
+<td>            П-4                 </td>
+<td>               20               </td>
+<td>            11371               </td>
+<td>            4                   </td>
+<td>            0.069               </td>
+</tr>
+<tr>
+<td>            WASHER              </td>
+<td>            П-5                 </td>
+<td>               20               </td>
+<td>            11371               </td>
+<td>            4                   </td>
+<td>            0.069               </td>
+</tr>
+<tr>
+<td>            WASHER              </td>
+<td>            П-5                 </td>
+<td>               30               </td>
+<td>            11371               </td>
+<td>            4                   </td>
+<td>            0.214               </td>
+</tr>
+<tr>
+<td>            WASHER              </td>
+<td>            П-9                 </td>
+<td>               20               </td>
+<td>            11371               </td>
+<td>            4                   </td>
+<td>            0.069               </td>
+</tr>
+<tr>
+<td>            HOLE               </td>
+<td>            Б-4                </td>
+<td>            4                  </td>
+<td>               22              </td>
+<td>            8                  </td>
+<td>           31                  </td>
+</tr>
+<tr>
+<td>            HOLE               </td>
+<td>            Б-7                </td>
+<td>            12                 </td>
+<td>               22              </td>
+<td>            8                  </td>
+<td>           16                  </td>
+</tr>
+<tr>
+<td>            HOLE               </td>
+<td>            П-4                </td>
+<td>            7                  </td>
+<td>               22              </td>
+<td>            4                  </td>
+<td>           31                  </td>
+</tr>
+<tr>
+<td>            HOLE               </td>
+<td>            П-5                </td>
+<td>            8                  </td>
+<td>               22              </td>
+<td>            4                  </td>
+<td>           20                  </td>
+</tr>
+<tr>
+<td>            HOLE               </td>
+<td>            П-5                </td>
+<td>            8                  </td>
+<td>               32              </td>
+<td>            4                  </td>
+<td>           35                  </td>
+</tr>
+<tr>
+<td>            HOLE               </td>
+<td>            П-6                </td>
+<td>            9                  </td>
+<td>               22              </td>
+<td>            4                  </td>
+<td>           20                  </td>
+</tr>
+<tr>
+<td>            CHAMFER            </td>
+<td>            П-6                </td>
+<td>            9                  </td>
+<td>                3000           </td>
+</tr>
+<tr>
+<td>            HOLE               </td>
+<td>            П-7                </td>
+<td>            11                 </td>
+<td>               32              </td>
+<td>            4                  </td>
+<td>           35                  </td>
+</tr>
+<tr>
+<td>            HOLE               </td>
+<td>            П-8                </td>
+<td>            14                 </td>
+<td>               22              </td>
+<td>            4                  </td>
+<td>           31                  </td>
+</tr>
+<tr>
+<td>            HOLE               </td>
+<td>            П-9                </td>
+<td>            15                 </td>
+<td>               22              </td>
+<td>            8                  </td>
+<td>           40                  </td>
+</tr>
+</table>
+</body>
+
+

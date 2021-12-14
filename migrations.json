@@ -1,0 +1,17 @@
+{
+  "prerun": "# some code here",
+  "directory": "migrations",
+  "history": "migratehistory",
+  "models": [
+    "models.Order",
+    "models.Drawing",
+    "models.Point",
+    "models.Part",
+    "models.Weld",
+    "models.Bolt",
+    "models.Nut",
+    "models.Washer",
+    "models.Hole",
+    "models.Chamfer"
+  ]
+}
