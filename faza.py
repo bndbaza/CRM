@@ -10,7 +10,7 @@ def Faza_update(order):
     row.line = line
     line += 1
     weight += row.assembly.weight
-    if weight >= 14000:
+    if weight >= 15000:
       weight = row.assembly.weight
       faza += 1
     row.faza = faza

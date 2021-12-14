@@ -117,10 +117,10 @@ def Tekla(xls,yyy):
           if row[1].replace(' ','') == col.assembly:
             if row[3].replace(' ','') != '':
               more = 0
-              more = float(row[3].replace(' ','').split(';')[1])  / col.count
+              more = float(row[3].replace(' ','').split(';')[1])
             else:
               more = 0
-            col.weight = float(row[2].replace(' ','')) / col.count,
+            col.weight = float(row[2].replace(' ','')),
             col.more=more,
             post['Weight'].append(col)
   with connection.atomic():

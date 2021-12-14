@@ -2,7 +2,7 @@ from typing import List
 from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
 from db import connection
-from models import Drawing, Order, Part, Point, Hole
+from models import Drawing, Order, Part, Point, Hole, Bolt, Nut, Washer
 from tekla import Tekla
 from faza import Faza_update
 from peewee import fn, JOIN
@@ -28,11 +28,16 @@ app.add_middleware(
 )
 
 
-@app.get('/',response_model=OrderBase)
+@app.get('/')#,response_model=List[PointBase])
 def get():
-  for i in Order.select(Order.cas, fn.SUM(Drawing.count).alias('aaa')).join(Drawing, JOIN.LEFT_OUTER).group_by(Order.cas):
-    print(i.cas,i.aaa)
-  return (Order.select(Order, Drawing).join(Drawing).first())
+  point = Point.select(Point.faza,fn.SUM(Drawing.weight).alias('aaa')).join(Drawing).group_by(Point.faza)
+
+  b = Bolt.select(fn.SUM(Bolt.weight * Bolt.count).alias('aaa'))
+
+  n = Nut.select(fn.SUM(Nut.weight * Nut.count).alias('aaa'))
+  w = Washer.select(fn.SUM(Washer.weight * Washer.count).alias('aaa'))
+  print(n.scalar() + b.scalar() + w.scalar())
+  return #point
 
 # @app.post('/',response_model=Drawing)
 # async def postDrawing(drawing: Drawing):

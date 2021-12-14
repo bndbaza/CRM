@@ -14,24 +14,20 @@ class Base(BaseModel):
   class Config:
     orm_mode = True
 
-class DrawingBase(BaseModel):
+
+class OrderBase(Base):
+  cas: str
+
+
+class DrawingBase(Base):
   id: int
   create_date: datetime.datetime
-  # cas: Optional[OrderBase]
+  cas: Optional[OrderBase]
   assembly: str
   area: float
   count: int
   weight: float
   more: float
-
-  class Config:
-    orm_mode = True
-
-class OrderBase(Base):
-  cas: str
-  # drawings: List[DrawingBase]
-
-
   
 
 
