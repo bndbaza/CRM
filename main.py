@@ -6,7 +6,7 @@ from models import Drawing, Order, Part, Point, Hole, Bolt, Nut, Washer
 from tekla import Tekla
 from faza import Faza_update
 from peewee import fn, JOIN
-from schemas import OrderBase, DrawingBase, PointBase,PartBase
+from schemas import OrderBase, DrawingBase, PointBase,PartBase, FazaBase
 
 
 app = FastAPI()
@@ -28,23 +28,15 @@ app.add_middleware(
 )
 
 
-@app.get('/')#,response_model=List[PointBase])
+@app.get('/',response_model=List[PartBase])
 def get():
   point = Point.select(Point.faza,fn.SUM(Drawing.weight).alias('aaa')).join(Drawing).group_by(Point.faza)
+  w = Point.select(Point.assembly).where(Point.faza == 1)
+  d = Part.select().where(fn.Substr(Part.profile, 1, 1) != '-',Part.assembly.in_(w))
+  for i in d:
+    print(i.assembly, i.profile, i.length, i.count)
+  return list(d)
 
-  b = Bolt.select(Bolt.profile,fn.SUM(Bolt.weight * Bolt.count).alias('aaa'),Bolt.weight,fn.SUM(Bolt.count).alias('bbb')).group_by(Bolt.profile)
-
-  n = Nut.select(Nut.profile,fn.SUM(Nut.weight * Nut.count).alias('aaa'),Nut.weight,fn.SUM(Nut.count).alias('bbb')).group_by(Nut.profile)
-
-  w = Washer.select(Washer.profile,fn.SUM(Washer.weight * Washer.count).alias('aaa'),Washer.weight,fn.SUM(Washer.count).alias('bbb'),Washer.gost).group_by(Washer.gost)
-  for i in w:
-    print(i.aaa,i.weight,i.bbb,i.gost)
-  return #point
-
-# @app.post('/',response_model=Drawing)
-# async def postDrawing(drawing: Drawing):
-#   await drawing.save()
-#   return drawing
 
 @app.post('/order')
 async def postTekla(

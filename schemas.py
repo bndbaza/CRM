@@ -92,3 +92,10 @@ class HoleBase(Base):
 class ChamferBase(Base):
   part: Optional[PartBase]
   length: float
+
+class FazaBase(BaseModel):
+  faza: int
+  aaa: Optional[float]
+
+  class Config:
+    orm_mode = True
