@@ -2,9 +2,9 @@ from typing import List
 from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
 from db import connection
-from models import Drawing, Order, Part, Point, Hole, Bolt, Nut, Washer
+from models import Drawing, Order, Part, Point, Hole, Bolt, Nut, Washer, PointPart
 from tekla import Tekla
-from faza import Faza_update
+from faza import Faza_update, PartPoint
 from peewee import fn, JOIN
 from schemas import OrderBase, DrawingBase, PointBase,PartBase, FazaBase
 
@@ -38,6 +38,22 @@ def get():
   return list(d)
 
 
+@app.get('/test')#,response_model=List[PartBase])
+def gettest():
+  # d = Point.select(Point,fn.SUM(Drawing.points.id).alias('aaa')).join(Drawing)#.where(Point.faza == 1)
+  # print(d[0].aaa)
+  PartPoint()
+  return #list(d)
+
+
+@app.get('/test2')#,response_model=List[PartBase])
+def gettest2():
+  query = PointPart.select(PointPart,Part,Point).join_from(PointPart,Part).join_from(PointPart,Point).where(fn.Substr(Part.profile, 1, 1) != '-').order_by(Point.line)
+  for i in query:
+    print(i.point.assembly,i.part.profile,i.point.line)
+  return 
+
+
 @app.post('/order')
 async def postTekla(
   file: UploadFile = File(...),
@@ -45,4 +61,4 @@ async def postTekla(
 ):
   Tekla(file,order)
   Faza_update(order)
-  return # await Point.objects.filter(assembly__cas__cas=order,faza=4).sum('assembly__weight')
+  return

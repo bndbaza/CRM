@@ -34,7 +34,7 @@ class Drawing(peewee.Model):
 class Bolt(peewee.Model):
     id = PrimaryKeyField(primary_key=True)
     create_date = DateTimeField()
-    assembly = snapshot.ForeignKeyField(index=True, model='drawing')
+    assembly = snapshot.ForeignKeyField(backref='bolts', index=True, model='drawing')
     profile = CharField(max_length=100)
     count = IntegerField()
     gost = CharField(max_length=50)
@@ -47,7 +47,7 @@ class Bolt(peewee.Model):
 class Part(peewee.Model):
     id = PrimaryKeyField(primary_key=True)
     create_date = DateTimeField()
-    assembly = snapshot.ForeignKeyField(index=True, model='drawing')
+    assembly = snapshot.ForeignKeyField(backref='parts', index=True, model='drawing')
     number = IntegerField()
     count = IntegerField()
     profile = CharField(max_length=100)
@@ -63,7 +63,7 @@ class Part(peewee.Model):
 class Chamfer(peewee.Model):
     id = PrimaryKeyField(primary_key=True)
     create_date = DateTimeField()
-    part = snapshot.ForeignKeyField(index=True, model='part')
+    part = snapshot.ForeignKeyField(backref='chamfers', index=True, model='part')
     length = DecimalField(auto_round=False, decimal_places=3, max_digits=12, rounding='ROUND_HALF_EVEN')
     class Meta:
         table_name = "chamfers"
@@ -73,7 +73,7 @@ class Chamfer(peewee.Model):
 class Hole(peewee.Model):
     id = PrimaryKeyField(primary_key=True)
     create_date = DateTimeField()
-    part = snapshot.ForeignKeyField(index=True, model='part')
+    part = snapshot.ForeignKeyField(backref='holes', index=True, model='part')
     diameter = IntegerField()
     count = IntegerField()
     depth = IntegerField()
@@ -85,7 +85,7 @@ class Hole(peewee.Model):
 class Nut(peewee.Model):
     id = PrimaryKeyField(primary_key=True)
     create_date = DateTimeField()
-    assembly = snapshot.ForeignKeyField(index=True, model='drawing')
+    assembly = snapshot.ForeignKeyField(backref='nuts', index=True, model='drawing')
     profile = CharField(max_length=100)
     count = IntegerField()
     gost = CharField(max_length=50)
@@ -98,21 +98,30 @@ class Nut(peewee.Model):
 class Point(peewee.Model):
     id = PrimaryKeyField(primary_key=True)
     create_date = DateTimeField()
-    assembly = snapshot.ForeignKeyField(index=True, model='drawing')
+    assembly = snapshot.ForeignKeyField(backref='points', index=True, model='drawing')
     point_x = CharField(max_length=30)
     point_y = CharField(max_length=30)
     point_z = DecimalField(auto_round=False, decimal_places=3, max_digits=12, rounding='ROUND_HALF_EVEN')
     faza = IntegerField(null=True)
     line = IntegerField(null=True)
+    in_work = BooleanField(default=False)
     class Meta:
         table_name = "points"
+
+
+@snapshot.append
+class PointPart(peewee.Model):
+    point = snapshot.ForeignKeyField(index=True, model='point')
+    part = snapshot.ForeignKeyField(index=True, model='part')
+    class Meta:
+        table_name = "pointparts"
 
 
 @snapshot.append
 class Washer(peewee.Model):
     id = PrimaryKeyField(primary_key=True)
     create_date = DateTimeField()
-    assembly = snapshot.ForeignKeyField(index=True, model='drawing')
+    assembly = snapshot.ForeignKeyField(backref='washers', index=True, model='drawing')
     profile = CharField(max_length=100)
     count = IntegerField()
     gost = CharField(max_length=50)
@@ -125,7 +134,7 @@ class Washer(peewee.Model):
 class Weld(peewee.Model):
     id = PrimaryKeyField(primary_key=True)
     create_date = DateTimeField()
-    assembly = snapshot.ForeignKeyField(index=True, model='drawing')
+    assembly = snapshot.ForeignKeyField(backref='welds', index=True, model='drawing')
     cathet = IntegerField()
     length = DecimalField(auto_round=False, decimal_places=3, max_digits=12, rounding='ROUND_HALF_EVEN')
     count = IntegerField()

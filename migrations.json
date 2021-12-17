@@ -12,6 +12,7 @@
     "models.Nut",
     "models.Washer",
     "models.Hole",
-    "models.Chamfer"
+    "models.Chamfer",
+    "models.PointPart"
   ]
 }

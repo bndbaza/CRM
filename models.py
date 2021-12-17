@@ -1,5 +1,5 @@
 import datetime
-from peewee import Model, IntegerField, DateTimeField, CharField, ForeignKeyField, DecimalField, PrimaryKeyField
+from peewee import Model, IntegerField, DateTimeField, CharField, ForeignKeyField, DecimalField, PrimaryKeyField, BooleanField
 from db import connection
 
 class ModelBase(Model):
@@ -30,19 +30,20 @@ class Point(ModelBase):
     table_name='points'
   id = PrimaryKeyField(null=False)
   create_date = DateTimeField()
-  assembly = ForeignKeyField(Drawing)
+  assembly = ForeignKeyField(Drawing,backref='points')
   point_x = CharField(max_length=30)
   point_y = CharField(max_length=30)
   point_z = DecimalField(max_digits=12, decimal_places=3)
   faza = IntegerField(null=True)
   line = IntegerField(null=True)
+  in_work = BooleanField(default=False)
 
 class Part(ModelBase):
   class Meta:
     table_name='parts'
   id = PrimaryKeyField(null=False)
   create_date = DateTimeField()
-  assembly = ForeignKeyField(Drawing)
+  assembly = ForeignKeyField(Drawing,backref='parts')
   number = IntegerField()
   count = IntegerField()
   profile = CharField(max_length=100)
@@ -56,7 +57,7 @@ class Weld(ModelBase):
     table_name='welds'
   id = PrimaryKeyField(null=False)
   create_date = DateTimeField()
-  assembly = ForeignKeyField(Drawing)
+  assembly = ForeignKeyField(Drawing,related_name='welds')
   cathet = IntegerField()
   length = DecimalField(max_digits=12,decimal_places=3)
   count = IntegerField()
@@ -66,7 +67,7 @@ class Bolt(ModelBase):
     table_name='bolts'
   id = PrimaryKeyField(null=False)
   create_date = DateTimeField()
-  assembly = ForeignKeyField(Drawing)
+  assembly = ForeignKeyField(Drawing,related_name='bolts')
   profile = CharField(max_length=100)
   count = IntegerField()
   gost = CharField(max_length=50)
@@ -77,7 +78,7 @@ class Nut(ModelBase):
     table_name='nuts'
   id = PrimaryKeyField(null=False)
   create_date = DateTimeField()
-  assembly = ForeignKeyField(Drawing)
+  assembly = ForeignKeyField(Drawing,related_name='nuts')
   profile = CharField(max_length=100)
   count = IntegerField()
   gost = CharField(max_length=50)
@@ -88,7 +89,7 @@ class Washer(ModelBase):
     table_name='washers'
   id = PrimaryKeyField(null=False)
   create_date = DateTimeField()
-  assembly = ForeignKeyField(Drawing)
+  assembly = ForeignKeyField(Drawing,related_name='washers')
   profile = CharField(max_length=100)
   count = IntegerField()
   gost = CharField(max_length=50)
@@ -99,7 +100,7 @@ class Hole(ModelBase):
     table_name='holes'
   id = PrimaryKeyField(null=False)
   create_date = DateTimeField()
-  part = ForeignKeyField(Part)
+  part = ForeignKeyField(Part,related_name='holes')
   diameter = IntegerField()
   count = IntegerField()
   depth = IntegerField()
@@ -109,14 +110,11 @@ class Chamfer(ModelBase):
     table_name='chamfers'
   id = PrimaryKeyField(null=False)
   create_date = DateTimeField()
-  part = ForeignKeyField(Part)
+  part = ForeignKeyField(Part,related_name='chamfers')
   length = DecimalField(max_digits=12,decimal_places=3)
 
-# class Faza(ormar.Model):
-#   class Meta:
-#     database = database
-#     metadata = metadata
-#   id: int = ormar.Integer(primary_key=True)
-#   assembly: Optional[Drawing] = ormar.ForeignKey(Drawing)
-#   faza: int = ormar.Integer(nullable=True)
-#   line: int = ormar.Integer(nullable=True)
+class PointPart(ModelBase):
+  class Meta:
+    table_name='pointparts'
+  point = ForeignKeyField(Point)
+  part = ForeignKeyField(Part)

@@ -1,4 +1,5 @@
-from models import Point
+from models import Point, Part, PointPart
+from db import connection
 
 def Faza_update(order):
   post = []
@@ -16,3 +17,15 @@ def Faza_update(order):
     row.faza = faza
     post.append(row)
   Point.bulk_update(post, fields=[Point.line,Point.faza])
+
+def PartPoint():
+  parts = Part.select()
+  points = Point.select().where(Point.faza == 1)
+  all = []
+  for point in points:
+    for part in parts:
+      if point.assembly == part.assembly:
+        d = (point,part)
+        all.append(d)
+  with connection.atomic():
+    PointPart.insert_many(all, fields=[PointPart.point,PointPart.part]).execute()

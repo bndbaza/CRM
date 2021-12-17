@@ -17,6 +17,7 @@ class Base(BaseModel):
 
 class OrderBase(Base):
   cas: str
+  # drawings: List[int] =[]
 
 
 class DrawingBase(Base):
