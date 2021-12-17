@@ -1,9 +1,10 @@
-from models import Point, Part, PointPart
+from models import Drawing, Order, Point, Part, PointPart
 from db import connection
 
 def Faza_update(order):
   post = []
-  points = Point.filter(assembly__cas__cas = order).order_by(Point.point_z,Point.point_y,Point.point_x)
+  # points = Point.filter(assembly__cas__cas = order).order_by(Point.point_z,Point.point_y,Point.point_x)
+  points = Point.select().where(Order.cas == order).join(Drawing).join(Order).order_by(Point.point_z,Point.point_y,Point.point_x)
   line=1
   faza=1
   weight=0
@@ -11,7 +12,7 @@ def Faza_update(order):
     row.line = line
     line += 1
     weight += row.assembly.weight
-    if weight >= 15000:
+    if weight > 15000:
       weight = row.assembly.weight
       faza += 1
     row.faza = faza
@@ -20,7 +21,8 @@ def Faza_update(order):
 
 def PartPoint():
   parts = Part.select()
-  points = Point.select().where(Point.faza == 1)
+  # points = Point.select().where(Point.faza == 1)
+  points = Point.filter(faza = 1)
   all = []
   for point in points:
     for part in parts:

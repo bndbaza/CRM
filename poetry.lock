@@ -89,7 +89,7 @@ python-versions = "*"
 
 [[package]]
 name = "peewee-migrations"
-version = "0.3.19"
+version = "0.3.20"
 description = "Migration engine for peewee orm"
 category = "main"
 optional = false
@@ -229,8 +229,8 @@ peewee = [
     {file = "peewee-3.14.8.tar.gz", hash = "sha256:01bd7f734defb08d7a3346a0c0ca7011bc8d0d685934ec0e001b3371d522ec53"},
 ]
 peewee-migrations = [
-    {file = "peewee-migrations-0.3.19.tar.gz", hash = "sha256:96cac443dbd7ba05b82673bd76b3c89f6b3be0c00366b240abf9a1057403e007"},
-    {file = "peewee_migrations-0.3.19-py3-none-any.whl", hash = "sha256:c7b87d5b971fb1d6f72e8ee4cd1bd37a387c120befa703e260809aaf959def95"},
+    {file = "peewee-migrations-0.3.20.tar.gz", hash = "sha256:825d5159163832366deaa6a4ed2b26fbff0de6f320a971d6a12eb8fcd8955637"},
+    {file = "peewee_migrations-0.3.20-py3-none-any.whl", hash = "sha256:417a8416a4d62383359ed66d0565926cc587218ed2d7d748affaddae0c9a0296"},
 ]
 pydantic = [
     {file = "pydantic-1.8.2-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:05ddfd37c1720c392f4e0d43c484217b7521558302e7069ce8d318438d297739"},
