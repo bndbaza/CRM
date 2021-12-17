@@ -38,15 +38,13 @@ def get():
   return list(d)
 
 
-@app.get('/test')#,response_model=List[PartBase])
+@app.get('/test')
 def gettest():
-  # d = Point.select(Point,fn.SUM(Drawing.points.id).alias('aaa')).join(Drawing)#.where(Point.faza == 1)
-  # print(d[0].aaa)
   PartPoint()
-  return #list(d)
+  return
 
 
-@app.get('/test2')#,response_model=List[PartBase])
+@app.get('/test2')
 def gettest2():
   query = PointPart.select(PointPart,Part,Point).join_from(PointPart,Part).join_from(PointPart,Point).where(fn.Substr(Part.profile, 1, 1) != '-').order_by(Point.line)
   for i in query:
