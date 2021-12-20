@@ -7,6 +7,7 @@ from tekla import Tekla
 from faza import Faza_update, PartPoint
 from peewee import fn, JOIN
 from schemas import OrderBase, DrawingBase, PointBase,PartBase, FazaBase
+from report import Pdf
 
 
 app = FastAPI()
@@ -41,6 +42,12 @@ def get():
 @app.get('/test')
 def gettest():
   PartPoint(1, '1000')
+  return
+
+
+@app.get('/pdf')
+def getPdf():
+  Pdf()
   return
 
 
