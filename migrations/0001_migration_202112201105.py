@@ -113,6 +113,15 @@ class Point(peewee.Model):
 class PointPart(peewee.Model):
     point = snapshot.ForeignKeyField(index=True, model='point')
     part = snapshot.ForeignKeyField(index=True, model='part')
+    detail = IntegerField()
+    cgm = IntegerField(default=0)
+    saw = IntegerField(default=0)
+    hole = IntegerField(default=0)
+    bevel = IntegerField(default=0)
+    notch = IntegerField(default=0)
+    chamfer = IntegerField(default=0)
+    milling = IntegerField(default=0)
+    bend = IntegerField(default=0)
     class Meta:
         table_name = "pointparts"
 

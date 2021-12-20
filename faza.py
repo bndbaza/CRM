@@ -1,9 +1,9 @@
 from models import Drawing, Order, Point, Part, PointPart
 from db import connection
+from peewee import fn, JOIN
 
 def Faza_update(order):
   post = []
-  # points = Point.filter(assembly__cas__cas = order).order_by(Point.point_z,Point.point_y,Point.point_x)
   points = Point.select().where(Order.cas == order).join(Drawing).join(Order).order_by(Point.point_z,Point.point_y,Point.point_x)
   line=1
   faza=1
@@ -19,15 +19,29 @@ def Faza_update(order):
     post.append(row)
   Point.bulk_update(post, fields=[Point.line,Point.faza])
 
-def PartPoint():
-  parts = Part.select()
-  # points = Point.select().where(Point.faza == 1)
-  points = Point.filter(faza = 1)
+def PartPoint(faza,cas):
+  parts = Part.filter(assembly__cas__cas = cas)
+  points = Point.filter(faza = faza,assembly__cas__cas = cas)
+  maxpp = PointPart.select(fn.MAX(PointPart.detail)).scalar()
   all = []
+  if maxpp == None:
+    maxpp = 0
   for point in points:
+    maxpp += 1
     for part in parts:
       if point.assembly == part.assembly:
-        d = (point,part)
+        oper = {'hole': 0, 'chamfer': 0, 'cgm': 0, 'saw': 0, 'milling': 0}
+        if part.chamfers.count() > 0:
+          oper['chamfer'] = 1
+        if part.holes.count() > 0:
+          oper['hole'] = 1
+        if part.profile[0] == '-':
+          oper['cgm'] = 1
+        else:
+          oper['saw'] = 1
+        if part.manipulation.find('фрез') >= 0:
+          oper['milling'] = 1
+        d = (point,part,maxpp,oper['hole'],oper['chamfer'],oper['cgm'],oper['saw'],oper['milling'])
         all.append(d)
   with connection.atomic():
-    PointPart.insert_many(all, fields=[PointPart.point,PointPart.part]).execute()
+    PointPart.insert_many(all, fields=[PointPart.point,PointPart.part,PointPart.detail,PointPart.hole,PointPart.chamfer,PointPart.cgm,PointPart.saw,PointPart.milling]).execute()

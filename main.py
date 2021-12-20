@@ -40,7 +40,7 @@ def get():
 
 @app.get('/test')
 def gettest():
-  PartPoint()
+  PartPoint(1, '1000')
   return
 
 

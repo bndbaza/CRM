@@ -2,10 +2,6 @@ from typing import Optional, List, Dict
 from pydantic import BaseModel
 import datetime
 
-from pydantic.types import constr
-
-from models import Drawing
-
 
 class Base(BaseModel):
   id: int
@@ -17,7 +13,6 @@ class Base(BaseModel):
 
 class OrderBase(Base):
   cas: str
-  # drawings: List[int] =[]
 
 
 class DrawingBase(Base):
@@ -30,7 +25,6 @@ class DrawingBase(Base):
   weight: float
   more: float
   
-
 
 class PointBase(Base):
   assembly: Optional[DrawingBase]

@@ -118,3 +118,12 @@ class PointPart(ModelBase):
     table_name='pointparts'
   point = ForeignKeyField(Point)
   part = ForeignKeyField(Part)
+  detail = IntegerField()
+  cgm = IntegerField(default=0)
+  saw = IntegerField(default=0)
+  hole = IntegerField(default=0)
+  bevel = IntegerField(default=0)
+  notch = IntegerField(default=0)
+  chamfer = IntegerField(default=0)
+  milling = IntegerField(default=0)
+  bend = IntegerField(default=0)
