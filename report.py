@@ -15,14 +15,13 @@ def Pdf():
   width, height = A4
 
   heightList = [height*0.1,height*0.25,height*0.15,height*0.1,height*0.25,height*0.15]
-
   mainTable = Table([
     [Header1(600,heightList[0])],
-    [''],
+    [Body(width,heightList[1])],
     [Footer(width,heightList[2])],
     [Header1(600,heightList[0])],
-    [''],
-    [Footer(width,heightList[2])]
+    [Body(width,heightList[1])],
+    ['123123123']
   ],colWidths=width,
     rowHeights=heightList)
 
@@ -135,7 +134,6 @@ def Footer2(width,height):
   return table
 
 def Footer3(width,height):
-  # widthList = [width*0.1,width*0.8,width*0.1]
   table = Table([
     ['7123'],
   ],colWidths=width,
@@ -170,17 +168,76 @@ def Footer4(width,height):
 
 def Footer5(width,height):
   widthList = [width*0.25,width*0.5,width*0.1,width*0.15]
+  img = Image('qr-code.gif',widthList[1],height,kind='proportional')
   table = Table([
-    [1,2,3,4],
+    [Footer6(widthList[0],height),img,'Пр',41],
+  ],colWidths=widthList,
+    rowHeights=height)
+  table.setStyle([
+    ('GRID',(0,0),(-1,-1),1,'red'),
+    ('LEFTPADDING',(0,0),(-2,0),0),
+    ('BOTTOMPADDING',(0,0),(-2,0),0),
+    ('BOTTOMPADDING',(-2,0),(-2,0),15),
+    ('BACKGROUND',(-1,0),(-1,0),colors.green),
+    ('TEXTCOLOR',(-1,0),(-1,0),'white'),
+    ('FONTNAME',(0,0),(-1,-1),'rus'),
+    ('ALIGN',(1,0),(3,0),'CENTER'),
+    ('VALIGN',(1,0),(3,0),'MIDDLE'),
+    ('FONTSIZE',(2,0),(2,0),16),
+    ('FONTSIZE',(3,0),(3,0),20),
+  ])
+  return table
+
+
+def Footer6(width,height):
+  heightList = [height/3,height/3,height/3]
+  table = Table([
+    [],
+    ['16'],
+    ['0.615'],
+  ],colWidths=width,
+    rowHeights=heightList)
+  table.setStyle([
+    ('GRID',(0,0),(-1,-1),1,'red'),
+    ('LEFTPADDING',(0,0),(-1,-1),0),
+    ('BOTTOMPADDING',(0,0),(-1,-1),0),
+    ('FONTNAME',(0,0),(-1,-1),'rus'),
+    ('ALIGN',(0,0),(0,1),'RIGHT'),
+    ('ALIGN',(-1,-1),(-1,-1),'CENTER'),
+    # ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+  ])
+  return table
+
+def Body(width,height):
+  widthList = [width*0.05,width*0.9,width*0.05]
+  table = Table([
+    ['',Body1(widthList[1],height),''],
   ],colWidths=widthList,
     rowHeights=height)
   table.setStyle([
     ('GRID',(0,0),(-1,-1),1,'red'),
     ('LEFTPADDING',(0,0),(-1,-1),0),
     ('BOTTOMPADDING',(0,0),(-1,-1),0),
-    ('FONTNAME',(0,0),(-1,-1),'rus'),
-    # ('ALIGN',(-1,-1),(-1,-1),'RIGHT'),
+    ('ROTATE',(0,0),(0,0),90),
+    # ('FONTNAME',(0,0),(-1,-1),'rus'),
+    # ('ALIGN',(0,0),(0,1),'RIGHT'),
+    # ('ALIGN',(-1,-1),(-1,-1),'CENTER'),
     # ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-    # ('FONTSIZE',(0,0),(-1,-1),60),
+  ])
+  return table
+
+def Body1(width,height):
+  heightList = [height/3,height/3,height/3]
+  table = Table([
+    ['Конструкция','Марка','Позиция','Количество','Профиль','Длинна','Вес','Марка стали','Распил','<rotate>Отв<rotate>','скос','вырез','фаска','фрезеровка','гибка'],
+  ])
+  table.setStyle([
+    ('GRID',(0,0),(-1,-1),1,'red'),
+    # ('LEFTPADDING',(0,0),(-1,-1),0),
+    # ('BOTTOMPADDING',(0,0),(-1,-1),0),
+    ('FONTNAME',(0,0),(-1,-1),'rus'),
+    # ('ALIGN',(0,0),(0,1),'RIGHT'),
+    # ('ALIGN',(-1,-1),(-1,-1),'CENTER'),
+    # ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
   ])
   return table
