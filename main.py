@@ -47,7 +47,11 @@ def gettest():
 
 @app.get('/pdf')
 def getPdf():
-  Pdf()
+  inf1 = PointPart.select().where(PointPart.detail == 2)
+  inf2 = PointPart.select(fn.SUM(Part.count)).join(Part).where(PointPart.detail == 2).scalar()
+  inf3 = PointPart.select(fn.SUM(Part.weight)).join(Part).where(PointPart.detail == 2).scalar()
+  inf = [inf1,inf2,inf3]
+  Pdf(inf)
   return
 
 
