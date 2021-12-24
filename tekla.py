@@ -44,9 +44,10 @@ def Tekla(xls,yyy):
         for col in drawings:
           if row[1].replace(' ','') == col.assembly:
             d = (col,
-              row[3].replace(' ','').split('/')[0].split('-')[0],
+              row[3].replace(' ','').replace('<','').replace('>','').split('/')[0].split('-')[0],
               row[3].replace(' ','').replace('<','').replace('>','').split('/')[-1].split('-')[0],
               float(row[2].replace(' ','')),
+              row[5].replace(' ',''),
               dates)
             post['Point'].append(d)
       if row[0].replace(' ','') == 'WELD':
@@ -100,7 +101,7 @@ def Tekla(xls,yyy):
             d = (part,float(row[3].replace(' ','')),dates)
             post['Chamfer'].append(d)
   with connection.atomic():
-    Point.insert_many(post['Point'], fields=[Point.assembly,Point.point_x,Point.point_y,Point.point_z,Point.create_date]).execute()
+    Point.insert_many(post['Point'], fields=[Point.assembly,Point.point_x,Point.point_y,Point.point_z,Point.name,Point.create_date]).execute()
     Weld.insert_many(post['Weld'], fields=[Weld.assembly,Weld.cathet,Weld.length,Weld.count,Weld.create_date]).execute()
     Bolt.insert_many(post['Bolt'], fields=[Bolt.assembly,Bolt.profile,Bolt.gost,Bolt.count,Bolt.weight,Bolt.create_date]).execute()
     Nut.insert_many(post['Nut'], fields=[Nut.assembly,Nut.profile,Nut.gost,Nut.count,Nut.weight,Nut.create_date]).execute()

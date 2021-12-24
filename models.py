@@ -31,6 +31,7 @@ class Point(ModelBase):
   id = PrimaryKeyField(null=False)
   create_date = DateTimeField()
   assembly = ForeignKeyField(Drawing,backref='points')
+  name = CharField(max_length=100)
   point_x = CharField(max_length=30)
   point_y = CharField(max_length=30)
   point_z = DecimalField(max_digits=12, decimal_places=3)

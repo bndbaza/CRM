@@ -307,7 +307,7 @@ def Inf(inf):
   tabl = []
   for i in inf:
     tab = []
-    tab.append('Балка')
+    tab.append(i.point.name)
     tab.append(i.point.assembly.assembly)
     tab.append(i.part.number)
     tab.append(i.part.count)
