@@ -41,15 +41,17 @@ def get():
 
 @app.get('/test')
 def gettest():
-  PartPoint(1, '1000')
+  PartPoint(1, '2313/1')
   return
 
 
 @app.get('/pdf')
 def getPdf():
-  inf1 = PointPart.select().where(PointPart.detail == 2)
-  inf2 = PointPart.select(fn.SUM(Part.count)).join(Part).where(PointPart.detail == 2).scalar()
-  inf3 = PointPart.select(fn.SUM(Part.weight)).join(Part).where(PointPart.detail == 2).scalar()
+  case = '2313/1'
+  detail = 3
+  inf1 = PointPart.select().join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,fn.Substr(Part.profile,1,1) == '-')
+  inf2 = PointPart.select(fn.SUM(Part.count)).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,fn.Substr(Part.profile,1,1) == '-').scalar()
+  inf3 = PointPart.select(fn.SUM(Part.weight)).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,fn.Substr(Part.profile,1,1) == '-').scalar()
   inf = [inf1,inf2,inf3]
   Pdf(inf)
   return

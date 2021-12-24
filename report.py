@@ -1,4 +1,3 @@
-from reportlab.lib import pagesizes
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
@@ -35,7 +34,7 @@ def Pdf(inf):
 
 
 def PrintTab(width,height,inf):
-  heightList = [height*0.1,height*0.25,height*0.15,height*0.1,height*0.25,height*0.15]
+  heightList = [height*0.07,height*0.28,height*0.15,height*0.07,height*0.28,height*0.15]
   table = Table([
     [Header1(width,heightList[0],inf)],
     [Body(width,heightList[1],inf)],
@@ -54,8 +53,8 @@ def PrintTab(width,height,inf):
 
 
 def Header1(width,height,inf):
-  widthList = [90,width-90]
-  img = Image('aut.gif',widthList[0],height)
+  widthList = [80,width-80]
+  img = Image('aut.gif',widthList[0],height,kind='proportional')
   table = Table([
     [img,Header2(widthList[1],height,inf)],
   ],colWidths=widthList,
@@ -186,10 +185,10 @@ def Footer4(width,height,inf):
   return table
 
 def Footer5(width,height,image,inf):
-  widthList = [width*0.25,width*0.5,width*0.1,width*0.15]
+  widthList = [width*0.25,width*0.4,width*0.1,width*0.25]
   img = Image(image,widthList[1],height,kind='proportional')
   table = Table([
-    [Footer6(widthList[0],height,inf),img,'Пр',inf[0]],
+    [Footer6(widthList[0],height,inf),img,inf[3][0][0][0],inf[0]],
   ],colWidths=widthList,
     rowHeights=height)
   table.setStyle([
@@ -231,7 +230,7 @@ def Footer6(width,height,inf):
   return table
 
 def Body(width,height,inf):
-  heightList = [20,len(inf[3])*15,height-20-(len(inf[3]*15))]
+  heightList = [20,len(inf[3])*12,height-20-(len(inf[3]*12))]
   table = Table([
     [Body1(width,heightList[0],inf)],
     [Body2(width,heightList[1],inf)],
@@ -279,18 +278,24 @@ def Body2(width,height,inf):
     rowHeights=height/len(mas))
   table.setStyle([
     ('GRID',(0,0),(-1,-1),1,'black'),
-    # ('LEFTPADDING',(0,0),(-1,-1),0),
-    # ('RIGHTPADDING',(0,0),(-1,-1),0),
-    # ('BOTTOMPADDING',(0,0),(-1,-1),0),
-    # ('TOPPADDING',(0,0),(-1,-1),0),
+    ('LEFTPADDING',(0,0),(-1,-1),0),
+    ('RIGHTPADDING',(0,0),(-1,-1),0),
+    ('BOTTOMPADDING',(0,0),(-1,-1),0),
+    ('TOPPADDING',(0,0),(-1,-1),0),
     # ('PADDING',(0,0),(-1,-1),0),
     ('FONTNAME',(0,0),(-1,-1),'rus'),
     ('FONTSIZE',(0,0),(-1,-1),8),
     # ('ALIGN',(0,0),(0,1),'RIGHT'),
-    # ('ALIGN',(0,0),(-1,-1),'CENTER'),
-    # ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+    ('ALIGN',(0,0),(-1,-1),'CENTER'),
+    ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
   ])
   return table
+
+
+
+
+
+
 
 def Inf(inf):
   count = inf[1]
@@ -310,13 +315,34 @@ def Inf(inf):
     tab.append(i.part.length)
     tab.append(i.part.weight)
     tab.append(i.part.mark)
-    tab.append(i.saw)
-    tab.append(i.hole)
-    tab.append(i.bevel)
-    tab.append(i.notch)
-    tab.append(i.chamfer)
-    tab.append(i.milling)
-    tab.append(i.bend)
+    if i.saw == 1:
+      tab.append('+')
+    else:
+      tab.append('')
+    if i.hole == 1:
+      tab.append('+')
+    else:
+      tab.append('')
+    if i.bevel == 1:
+      tab.append('+')
+    else:
+      tab.append('')
+    if i.notch == 1:
+      tab.append('+')
+    else:
+      tab.append('')
+    if i.chamfer == 1:
+      tab.append('+')
+    else:
+      tab.append('')
+    if i.milling == 1:
+      tab.append('+')
+    else:
+      tab.append('')
+    if i.bend == 1:
+      tab.append('+')
+    else:
+      tab.append('')
     tabl.append(tab)
   return [case,faza,detail,tabl,count,mass]
 
