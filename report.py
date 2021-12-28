@@ -9,14 +9,36 @@ pdfmetrics.registerFont(TTFont('rus','arial.ttf'))
 
 def Pdf(inf):
   inf = Inf(inf)
+  lis = []
   pdf = canvas.Canvas('My.pdf', pagesize=A4,bottomup=1)
   pdf.setTitle('test')
+  if inf['saw_s']['tabl_sum']['table_count'] != None:
+    lis.append('saw_s')
+  if inf['saw_b']['tabl_sum']['table_count'] != None:
+    lis.append('saw_b')
+  if inf['cgm']['tabl_sum']['table_count'] != None:
+    lis.append('cgm')
+  for i in range(4):
+    lis2 = []
+    lis2.append(lis.pop(0))
+    try:
+      lis2.append(lis.pop(0))
+    except:
+      print(lis2)
+      break
+    
+  pdf.showPage()
+  pdf.save()
+
+
+
+def Pdf1(inf,pdf,lis):
   width, height = A4
   widthList = [width*0.02,width*0.96,width*0.02,]
   heightList = [height*0.015,height*0.97,height*0.015,]
   mainTable = Table([
     ['','',''],
-    ['',PrintTab(widthList[1],heightList[1],inf),''],
+    ['',PrintTab(widthList[1],heightList[1],inf,lis),''],
     ['','',''],
   ],colWidths=widthList,
     rowHeights=heightList)
@@ -29,21 +51,25 @@ def Pdf(inf):
   ])
   mainTable.wrapOn(pdf,0,0)
   mainTable.drawOn(pdf,0,0)
-  pdf.showPage()
-  pdf.save()
+  # pdf.showPage()
+  # pdf.save()
 
 
-def PrintTab(width,height,inf):
+def PrintTab(width,height,inf,lis):
   heightList = [height*0.07,height*0.28,height*0.15,height*0.07,height*0.28,height*0.15]
-  table = Table([
-    [Header1(width,heightList[0],inf,'saw_s')],
-    [Body(width,heightList[1],inf,'saw_s')],
-    [Footer(width,heightList[2],inf,'saw_s')],
-    [Header1(width,heightList[0],inf,'cgm')],
-    [''],
-    [Footer(width,heightList[2],inf,'cgm')]
-    # [Body(width,heightList[1],inf)],
-  ],colWidths=width,
+  lis2 = [
+    [Header1(width,heightList[0],inf,lis[0])],
+    [Body(width,heightList[1],inf,lis[0])],
+    [Footer(width,heightList[2],inf,lis[0])],
+  ]
+  if len(lis) == 2:
+    lis2.append([Header1(width,heightList[3],inf,lis[1])])
+    lis2.append([Body(width,heightList[4],inf,lis[1])])
+    lis2.append([Footer(width,heightList[5],inf,lis[1])])
+  else:
+    for i in range(3):
+      lis2.append([''])
+  table = Table(lis2,colWidths=width,
     rowHeights=heightList)
   table.setStyle([
     # ('GRID',(0,0),(-1,-1),1,'red'),
@@ -293,9 +319,9 @@ def Body2(height,inf,oper):
   ])
   return table
 
-def Body3(width,height,inf):
+def Body3(width,height,inf,oper):
   widthList = [60,35,25,30,60,35,30,50,25,25,25,25,25,25,25,]
-  table = Table([['','','',inf[4],'','',inf[5],'','','','','','','','']]
+  table = Table([['','','',inf[oper]['tabl_sum']['table_count'],'','',inf[oper]['tabl_sum']['table_weight'],'','','','','','','','']]
   ,colWidths=widthList,
     rowHeights=12)
   table.setStyle([
@@ -371,7 +397,7 @@ def Inf(inf):
         if y == 'saw_s':
           tabl_saw_s['tabl'].append(tab)
         if y == 'saw_b':
-          tabl_saw_s['tabl'].append(tab)
+          tabl_saw_b['tabl'].append(tab)
         if y == 'cgm':
           tabl_cgm['tabl'].append(tab)
   # count = inf['saw'][1]

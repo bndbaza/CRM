@@ -68,8 +68,8 @@ def getPdf():
 
 
   inf = {'saw_b':[inf1,inf2,inf3,'ПИЛЫ Б'],'saw_s':[inf4,inf5,inf6,'ПИЛЫ М'],'cgm':[inf7,inf8,inf9,'ФАСОНКА'],'general':{'case':case,'detail':detail,'faza':faza}}
-  # print(faza)
   Pdf(inf)
+  # print(inf)
   return
 
 
