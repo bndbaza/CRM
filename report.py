@@ -36,12 +36,13 @@ def Pdf(inf):
 def PrintTab(width,height,inf):
   heightList = [height*0.07,height*0.28,height*0.15,height*0.07,height*0.28,height*0.15]
   table = Table([
-    [Header1(width,heightList[0],inf)],
-    [Body(width,heightList[1],inf)],
-    [Footer(width,heightList[2],inf)],
-    [Header1(width,heightList[0],inf)],
-    [Body(width,heightList[1],inf)],
-    [Footer(width,heightList[2],inf)]
+    [Header1(width,heightList[0],inf,'saw_s')],
+    [Body(width,heightList[1],inf,'saw_s')],
+    [Footer(width,heightList[2],inf,'saw_s')],
+    [Header1(width,heightList[0],inf,'cgm')],
+    [''],
+    [Footer(width,heightList[2],inf,'cgm')]
+    # [Body(width,heightList[1],inf)],
   ],colWidths=width,
     rowHeights=heightList)
   table.setStyle([
@@ -52,11 +53,11 @@ def PrintTab(width,height,inf):
   return table
 
 
-def Header1(width,height,inf):
+def Header1(width,height,inf,oper):
   widthList = [80,width-80]
   img = Image('aut.gif',widthList[0],height,kind='proportional')
   table = Table([
-    [img,Header2(widthList[1],height,inf)],
+    [img,Header2(widthList[1],height,inf,oper)],
   ],colWidths=widthList,
     rowHeights=height)
   table.setStyle([
@@ -66,11 +67,11 @@ def Header1(width,height,inf):
   ])
   return table
 
-def Header2(width,height,inf):
+def Header2(width,height,inf,oper):
   heightList = [height*0.2,height*0.3,height*0.5]
   table = Table([
     [''],
-    [Header3(width,heightList[1],inf)],
+    [Header3(width,heightList[1],inf,oper)],
     ['']
   ],colWidths=width,
     rowHeights=heightList)
@@ -82,19 +83,19 @@ def Header2(width,height,inf):
   return table
 
 
-def Header3(width,height,inf):
+def Header3(width,height,inf,oper):
   widthList = [width*0.1,width*0.2,width*0.2,width*0.2,width*0.1,width*0.2]
   table = Table([
-    ['Пр','ПИЛЫ','№'+str(inf[2]),inf[0],inf[1],'P C W M'],
+    ['Пр',inf[oper]['name'],'№'+str(inf['detail']),inf['case'],inf['faza'],'P C W M'],
   ],colWidths=widthList,
     rowHeights=height)
   table.setStyle([
     # ('GRID',(0,0),(-1,-1),1,'red'),
     # ('LEFTPADDING',(0,0),(-1,-1),0),
     ('BOTTOMPADDING',(0,0),(-1,-1),10),
-    ('BACKGROUND',(1,0),(1,0),colors.blue),
+    ('BACKGROUND',(1,0),(1,0),inf[oper]['color']),
     ('BACKGROUND',(3,0),(3,0),colors.green),
-    ('TEXTCOLOR',(1,0),(1,0),'white'),
+    ('TEXTCOLOR',(1,0),(1,0),inf[oper]['color_t']),
     ('TEXTCOLOR',(3,0),(3,0),'white'),
     ('ALIGN',(1,0),(-1,-1),'CENTER'),
     ('ALIGN',(0,0),(0,0),'RIGHT'),
@@ -104,12 +105,12 @@ def Header3(width,height,inf):
   ])
   return table
 
-def Footer(width,height,inf):
-  widthList = [width*0.4,width*0.2,width*0.4]
+def Footer(width,height,inf,oper):
+  widthList = [width*0.35,width*0.3,width*0.35]
   image_run = 'run.gif'
   image_aut = 'aut.gif'
   table = Table([
-    [Footer1(widthList[0],height,'Бегунок',image_run,inf),'',Footer1(widthList[0],height,'Авторизация',image_aut,inf)],
+    [Footer1(widthList[0],height,'Бегунок',image_run,inf,oper),'',Footer1(widthList[0],height,'Авторизация',image_aut,inf,oper)],
   ],colWidths=widthList,
     rowHeights=height)
   table.setStyle([
@@ -120,13 +121,13 @@ def Footer(width,height,inf):
   ])
   return table
 
-def Footer1(width,height,str,image,inf):
+def Footer1(width,height,str,image,inf,oper):
   heightList = [height*0.1,height*0.5,height*0.1,height*0.3]
   table = Table([
-    [Footer2(width,heightList[0],str,inf)],
+    [Footer2(width,heightList[0],str,inf,oper)],
     [Footer3(width,heightList[1],inf)],
-    [Footer4(width,heightList[2],inf)],
-    [Footer5(width,heightList[3],image,inf)]
+    [Footer4(width,heightList[2],inf,oper)],
+    [Footer5(width,heightList[3],image,inf,oper)],
   ],colWidths=width,
     rowHeights=heightList)
   table.setStyle([
@@ -136,10 +137,10 @@ def Footer1(width,height,str,image,inf):
   ])
   return table
 
-def Footer2(width,height,str,inf):
+def Footer2(width,height,str,inf,oper):
   widthList = [width*0.1,width*0.8,width*0.1]
   table = Table([
-    [inf[1],str,inf[3][0][0][0]],
+    [inf['faza'],str,inf[oper]['name'][0]],
   ],colWidths=widthList,
     rowHeights=height)
   table.setStyle([
@@ -153,7 +154,7 @@ def Footer2(width,height,str,inf):
 
 def Footer3(width,height,inf):
   table = Table([
-    [inf[2]],
+    [inf['detail']],
   ],colWidths=width,
     rowHeights=height)
   table.setStyle([
@@ -167,10 +168,10 @@ def Footer3(width,height,inf):
   ])
   return table
 
-def Footer4(width,height,inf):
+def Footer4(width,height,inf,oper):
   widthList = [width*0.5,width*0.5]
   table = Table([
-    [inf[3][0][1],'П С W M'],
+    [inf[oper]['tabl'][0][1],'П С W M'],
   ],colWidths=widthList,
     rowHeights=height)
   table.setStyle([
@@ -184,11 +185,11 @@ def Footer4(width,height,inf):
   ])
   return table
 
-def Footer5(width,height,image,inf):
+def Footer5(width,height,image,inf,oper):
   widthList = [width*0.25,width*0.4,width*0.1,width*0.25]
   img = Image(image,widthList[1],height,kind='proportional')
   table = Table([
-    [Footer6(widthList[0],height,inf),img,inf[3][0][0][0],inf[0]],
+    [Footer6(widthList[0],height,inf,oper),img,inf[oper]['tabl'][0][0][0],inf['case']],
   ],colWidths=widthList,
     rowHeights=height)
   table.setStyle([
@@ -210,12 +211,12 @@ def Footer5(width,height,image,inf):
   return table
 
 
-def Footer6(width,height,inf):
+def Footer6(width,height,inf,oper):
   heightList = [height/3,height/3,height/3]
   table = Table([
-    [inf[3][0][4]],
-    [inf[4]],
-    [inf[5]],
+    [inf[oper]['tabl'][0][4]],
+    [inf[oper]['tabl_sum']['table_count']],
+    [inf[oper]['tabl_sum']['table_weight']],
   ],colWidths=width,
     rowHeights=heightList)
   table.setStyle([
@@ -229,12 +230,13 @@ def Footer6(width,height,inf):
   ])
   return table
 
-def Body(width,height,inf):
-  heightList = [20,len(inf[3])*12,height-20-(len(inf[3]*12))]
+def Body(width,height,inf,oper):
+  heightList = [20,len(inf[oper]['tabl'])*12,12,height-20-12-(len(inf[oper]['tabl']*12))]
   table = Table([
-    [Body1(width,heightList[0],inf)],
-    [Body2(width,heightList[1],inf)],
-    ['']
+    [Body1(heightList[0])],
+    [Body2(heightList[1],inf,oper)],
+    [Body3(width,heightList[2],inf,oper)],
+    [''],
   ],colWidths=width,
     rowHeights=heightList)
   table.setStyle([
@@ -249,7 +251,7 @@ def Body(width,height,inf):
   ])
   return table
 
-def Body1(width,height,inf):
+def Body1(height):
   widthList = [60,35,25,30,60,35,30,50,25,25,25,25,25,25,25,]
   table = Table([
     ['Конструкция','Марка','№','Колич.','Профиль','Длинна','Вес','Марка стали',('пилы'),('отв'),
@@ -270,14 +272,35 @@ def Body1(width,height,inf):
   ])
   return table
 
-def Body2(width,height,inf):
+def Body2(height,inf,oper):
   widthList = [60,35,25,30,60,35,30,50,25,25,25,25,25,25,25,]
-  mas = inf[3]
+  mas = inf[oper]['tabl']
   table = Table(mas
   ,colWidths=widthList,
     rowHeights=height/len(mas))
   table.setStyle([
     ('GRID',(0,0),(-1,-1),1,'black'),
+    ('LEFTPADDING',(0,0),(-1,-1),0),
+    ('RIGHTPADDING',(0,0),(-1,-1),0),
+    ('BOTTOMPADDING',(0,0),(-1,-1),0),
+    ('TOPPADDING',(0,0),(-1,-1),0),
+    # ('PADDING',(0,0),(-1,-1),0),
+    ('FONTNAME',(0,0),(-1,-1),'rus'),
+    ('FONTSIZE',(0,0),(-1,-1),8),
+    # ('ALIGN',(0,0),(0,1),'RIGHT'),
+    ('ALIGN',(0,0),(-1,-1),'CENTER'),
+    ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+  ])
+  return table
+
+def Body3(width,height,inf):
+  widthList = [60,35,25,30,60,35,30,50,25,25,25,25,25,25,25,]
+  table = Table([['','','',inf[4],'','',inf[5],'','','','','','','','']]
+  ,colWidths=widthList,
+    rowHeights=12)
+  table.setStyle([
+    ('GRID',(3,0),(3,0),1,'black'),
+    ('GRID',(6,0),(6,0),1,'black'),
     ('LEFTPADDING',(0,0),(-1,-1),0),
     ('RIGHTPADDING',(0,0),(-1,-1),0),
     ('BOTTOMPADDING',(0,0),(-1,-1),0),
@@ -298,53 +321,64 @@ def Body2(width,height,inf):
 
 
 def Inf(inf):
-  count = inf[1]
-  mass = inf[2]
-  inf = inf[0]
-  case = inf[0].part.assembly.cas.cas
-  faza = inf[0].point.faza
-  detail = inf[0].detail
-  tabl = []
-  for i in inf:
-    tab = []
-    tab.append(i.point.name)
-    tab.append(i.point.assembly.assembly)
-    tab.append(i.part.number)
-    tab.append(i.part.count)
-    tab.append(i.part.profile)
-    tab.append(i.part.length)
-    tab.append(i.part.weight)
-    tab.append(i.part.mark)
-    if i.saw == 1:
-      tab.append('+')
-    else:
-      tab.append('')
-    if i.hole == 1:
-      tab.append('+')
-    else:
-      tab.append('')
-    if i.bevel == 1:
-      tab.append('+')
-    else:
-      tab.append('')
-    if i.notch == 1:
-      tab.append('+')
-    else:
-      tab.append('')
-    if i.chamfer == 1:
-      tab.append('+')
-    else:
-      tab.append('')
-    if i.milling == 1:
-      tab.append('+')
-    else:
-      tab.append('')
-    if i.bend == 1:
-      tab.append('+')
-    else:
-      tab.append('')
-    tabl.append(tab)
-  return [case,faza,detail,tabl,count,mass]
+  # inf = inf[0]
+  case = inf['general']['case']
+  detail = inf['general']['detail']
+  faza = inf['general']['faza']
+  tabl_saw_s = {'tabl':[],'tabl_sum':{'table_count':inf['saw_s'][1],'table_weight':inf['saw_s'][2]},'name':inf['saw_s'][3],'color':colors.blue,'color_t':'white'}
+  tabl_saw_b = {'tabl':[],'tabl_sum':{'table_count':inf['saw_b'][1],'table_weight':inf['saw_b'][2]},'name':inf['saw_b'][3],'color':colors.green,'color_t':'white'}
+  tabl_cgm = {'tabl':[],'tabl_sum':{'table_count':inf['cgm'][1],'table_weight':inf['cgm'][2]},'name':inf['cgm'][3],'color':colors.yellow,'color_t':'black'}
+  for y in inf:
+    if y != 'general':
+      for i in inf[y][0]:
+        tab = []
+        tab.append(i.point.name)
+        tab.append(i.point.assembly.assembly)
+        tab.append(i.part.number)
+        tab.append(i.part.count)
+        tab.append(i.part.profile)
+        tab.append(i.part.length)
+        tab.append(i.part.weight)
+        tab.append(i.part.mark)
+        if i.saw == 1:
+          tab.append('+')
+        else:
+          tab.append('+')
+        if i.hole == 1:
+          tab.append('+')
+        else:
+          tab.append('')
+        if i.bevel == 1:
+          tab.append('+')
+        else:
+          tab.append('')
+        if i.notch == 1:
+          tab.append('+')
+        else:
+          tab.append('')
+        if i.chamfer == 1:
+          tab.append('+')
+        else:
+          tab.append('')
+        if i.milling == 1:
+          tab.append('+')
+        else:
+          tab.append('')
+        if i.bend == 1:
+          tab.append('+')
+        else:
+          tab.append('')
+        if y == 'saw_s':
+          tabl_saw_s['tabl'].append(tab)
+        if y == 'saw_b':
+          tabl_saw_s['tabl'].append(tab)
+        if y == 'cgm':
+          tabl_cgm['tabl'].append(tab)
+  # count = inf['saw'][1]
+  # mass = inf['saw'][2]
+  # print({'case':case,'detail':detail,'faza':faza})
+  # print(tabl_cgm)
+  return {'case':case,'detail':detail,'faza':faza,'saw_s':tabl_saw_s,'saw_b':tabl_saw_b,'cgm':tabl_cgm}
 
 
 

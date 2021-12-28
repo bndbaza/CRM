@@ -48,11 +48,27 @@ def gettest():
 @app.get('/pdf')
 def getPdf():
   case = '2313/1'
-  detail = 41
+  detail = 3
+
   inf1 = PointPart.select().join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,fn.Substr(Part.profile,1,1) != '-')
   inf2 = PointPart.select(fn.SUM(Part.count)).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,fn.Substr(Part.profile,1,1) != '-').scalar()
   inf3 = PointPart.select(fn.SUM(Part.weight)).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,fn.Substr(Part.profile,1,1) != '-').scalar()
-  inf = [inf1,inf2,inf3]
+
+  inf4 = PointPart.select().join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,fn.Substr(Part.profile,1,1) != '-')
+  inf5 = PointPart.select(fn.SUM(Part.count)).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,fn.Substr(Part.profile,1,1) != '-').scalar()
+  inf6 = PointPart.select(fn.SUM(Part.weight)).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,fn.Substr(Part.profile,1,1) != '-').scalar()
+
+  inf7 = PointPart.select().join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,fn.Substr(Part.profile,1,1) == '-')
+  inf8 = PointPart.select(fn.SUM(Part.count)).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,fn.Substr(Part.profile,1,1) == '-').scalar()
+  inf9 = PointPart.select(fn.SUM(Part.weight)).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,fn.Substr(Part.profile,1,1) == '-').scalar()
+
+  faza = PointPart.select().join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case)
+  faza = faza[0].point.faza
+
+
+
+  inf = {'saw_b':[inf1,inf2,inf3,'ПИЛЫ Б'],'saw_s':[inf4,inf5,inf6,'ПИЛЫ М'],'cgm':[inf7,inf8,inf9,'ФАСОНКА'],'general':{'case':case,'detail':detail,'faza':faza}}
+  # print(faza)
   Pdf(inf)
   return
 
