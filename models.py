@@ -48,6 +48,7 @@ class Part(ModelBase):
   number = IntegerField()
   count = IntegerField()
   profile = CharField(max_length=100)
+  size = CharField(max_length=100)
   length = DecimalField(max_digits=12,decimal_places=3)
   weight = DecimalField(max_digits=12,decimal_places=3)
   mark = CharField(max_length=50)

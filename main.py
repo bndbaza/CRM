@@ -29,14 +29,14 @@ app.add_middleware(
 )
 
 
-@app.get('/',response_model=List[PartBase])
-def get():
-  point = Point.select(Point.faza,fn.SUM(Drawing.weight).alias('aaa')).join(Drawing).group_by(Point.faza)
-  w = Point.select(Point.assembly).where(Point.faza == 1)
-  d = Part.select().where(fn.Substr(Part.profile, 1, 1) != '-',Part.assembly.in_(w))
-  for i in d:
-    print(i.assembly, i.profile, i.length, i.count)
-  return list(d)
+# @app.get('/',response_model=List[PartBase])
+# def get():
+#   point = Point.select(Point.faza,fn.SUM(Drawing.weight).alias('aaa')).join(Drawing).group_by(Point.faza)
+#   w = Point.select(Point.assembly).where(Point.faza == 1)
+#   d = Part.select().where(fn.Substr(Part.profile, 1, 1) != '-',Part.assembly.in_(w))
+#   for i in d:
+#     print(i.assembly, i.profile, i.length, i.count)
+#   return list(d)
 
 
 @app.get('/test')
@@ -50,17 +50,17 @@ def getPdf():
   case = '2313/1'
   detail = 3
 
-  inf1 = PointPart.select().join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,fn.Substr(Part.profile,1,1) != '-')
-  inf2 = PointPart.select(fn.SUM(Part.count)).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,fn.Substr(Part.profile,1,1) != '-').scalar()
-  inf3 = PointPart.select(fn.SUM(Part.weight)).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,fn.Substr(Part.profile,1,1) != '-').scalar()
+  inf1 = PointPart.select().join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.profile == 'Двутавр')
+  inf2 = PointPart.select(fn.SUM(Part.count)).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.profile == 'Двутавр').scalar()
+  inf3 = PointPart.select(fn.SUM(Part.weight)).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.profile == 'Двутавр').scalar()
 
-  inf4 = PointPart.select().join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,fn.Substr(Part.profile,1,1) != '-')
-  inf5 = PointPart.select(fn.SUM(Part.count)).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,fn.Substr(Part.profile,1,1) != '-').scalar()
-  inf6 = PointPart.select(fn.SUM(Part.weight)).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,fn.Substr(Part.profile,1,1) != '-').scalar()
+  inf4 = PointPart.select().join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.profile != 'Лист')
+  inf5 = PointPart.select(fn.SUM(Part.count)).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.profile != 'Лист').scalar()
+  inf6 = PointPart.select(fn.SUM(Part.weight)).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.profile != 'Лист').scalar()
 
-  inf7 = PointPart.select().join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,fn.Substr(Part.profile,1,1) == '-')
-  inf8 = PointPart.select(fn.SUM(Part.count)).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,fn.Substr(Part.profile,1,1) == '-').scalar()
-  inf9 = PointPart.select(fn.SUM(Part.weight)).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,fn.Substr(Part.profile,1,1) == '-').scalar()
+  inf7 = PointPart.select().join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.profile == 'Лист')
+  inf8 = PointPart.select(fn.SUM(Part.count)).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.profile == 'Лист').scalar()
+  inf9 = PointPart.select(fn.SUM(Part.weight)).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.profile == 'Лист').scalar()
 
   faza = PointPart.select().join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case)
   faza = faza[0].point.faza
@@ -73,12 +73,12 @@ def getPdf():
   return
 
 
-@app.get('/test2')
-def gettest2():
-  query = PointPart.select(PointPart,Part,Point).join_from(PointPart,Part).join_from(PointPart,Point).where(fn.Substr(Part.profile, 1, 1) != '-').order_by(Point.line)
-  for i in query:
-    print(i.point.assembly,i.part.profile,i.point.line)
-  return 
+# @app.get('/test2')
+# def gettest2():
+#   query = PointPart.select(PointPart,Part,Point).join_from(PointPart,Part).join_from(PointPart,Point).where(fn.Substr(Part.profile, 1, 1) != '-').order_by(Point.line)
+#   for i in query:
+#     print(i.point.assembly,i.part.profile,i.point.line)
+#   return 
 
 
 @app.post('/order')

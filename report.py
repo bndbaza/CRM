@@ -18,16 +18,15 @@ def Pdf(inf):
     lis.append('saw_b')
   if inf['cgm']['tabl_sum']['table_count'] != None:
     lis.append('cgm')
-  for i in range(4):
+  for i in range(len(lis)//2 + len(lis)%2):
     lis2 = []
     lis2.append(lis.pop(0))
     try:
       lis2.append(lis.pop(0))
     except:
-      print(lis2)
-      break
-    
-  pdf.showPage()
+      pass
+    Pdf1(inf,pdf,lis2)
+    pdf.showPage()
   pdf.save()
 
 
@@ -239,8 +238,12 @@ def Footer5(width,height,image,inf,oper):
 
 def Footer6(width,height,inf,oper):
   heightList = [height/3,height/3,height/3]
+  if inf[oper]['tabl'][0][4].startswith('Лист'):
+    i = inf[oper]['tabl'][0][4].split(' ')[1].split('x')[1]
+  else:
+    i = inf[oper]['tabl'][0][4].split(' ')[1]
   table = Table([
-    [inf[oper]['tabl'][0][4]],
+    [i],
     [inf[oper]['tabl_sum']['table_count']],
     [inf[oper]['tabl_sum']['table_weight']],
   ],colWidths=width,
@@ -259,7 +262,7 @@ def Footer6(width,height,inf,oper):
 def Body(width,height,inf,oper):
   heightList = [20,len(inf[oper]['tabl'])*12,12,height-20-12-(len(inf[oper]['tabl']*12))]
   table = Table([
-    [Body1(heightList[0])],
+    [Body1(heightList[0],inf,oper)],
     [Body2(heightList[1],inf,oper)],
     [Body3(width,heightList[2],inf,oper)],
     [''],
@@ -277,10 +280,10 @@ def Body(width,height,inf,oper):
   ])
   return table
 
-def Body1(height):
+def Body1(height,inf,oper):
   widthList = [60,35,25,30,60,35,30,50,25,25,25,25,25,25,25,]
   table = Table([
-    ['Конструкция','Марка','№','Колич.','Профиль','Длинна','Вес','Марка стали',('пилы'),('отв'),
+    ['Конструкция','Марка','№','Колич.','Профиль','Длинна','Вес','Марка стали',inf[oper]['oper'],('отв'),
     ('скос'),('вырез'),('фаска'),('фрез'),('гибка')],
   ],colWidths=widthList,
     rowHeights=height)
@@ -351,9 +354,9 @@ def Inf(inf):
   case = inf['general']['case']
   detail = inf['general']['detail']
   faza = inf['general']['faza']
-  tabl_saw_s = {'tabl':[],'tabl_sum':{'table_count':inf['saw_s'][1],'table_weight':inf['saw_s'][2]},'name':inf['saw_s'][3],'color':colors.blue,'color_t':'white'}
-  tabl_saw_b = {'tabl':[],'tabl_sum':{'table_count':inf['saw_b'][1],'table_weight':inf['saw_b'][2]},'name':inf['saw_b'][3],'color':colors.green,'color_t':'white'}
-  tabl_cgm = {'tabl':[],'tabl_sum':{'table_count':inf['cgm'][1],'table_weight':inf['cgm'][2]},'name':inf['cgm'][3],'color':colors.yellow,'color_t':'black'}
+  tabl_saw_s = {'tabl':[],'tabl_sum':{'table_count':inf['saw_s'][1],'table_weight':inf['saw_s'][2]},'name':inf['saw_s'][3],'color':colors.blue,'color_t':'white','oper':'пилы'}
+  tabl_saw_b = {'tabl':[],'tabl_sum':{'table_count':inf['saw_b'][1],'table_weight':inf['saw_b'][2]},'name':inf['saw_b'][3],'color':colors.green,'color_t':'white','oper':'пилы'}
+  tabl_cgm = {'tabl':[],'tabl_sum':{'table_count':inf['cgm'][1],'table_weight':inf['cgm'][2]},'name':inf['cgm'][3],'color':colors.yellow,'color_t':'black','oper':'цгм'}
   for y in inf:
     if y != 'general':
       for i in inf[y][0]:
@@ -362,8 +365,8 @@ def Inf(inf):
         tab.append(i.point.assembly.assembly)
         tab.append(i.part.number)
         tab.append(i.part.count)
-        tab.append(i.part.profile)
-        tab.append(i.part.length)
+        tab.append(i.part.profile+' '+i.part.size)
+        tab.append(int(i.part.length))
         tab.append(i.part.weight)
         tab.append(i.part.mark)
         if i.saw == 1:

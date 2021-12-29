@@ -73,10 +73,11 @@ def Tekla(xls,yyy):
       if row[0].replace(' ','') == 'PART':
         for col in drawings:
           if row[1].replace(' ','') == col.assembly:
-            d = (col,int(row[2].replace(' ','')),int(row[3].replace(' ','')),row[4].replace(' ',''),float(row[5].replace(' ','')),float(row[6].replace(' ','')),row[8].replace(' ',''),row[9].replace(' ',''),dates)
+            profile = Size(row[4].replace(' ',''))
+            d = (col,int(row[2].replace(' ','')),int(row[3].replace(' ','')),profile[0],profile[1],float(row[5].replace(' ','')),float(row[6].replace(' ','')),row[8].replace(' ',''),row[9].replace(' ',''),dates)
             post['Part'].append(d)
   with connection.atomic():
-    Part.insert_many(post['Part'], fields=[Part.assembly,Part.number,Part.count,Part.profile,Part.length,Part.weight,Part.mark,Part.manipulation,Part.create_date]).execute()
+    Part.insert_many(post['Part'], fields=[Part.assembly,Part.number,Part.count,Part.profile,Part.size,Part.length,Part.weight,Part.mark,Part.manipulation,Part.create_date]).execute()
   with open(xls.filename,'r', encoding='windows-1251') as file:
     reader = csv.reader(file, delimiter='\t')
     for row in reader:
@@ -127,4 +128,38 @@ def Tekla(xls,yyy):
   with connection.atomic():
     Drawing.bulk_update(post['Weight'], fields=[Drawing.weight,Drawing.more])
   return
-      
+
+def Size(str):
+  if str.startswith('Гн.[]'):
+    i = ('Труба профильная',str.replace('Гн.[]',''))
+    return (i)
+  elif str.startswith('Гн.['):  
+    i = ('Швеллер гнутый',str.replace('Гн.[',''))
+    return (i)
+  elif str.startswith('Гн'):  
+    i = ('Труба квадратная',str.replace('Гн',''))
+    return (i)
+  elif str.startswith('['):  
+    i = ('Швеллер',str.replace('[',''))
+    return (i)
+  elif str.startswith('O'):  
+    i = ('Труба круглая',str.replace('O',''))
+    return (i)
+  elif str.startswith('L'):  
+    i = ('Угол',str.replace('L',''))
+    return (i)
+  elif str.startswith('I'):  
+    i = ('Двутавр',str.replace('I',''))
+    return (i)
+  elif str.startswith('—'):
+    a = str.replace('—','').split('x')
+    if int(a[0]) > int(a[1]):
+      i = ('Лист',a[1]+'x'+a[0])
+    else:
+      i = ('Лист',str.replace('—',''))
+    return (i)
+  elif str.startswith('-'):  
+    i = ('Лист',str.replace('-',''))
+    return (i)
+  # else:
+  #   print(str)
