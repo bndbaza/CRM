@@ -53,6 +53,7 @@ class Part(ModelBase):
   weight = DecimalField(max_digits=12,decimal_places=3)
   mark = CharField(max_length=50)
   manipulation = CharField(max_length=150)
+  work = CharField(max_length=10)
 
 class Weld(ModelBase):
   class Meta:

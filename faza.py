@@ -35,7 +35,7 @@ def PartPoint(faza,cas):
           oper['chamfer'] = 1
         if part.holes.count() > 0:
           oper['hole'] = 1
-        if part.profile[0] == '-':
+        if part.profile == 'Лист':
           oper['cgm'] = 1
         else:
           oper['saw'] = 1

@@ -4,11 +4,12 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.platypus import Table, Image
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
+from models import *
+from peewee import fn, JOIN
 
 pdfmetrics.registerFont(TTFont('rus','arial.ttf'))
 
 def Pdf(inf):
-  inf = Inf(inf)
   lis = []
   pdf = canvas.Canvas('My.pdf', pagesize=A4,bottomup=1)
   pdf.setTitle('test')
@@ -50,8 +51,6 @@ def Pdf1(inf,pdf,lis):
   ])
   mainTable.wrapOn(pdf,0,0)
   mainTable.drawOn(pdf,0,0)
-  # pdf.showPage()
-  # pdf.save()
 
 
 def PrintTab(width,height,inf,lis):
@@ -111,7 +110,7 @@ def Header2(width,height,inf,oper):
 def Header3(width,height,inf,oper):
   widthList = [width*0.1,width*0.2,width*0.2,width*0.2,width*0.1,width*0.2]
   table = Table([
-    ['Пр',inf[oper]['name'],'№'+str(inf['detail']),inf['case'],inf['faza'],'P C W M'],
+    [inf[oper]['tabl'][0][0][0],inf[oper]['name'],'№'+str(inf['detail']),inf['case'],inf['faza'],inf['work'][oper]],
   ],colWidths=widthList,
     rowHeights=height)
   table.setStyle([
@@ -169,8 +168,11 @@ def Footer2(width,height,str,inf,oper):
   ],colWidths=widthList,
     rowHeights=height)
   table.setStyle([
-    # ('GRID',(0,0),(-1,-1),1,'red'),
+    ('GRID',(-1,-1),(-1,-1),1,'black'),
     ('LEFTPADDING',(0,0),(-1,-1),0),
+    ('RIGHTPADDING',(0,0),(-1,0),0),
+    ('BACKGROUND',(-1,-1),(-1,-1),inf[oper]['color']),
+    ('TEXTCOLOR',(-1,-1),(-1,-1),inf[oper]['color_t']),
     ('FONTNAME',(0,0),(-1,-1),'rus'),
     ('ALIGN',(0,0),(-1,-1),'CENTER'),
     ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
@@ -196,7 +198,7 @@ def Footer3(width,height,inf):
 def Footer4(width,height,inf,oper):
   widthList = [width*0.5,width*0.5]
   table = Table([
-    [inf[oper]['tabl'][0][1],'П С W M'],
+    [inf[oper]['tabl'][0][1],inf['work'][oper]],
   ],colWidths=widthList,
     rowHeights=height)
   table.setStyle([
@@ -238,23 +240,28 @@ def Footer5(width,height,image,inf,oper):
 
 def Footer6(width,height,inf,oper):
   heightList = [height/3,height/3,height/3]
-  if inf[oper]['tabl'][0][4].startswith('Лист'):
-    i = inf[oper]['tabl'][0][4].split(' ')[1].split('x')[1]
-  else:
-    i = inf[oper]['tabl'][0][4].split(' ')[1]
+  i = inf['master'].part.size
+
+  # if inf[oper]['tabl'][0][4].startswith('Лист'):
+  #   i = inf[oper]['tabl'][0][4].split(' ')[1].split('x')[1]
+  # else:
+  #   i = inf[oper]['tabl'][0][4].split(' ')[1]
+
   table = Table([
     [i],
     [inf[oper]['tabl_sum']['table_count']],
-    [inf[oper]['tabl_sum']['table_weight']],
+    [float(inf[oper]['tabl_sum']['table_weight'])],
   ],colWidths=width,
     rowHeights=heightList)
   table.setStyle([
     ('GRID',(0,0),(-1,-1),1,'black'),
     ('LEFTPADDING',(0,0),(-1,-1),0),
+    ('RIGHTPADDING',(0,0),(-1,-1),0),
     ('BOTTOMPADDING',(0,0),(-1,-1),0),
     ('FONTNAME',(0,0),(-1,-1),'rus'),
-    ('ALIGN',(0,0),(0,1),'RIGHT'),
-    ('ALIGN',(-1,-1),(-1,-1),'CENTER'),
+    # ('FONTSIZE',(0,0),(0,0),8),
+    # ('ALIGN',(0,0),(0,1),'RIGHT'),
+    ('ALIGN',(0,0),(-1,-1),'CENTER'),
     # ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
   ])
   return table
@@ -283,8 +290,8 @@ def Body(width,height,inf,oper):
 def Body1(height,inf,oper):
   widthList = [60,35,25,30,60,35,30,50,25,25,25,25,25,25,25,]
   table = Table([
-    ['Конструкция','Марка','№','Колич.','Профиль','Длинна','Вес','Марка стали',inf[oper]['oper'],('отв'),
-    ('скос'),('вырез'),('фаска'),('фрез'),('гибка')],
+    ['Конструкция','Марка','№','Колич.','Профиль','Длинна','Вес','Марка стали',inf[oper]['oper'],'отв',
+    'скос','вырез','фаска','фрез','гибка'],
   ],colWidths=widthList,
     rowHeights=height)
   table.setStyle([
@@ -324,7 +331,7 @@ def Body2(height,inf,oper):
 
 def Body3(width,height,inf,oper):
   widthList = [60,35,25,30,60,35,30,50,25,25,25,25,25,25,25,]
-  table = Table([['','','',inf[oper]['tabl_sum']['table_count'],'','',inf[oper]['tabl_sum']['table_weight'],'','','','','','','','']]
+  table = Table([['','','',inf[oper]['tabl_sum']['table_count'],'','',float(inf[oper]['tabl_sum']['table_weight']),'','','','','','','','']]
   ,colWidths=widthList,
     rowHeights=12)
   table.setStyle([
@@ -349,65 +356,92 @@ def Body3(width,height,inf,oper):
 
 
 
-def Inf(inf):
-  # inf = inf[0]
-  case = inf['general']['case']
-  detail = inf['general']['detail']
-  faza = inf['general']['faza']
-  tabl_saw_s = {'tabl':[],'tabl_sum':{'table_count':inf['saw_s'][1],'table_weight':inf['saw_s'][2]},'name':inf['saw_s'][3],'color':colors.blue,'color_t':'white','oper':'пилы'}
-  tabl_saw_b = {'tabl':[],'tabl_sum':{'table_count':inf['saw_b'][1],'table_weight':inf['saw_b'][2]},'name':inf['saw_b'][3],'color':colors.green,'color_t':'white','oper':'пилы'}
-  tabl_cgm = {'tabl':[],'tabl_sum':{'table_count':inf['cgm'][1],'table_weight':inf['cgm'][2]},'name':inf['cgm'][3],'color':colors.yellow,'color_t':'black','oper':'цгм'}
+def Inf(detail,case):
+  inf1 = PointPart.select().join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.work == 'saw_b')
+  inf2 = PointPart.select().join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.work == 'saw_s')
+  inf3 = PointPart.select().join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.work == 'cgm')
+  inf4 = PointPart.select(fn.SUM(Part.count).alias('count')).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case).scalar()
+  inf5 = PointPart.select(Part.profile,Part.size,fn.MAX(Part.weight).alias('weight')).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.work != 'cgm').first()
+  gr = PointPart.select(Part.work,PointPart.point,
+                        fn.SUM(Part.weight).alias('weight'),
+                        fn.SUM(Part.count).alias('count'),
+                        fn.SUM(PointPart.saw).alias('saw'),
+                        fn.SUM(PointPart.cgm).alias('cgm'),
+                        fn.SUM(PointPart.hole).alias('hole'),
+                        fn.SUM(PointPart.bevel).alias('bevel'),
+                        fn.SUM(PointPart.notch).alias('notch'),
+                        fn.SUM(PointPart.chamfer).alias('chamfer'),
+                        fn.SUM(PointPart.milling).alias('milling'),
+                        fn.SUM(PointPart.bend).alias('bend'),
+                ).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case).group_by(Part.work).objects()
+  faza = gr[0].point.faza
+  gr1 = {'saw_s':{'weight': None, 'count': None},'saw_b':{'weight': None, 'count': None},'cgm':{'weight': None, 'count': None}}
+  gr2 = {'saw_s':'','saw_b':'','cgm':''}
+  for i in gr:
+    gr1[i.work] = {'weight': i.weight, 'count': i.count}
+    if i.saw > 0:
+      gr2[i.work] = gr2[i.work] + 'П'
+    if i.cgm > 0:
+      gr2[i.work] = gr2[i.work] + 'Ф'
+    if i.hole > 0:
+      gr2[i.work] = gr2[i.work] + ' С'
+    if i.chamfer > 0:
+      gr2[i.work] = gr2[i.work] + ' F'
+    if inf4 > 1:
+      gr2[i.work] = gr2[i.work] + ' W'
+    gr2[i.work] = gr2[i.work] + ' М'
+    
+  inf = {'saw_b':inf1,'saw_s':inf2,'cgm':inf3}
+  tabl_saw_s = {'tabl':[],'tabl_sum':{'table_count':gr1['saw_s']['count'],'table_weight':gr1['saw_s']['weight']},'name':'ПИЛЫ М','color':colors.blue,'color_t':'white','oper':'пилы'}
+  tabl_saw_b = {'tabl':[],'tabl_sum':{'table_count':gr1['saw_b']['count'],'table_weight':gr1['saw_b']['weight']},'name':'ПИЛЫ Б','color':colors.green,'color_t':'white','oper':'пилы'}
+  tabl_cgm = {'tabl':[],'tabl_sum':{'table_count':gr1['cgm']['count'],'table_weight':gr1['cgm']['weight']},'name':'ФАСОНКА','color':colors.yellow,'color_t':'black','oper':'цгм'}
   for y in inf:
-    if y != 'general':
-      for i in inf[y][0]:
-        tab = []
-        tab.append(i.point.name)
-        tab.append(i.point.assembly.assembly)
-        tab.append(i.part.number)
-        tab.append(i.part.count)
-        tab.append(i.part.profile+' '+i.part.size)
-        tab.append(int(i.part.length))
-        tab.append(i.part.weight)
-        tab.append(i.part.mark)
-        if i.saw == 1:
-          tab.append('+')
-        else:
-          tab.append('+')
-        if i.hole == 1:
-          tab.append('+')
-        else:
-          tab.append('')
-        if i.bevel == 1:
-          tab.append('+')
-        else:
-          tab.append('')
-        if i.notch == 1:
-          tab.append('+')
-        else:
-          tab.append('')
-        if i.chamfer == 1:
-          tab.append('+')
-        else:
-          tab.append('')
-        if i.milling == 1:
-          tab.append('+')
-        else:
-          tab.append('')
-        if i.bend == 1:
-          tab.append('+')
-        else:
-          tab.append('')
-        if y == 'saw_s':
-          tabl_saw_s['tabl'].append(tab)
-        if y == 'saw_b':
-          tabl_saw_b['tabl'].append(tab)
-        if y == 'cgm':
-          tabl_cgm['tabl'].append(tab)
-  # count = inf['saw'][1]
-  # mass = inf['saw'][2]
-  # print({'case':case,'detail':detail,'faza':faza})
-  # print(tabl_cgm)
-  return {'case':case,'detail':detail,'faza':faza,'saw_s':tabl_saw_s,'saw_b':tabl_saw_b,'cgm':tabl_cgm}
+    for i in inf[y]:
+      tab = []
+      tab.append(i.point.name)
+      tab.append(i.point.assembly.assembly)
+      tab.append(i.part.number)
+      tab.append(i.part.count)
+      tab.append(i.part.profile+' '+i.part.size)
+      tab.append(int(i.part.length))
+      tab.append(float(i.part.weight))
+      tab.append(i.part.mark)
+      if i.saw == 1:
+        tab.append('+')
+      else:
+        tab.append('+')
+      if i.hole == 1:
+        tab.append('+')
+      else:
+        tab.append('')
+      if i.bevel == 1:
+        tab.append('+')
+      else:
+        tab.append('')
+      if i.notch == 1:
+        tab.append('+')
+      else:
+        tab.append('')
+      if i.chamfer == 1:
+        tab.append('+')
+      else:
+        tab.append('')
+      if i.milling == 1:
+        tab.append('+')
+      else:
+        tab.append('')
+      if i.bend == 1:
+        tab.append('+')
+      else:
+        tab.append('')
+      if y == 'saw_s':
+        tabl_saw_s['tabl'].append(tab)
+      if y == 'saw_b':
+        tabl_saw_b['tabl'].append(tab)
+      if y == 'cgm':
+        tabl_cgm['tabl'].append(tab)
+  Pdf({'case':case,'detail':detail,'work':gr2,'master':inf5,'faza':faza,'saw_s':tabl_saw_s,'saw_b':tabl_saw_b,'cgm':tabl_cgm})
+  return
 
 
 

@@ -56,6 +56,7 @@ class Part(peewee.Model):
     weight = DecimalField(auto_round=False, decimal_places=3, max_digits=12, rounding='ROUND_HALF_EVEN')
     mark = CharField(max_length=50)
     manipulation = CharField(max_length=150)
+    work = CharField(max_length=10)
     class Meta:
         table_name = "parts"
 

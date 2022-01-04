@@ -7,7 +7,7 @@ from tekla import Tekla
 from faza import Faza_update, PartPoint
 from peewee import fn, JOIN
 from schemas import OrderBase, DrawingBase, PointBase,PartBase, FazaBase
-from report import Pdf
+from report import Pdf, Inf
 
 
 app = FastAPI()
@@ -48,28 +48,8 @@ def gettest():
 @app.get('/pdf')
 def getPdf():
   case = '2313/1'
-  detail = 3
-
-  inf1 = PointPart.select().join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.profile == 'Двутавр')
-  inf2 = PointPart.select(fn.SUM(Part.count)).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.profile == 'Двутавр').scalar()
-  inf3 = PointPart.select(fn.SUM(Part.weight)).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.profile == 'Двутавр').scalar()
-
-  inf4 = PointPart.select().join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.profile != 'Лист')
-  inf5 = PointPart.select(fn.SUM(Part.count)).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.profile != 'Лист').scalar()
-  inf6 = PointPart.select(fn.SUM(Part.weight)).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.profile != 'Лист').scalar()
-
-  inf7 = PointPart.select().join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.profile == 'Лист')
-  inf8 = PointPart.select(fn.SUM(Part.count)).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.profile == 'Лист').scalar()
-  inf9 = PointPart.select(fn.SUM(Part.weight)).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.profile == 'Лист').scalar()
-
-  faza = PointPart.select().join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case)
-  faza = faza[0].point.faza
-
-
-
-  inf = {'saw_b':[inf1,inf2,inf3,'ПИЛЫ Б'],'saw_s':[inf4,inf5,inf6,'ПИЛЫ М'],'cgm':[inf7,inf8,inf9,'ФАСОНКА'],'general':{'case':case,'detail':detail,'faza':faza}}
-  Pdf(inf)
-  # print(inf)
+  detail = 5
+  Inf(detail,case)
   return
 
 
