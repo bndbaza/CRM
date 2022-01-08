@@ -9,25 +9,52 @@ from peewee import fn, JOIN
 
 pdfmetrics.registerFont(TTFont('rus','arial.ttf'))
 
-def Pdf(inf):
-  lis = []
+def Pdf(infs):
   pdf = canvas.Canvas('My.pdf', pagesize=A4,bottomup=1)
   pdf.setTitle('test')
-  if inf['saw_s']['tabl_sum']['table_count'] != None:
-    lis.append('saw_s')
-  if inf['saw_b']['tabl_sum']['table_count'] != None:
-    lis.append('saw_b')
-  if inf['cgm']['tabl_sum']['table_count'] != None:
-    lis.append('cgm')
-  for i in range(len(lis)//2 + len(lis)%2):
-    lis2 = []
-    lis2.append(lis.pop(0))
-    try:
-      lis2.append(lis.pop(0))
-    except:
-      pass
-    Pdf1(inf,pdf,lis2)
-    pdf.showPage()
+  lis = []
+  for inf in infs:
+    if inf['saw_s']['tabl_sum']['table_count'] != None:
+      lis.append(('saw_s',inf))
+    if inf['saw_b']['tabl_sum']['table_count'] != None:
+      lis.append(('saw_b',inf))
+    if inf['weld']['tabl'] != None:
+      lis.append(('weld',inf))
+    if inf['cgm']['tabl_sum']['table_count'] != None:
+      lis.append(('cgm',inf))
+  # print(lis)
+  lis2 = []
+  count = 0
+  for i in lis:
+    if i[0] != 'weld':
+      count += len(i[1][i[0]]['tabl'])
+    else:
+      count += 1
+    if count <= 15 and len(lis2) < 3:
+      lis2.append(i[0])
+      if len(lis2) == 3:
+        print(lis2)
+      # Pdf1(inf,pdf,lis2)
+    else:
+      # Pdf1(inf,pdf,lis2)
+      pdf.showPage()
+      if i[0] != 'weld':
+        count += len(i[1][i[0]]['tabl'])
+      else:
+        count += 1
+      lis2 = []
+      lis2.append(i[0])
+    # print(lis2)
+    # print('----------')
+    # for i in range(len(lis)//2 + len(lis)%2):
+    #   lis2 = []
+    #   lis2.append(lis.pop(0))
+    #   try:
+    #     lis2.append(lis.pop(0))
+    #   except:
+    #     pass
+      # Pdf1(inf,pdf,lis2)
+      # pdf.showPage()
   pdf.save()
 
 
@@ -54,7 +81,17 @@ def Pdf1(inf,pdf,lis):
 
 
 def PrintTab(width,height,inf,lis):
-  heightList = [height*0.07,height*0.28,height*0.15,height*0.07,height*0.28,height*0.15]
+  heightList = [height*0.07,8+12+32,height*0.15,height*0.07,8+12+32,height*0.15]
+  heightDown = 0
+  for i in heightList:
+    heightDown = heightDown + i
+  # print(heightDown)
+  heightList.append(height - heightDown)
+  # print(height*0.08-34)
+  # if 'cgm' in lis:
+  #   heightList = [height*0.07,height*0.14,height*0.15,height*0.07,height*0.42,height*0.15]
+  # if 'cgm' in lis[0]:
+  #   heightList = [height*0.07,height*0.42,height*0.15,height*0.07,height*0.14,height*0.15]
   lis2 = [
     [Header1(width,heightList[0],inf,lis[0])],
     [Body(width,heightList[1],inf,lis[0])],
@@ -67,6 +104,7 @@ def PrintTab(width,height,inf,lis):
   else:
     for i in range(3):
       lis2.append([''])
+  lis2.append([''])
   table = Table(lis2,colWidths=width,
     rowHeights=heightList)
   table.setStyle([
@@ -110,7 +148,7 @@ def Header2(width,height,inf,oper):
 def Header3(width,height,inf,oper):
   widthList = [width*0.1,width*0.2,width*0.2,width*0.2,width*0.1,width*0.2]
   table = Table([
-    [inf[oper]['tabl'][0][0][0],inf[oper]['name'],'№'+str(inf['detail']),inf['case'],inf['faza'],inf['work'][oper]],
+    [inf['name'][0],inf[oper]['name'],'№'+str(inf['detail']),inf['case'],inf['faza'],inf['work']],
   ],colWidths=widthList,
     rowHeights=height)
   table.setStyle([
@@ -152,6 +190,9 @@ def Footer1(width,height,str,image,inf,oper):
     [Footer3(width,heightList[1],inf)],
     [Footer4(width,heightList[2],inf,oper)],
     [Footer5(width,heightList[3],image,inf,oper)],
+    # [''],
+    # [''],
+    # [''],
   ],colWidths=width,
     rowHeights=heightList)
   table.setStyle([
@@ -198,7 +239,7 @@ def Footer3(width,height,inf):
 def Footer4(width,height,inf,oper):
   widthList = [width*0.5,width*0.5]
   table = Table([
-    [inf[oper]['tabl'][0][1],inf['work'][oper]],
+    [inf['mark'],inf['work']],
   ],colWidths=widthList,
     rowHeights=height)
   table.setStyle([
@@ -216,7 +257,7 @@ def Footer5(width,height,image,inf,oper):
   widthList = [width*0.25,width*0.4,width*0.1,width*0.25]
   img = Image(image,widthList[1],height,kind='proportional')
   table = Table([
-    [Footer6(widthList[0],height,inf,oper),img,inf[oper]['tabl'][0][0][0],inf['case']],
+    [Footer6(widthList[0],height,inf,oper),img,inf['name'][0],inf['case']],
   ],colWidths=widthList,
     rowHeights=height)
   table.setStyle([
@@ -241,17 +282,11 @@ def Footer5(width,height,image,inf,oper):
 def Footer6(width,height,inf,oper):
   heightList = [height/3,height/3,height/3]
   i = inf['master'].part.size
-
-  # if inf[oper]['tabl'][0][4].startswith('Лист'):
-  #   i = inf[oper]['tabl'][0][4].split(' ')[1].split('x')[1]
-  # else:
-  #   i = inf[oper]['tabl'][0][4].split(' ')[1]
-
-  table = Table([
-    [i],
-    [inf[oper]['tabl_sum']['table_count']],
-    [float(inf[oper]['tabl_sum']['table_weight'])],
-  ],colWidths=width,
+  if oper != 'weld':
+    table_list = [[i],[inf[oper]['tabl_sum']['table_count']],[float(inf[oper]['tabl_sum']['table_weight'])]]
+  else:
+    table_list = [[i],[1],[float(inf[oper]['tabl'].part.assembly.weight)]]
+  table = Table(table_list,colWidths=width,
     rowHeights=heightList)
   table.setStyle([
     ('GRID',(0,0),(-1,-1),1,'black'),
@@ -267,11 +302,23 @@ def Footer6(width,height,inf,oper):
   return table
 
 def Body(width,height,inf,oper):
-  heightList = [20,len(inf[oper]['tabl'])*12,12,height-20-12-(len(inf[oper]['tabl']*12))]
+  heightList = [20]
+  if oper != 'weld':
+    heightList.append(len(inf[oper]['tabl'])*12)
+    heightList.append(12)
+    heightList.append(height-20-12-(len(inf[oper]['tabl']*12)))
+  else:
+    heightList.append(12)
+    heightList.append(12)
+    heightList.append(height-20-12-12)
+
+
   table = Table([
-    [Body1(heightList[0],inf,oper)],
-    [Body2(heightList[1],inf,oper)],
+    [Body1(width,heightList[0],inf,oper)],
+    [Body2(width,heightList[1],inf,oper)],
     [Body3(width,heightList[2],inf,oper)],
+    # [''],
+    # [''],
     [''],
   ],colWidths=width,
     rowHeights=heightList)
@@ -287,12 +334,15 @@ def Body(width,height,inf,oper):
   ])
   return table
 
-def Body1(height,inf,oper):
-  widthList = [60,35,25,30,60,35,30,50,25,25,25,25,25,25,25,]
-  table = Table([
-    ['Конструкция','Марка','№','Колич.','Профиль','Длинна','Вес','Марка стали',inf[oper]['oper'],'отв',
-    'скос','вырез','фаска','фрез','гибка'],
-  ],colWidths=widthList,
+def Body1(width,height,inf,oper):
+  if oper != 'weld':
+    widthList = [60,35,25,30,130,35,30,50,25,25,25,25,25,25,25]
+    table_list = ['Конструкция','Марка','№','Колич.','Профиль','Длинна','Вес','Марка стали',inf[oper]['oper'],'отв','скос','вырез','фаска','фрез','гибка']
+  else:
+    widthList = [width/7]
+    table_list = ['Конструкция','Марка','Колич.','Ствол','Масса','Кол. деталей','Тариф']
+  table = Table([table_list]
+  ,colWidths=widthList,
     rowHeights=height)
   table.setStyle([
     ('GRID',(0,0),(-1,-1),1,'black'),
@@ -308,12 +358,26 @@ def Body1(height,inf,oper):
   ])
   return table
 
-def Body2(height,inf,oper):
-  widthList = [60,35,25,30,60,35,30,50,25,25,25,25,25,25,25,]
-  mas = inf[oper]['tabl']
+def Body2(width,height,inf,oper):
+  if oper != 'weld':
+    widthList = [60,35,25,30,130,35,30,50,25,25,25,25,25,25,25]
+    mas = inf[oper]['tabl']
+    size = height/len(mas)
+  else:
+    widthList = [width/7]
+    mas = [[
+      inf[oper]['tabl'].point.name,
+      inf[oper]['tabl'].point.assembly.assembly,
+      1,
+      inf['master'].part.size,
+      float(inf[oper]['tabl'].point.assembly.weight),
+      inf[oper]['tabl'].count,
+      'В разр.',
+    ]]
+    size = height
   table = Table(mas
   ,colWidths=widthList,
-    rowHeights=height/len(mas))
+    rowHeights=size)
   table.setStyle([
     ('GRID',(0,0),(-1,-1),1,'black'),
     ('LEFTPADDING',(0,0),(-1,-1),0),
@@ -330,117 +394,133 @@ def Body2(height,inf,oper):
   return table
 
 def Body3(width,height,inf,oper):
-  widthList = [60,35,25,30,60,35,30,50,25,25,25,25,25,25,25,]
-  table = Table([['','','',inf[oper]['tabl_sum']['table_count'],'','',float(inf[oper]['tabl_sum']['table_weight']),'','','','','','','','']]
-  ,colWidths=widthList,
-    rowHeights=12)
-  table.setStyle([
-    ('GRID',(3,0),(3,0),1,'black'),
-    ('GRID',(6,0),(6,0),1,'black'),
-    ('LEFTPADDING',(0,0),(-1,-1),0),
-    ('RIGHTPADDING',(0,0),(-1,-1),0),
-    ('BOTTOMPADDING',(0,0),(-1,-1),0),
-    ('TOPPADDING',(0,0),(-1,-1),0),
-    # ('PADDING',(0,0),(-1,-1),0),
-    ('FONTNAME',(0,0),(-1,-1),'rus'),
-    ('FONTSIZE',(0,0),(-1,-1),8),
-    # ('ALIGN',(0,0),(0,1),'RIGHT'),
-    ('ALIGN',(0,0),(-1,-1),'CENTER'),
-    ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-  ])
-  return table
+  if oper != 'weld':
+    widthList = [60,35,25,30,130,35,30,50,25,25,25,25,25,25,25,]
+    table = Table([['','','',inf[oper]['tabl_sum']['table_count'],'','',float(inf[oper]['tabl_sum']['table_weight']),'','','','','','','','']]
+    ,colWidths=widthList,
+      rowHeights=12)
+    table.setStyle([
+      ('GRID',(3,0),(3,0),1,'black'),
+      ('GRID',(6,0),(6,0),1,'black'),
+      ('LEFTPADDING',(0,0),(-1,-1),0),
+      ('RIGHTPADDING',(0,0),(-1,-1),0),
+      ('BOTTOMPADDING',(0,0),(-1,-1),0),
+      ('TOPPADDING',(0,0),(-1,-1),0),
+      # ('PADDING',(0,0),(-1,-1),0),
+      ('FONTNAME',(0,0),(-1,-1),'rus'),
+      ('FONTSIZE',(0,0),(-1,-1),8),
+      # ('ALIGN',(0,0),(0,1),'RIGHT'),
+      ('ALIGN',(0,0),(-1,-1),'CENTER'),
+      ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+    ])
+    return table
+  else:
+    return ''
 
 
 
-
-
-
-
-def Inf(detail,case):
-  inf1 = PointPart.select().join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.work == 'saw_b')
-  inf2 = PointPart.select().join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.work == 'saw_s')
-  inf3 = PointPart.select().join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.work == 'cgm')
-  inf4 = PointPart.select(fn.SUM(Part.count).alias('count')).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case).scalar()
-  inf5 = PointPart.select(Part.profile,Part.size,fn.MAX(Part.weight).alias('weight')).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.work != 'cgm').first()
-  gr = PointPart.select(Part.work,PointPart.point,
-                        fn.SUM(Part.weight).alias('weight'),
-                        fn.SUM(Part.count).alias('count'),
-                        fn.SUM(PointPart.saw).alias('saw'),
-                        fn.SUM(PointPart.cgm).alias('cgm'),
-                        fn.SUM(PointPart.hole).alias('hole'),
-                        fn.SUM(PointPart.bevel).alias('bevel'),
-                        fn.SUM(PointPart.notch).alias('notch'),
-                        fn.SUM(PointPart.chamfer).alias('chamfer'),
-                        fn.SUM(PointPart.milling).alias('milling'),
-                        fn.SUM(PointPart.bend).alias('bend'),
-                ).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case).group_by(Part.work).objects()
-  faza = gr[0].point.faza
-  gr1 = {'saw_s':{'weight': None, 'count': None},'saw_b':{'weight': None, 'count': None},'cgm':{'weight': None, 'count': None}}
-  gr2 = {'saw_s':'','saw_b':'','cgm':''}
-  for i in gr:
-    gr1[i.work] = {'weight': i.weight, 'count': i.count}
-    if i.saw > 0:
-      gr2[i.work] = gr2[i.work] + 'П'
-    if i.cgm > 0:
-      gr2[i.work] = gr2[i.work] + 'Ф'
-    if i.hole > 0:
-      gr2[i.work] = gr2[i.work] + ' С'
-    if i.chamfer > 0:
-      gr2[i.work] = gr2[i.work] + ' F'
-    if inf4 > 1:
-      gr2[i.work] = gr2[i.work] + ' W'
-    gr2[i.work] = gr2[i.work] + ' М'
-    
-  inf = {'saw_b':inf1,'saw_s':inf2,'cgm':inf3}
-  tabl_saw_s = {'tabl':[],'tabl_sum':{'table_count':gr1['saw_s']['count'],'table_weight':gr1['saw_s']['weight']},'name':'ПИЛЫ М','color':colors.blue,'color_t':'white','oper':'пилы'}
-  tabl_saw_b = {'tabl':[],'tabl_sum':{'table_count':gr1['saw_b']['count'],'table_weight':gr1['saw_b']['weight']},'name':'ПИЛЫ Б','color':colors.green,'color_t':'white','oper':'пилы'}
-  tabl_cgm = {'tabl':[],'tabl_sum':{'table_count':gr1['cgm']['count'],'table_weight':gr1['cgm']['weight']},'name':'ФАСОНКА','color':colors.yellow,'color_t':'black','oper':'цгм'}
-  for y in inf:
-    for i in inf[y]:
-      tab = []
-      tab.append(i.point.name)
-      tab.append(i.point.assembly.assembly)
-      tab.append(i.part.number)
-      tab.append(i.part.count)
-      tab.append(i.part.profile+' '+i.part.size)
-      tab.append(int(i.part.length))
-      tab.append(float(i.part.weight))
-      tab.append(i.part.mark)
-      if i.saw == 1:
-        tab.append('+')
-      else:
-        tab.append('+')
-      if i.hole == 1:
-        tab.append('+')
-      else:
-        tab.append('')
-      if i.bevel == 1:
-        tab.append('+')
-      else:
-        tab.append('')
-      if i.notch == 1:
-        tab.append('+')
-      else:
-        tab.append('')
-      if i.chamfer == 1:
-        tab.append('+')
-      else:
-        tab.append('')
-      if i.milling == 1:
-        tab.append('+')
-      else:
-        tab.append('')
-      if i.bend == 1:
-        tab.append('+')
-      else:
-        tab.append('')
-      if y == 'saw_s':
-        tabl_saw_s['tabl'].append(tab)
-      if y == 'saw_b':
-        tabl_saw_b['tabl'].append(tab)
-      if y == 'cgm':
-        tabl_cgm['tabl'].append(tab)
-  Pdf({'case':case,'detail':detail,'work':gr2,'master':inf5,'faza':faza,'saw_s':tabl_saw_s,'saw_b':tabl_saw_b,'cgm':tabl_cgm})
+def Inf(details,case):
+  inf_pdf = []
+  for detail in details:
+    inf1 = PointPart.select().join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.work == 'saw_b')
+    inf2 = PointPart.select().join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.work == 'saw_s')
+    inf3 = PointPart.select().join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.work == 'cgm')
+    inf4 = PointPart.select(fn.SUM(Part.count).alias('count'),PointPart).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case)
+    inf5 = PointPart.select(Part.profile,Part.size,fn.MAX(Part.weight).alias('weight')).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.work != 'cgm').first()
+    if inf4.scalar() > 1:
+      inf6 = PointPart.select(PointPart,fn.SUM(Part.count).alias('count')).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case).first()
+    else:
+      inf6 = None
+    gr = PointPart.select(Part.work,PointPart.point,
+                          fn.SUM(Part.weight).alias('weight'),
+                          fn.SUM(Part.count).alias('count'),
+                          fn.SUM(PointPart.saw).alias('saw'),
+                          fn.SUM(PointPart.cgm).alias('cgm'),
+                          fn.SUM(PointPart.hole).alias('hole'),
+                          fn.SUM(PointPart.bevel).alias('bevel'),
+                          fn.SUM(PointPart.notch).alias('notch'),
+                          fn.SUM(PointPart.chamfer).alias('chamfer'),
+                          fn.SUM(PointPart.milling).alias('milling'),
+                          fn.SUM(PointPart.bend).alias('bend'),
+                  ).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case).group_by(Part.work).objects()
+    faza = gr[0].point.faza
+    gr1 = {'saw_s':{'weight': None, 'count': None},'saw_b':{'weight': None, 'count': None},'cgm':{'weight': None, 'count': None}}
+    # gr2 = {'saw_s':'','saw_b':'','cgm':'','weld':''}
+    gr2 = ''
+    gr3 = 'ПФСFWM'
+    for i in gr:
+      gr1[i.work] = {'weight': i.weight, 'count': i.count}
+      if i.saw > 0:
+        gr2 = gr2 + 'П'
+      if i.cgm > 0:
+        gr2 = gr2 + 'Ф'
+      if i.hole > 0:
+        gr2 = gr2 + 'С'
+      if i.chamfer > 0:
+        gr2 = gr2 + 'F'
+      if inf4.scalar() > 1:
+        gr2 = gr2 + 'W'
+      gr2 = gr2 + 'M'
+    for i in gr3:
+      if not i in gr2:
+        gr3 = gr3.replace(i,'')
+    gr2 = gr3.replace('',' ')
+      
+    inf = {'saw_b':inf1,'saw_s':inf2,'cgm':inf3}
+    tabl_saw_s = {'tabl':[],'tabl_sum':{'table_count':gr1['saw_s']['count'],'table_weight':gr1['saw_s']['weight']},'name':'ПИЛЫ М','color':colors.blue,'color_t':'white','oper':'пилы'}
+    tabl_saw_b = {'tabl':[],'tabl_sum':{'table_count':gr1['saw_b']['count'],'table_weight':gr1['saw_b']['weight']},'name':'ПИЛЫ Б','color':colors.green,'color_t':'white','oper':'пилы'}
+    tabl_cgm = {'tabl':[],'tabl_sum':{'table_count':gr1['cgm']['count'],'table_weight':gr1['cgm']['weight']},'name':'ФАСОНКА','color':colors.yellow,'color_t':'black','oper':'цгм'}
+    tabl_weld = {'tabl':inf6,'name':'Сборка','color':colors.red,'color_t':'black','count':inf4.scalar()}
+    for y in inf:
+      for i in inf[y]:
+        tab = []
+        tab.append(i.point.name)
+        tab.append(i.point.assembly.assembly)
+        tab.append(i.part.number)
+        tab.append(i.part.count)
+        if len(i.part.profile.split(' ')) > 1:
+          tab.append((i.part.profile).split(' ')[0]+' '+(i.part.profile).split(' ')[1][0:2]+' '+i.part.size)
+        else:
+          tab.append((i.part.profile)+' '+i.part.size)
+        tab.append(int(i.part.length))
+        tab.append(float(i.part.weight))
+        tab.append(i.part.mark)
+        if i.saw == 1:
+          tab.append('+')
+        else:
+          tab.append('+')
+        if i.hole == 1:
+          tab.append('+')
+        else:
+          tab.append('')
+        if i.bevel == 1:
+          tab.append('+')
+        else:
+          tab.append('')
+        if i.notch == 1:
+          tab.append('+')
+        else:
+          tab.append('')
+        if i.chamfer == 1:
+          tab.append('+')
+        else:
+          tab.append('')
+        if i.milling == 1:
+          tab.append('+')
+        else:
+          tab.append('')
+        if i.bend == 1:
+          tab.append('+')
+        else:
+          tab.append('')
+        if y == 'saw_s':
+          tabl_saw_s['tabl'].append(tab)
+        if y == 'saw_b':
+          tabl_saw_b['tabl'].append(tab)
+        if y == 'cgm':
+          tabl_cgm['tabl'].append(tab)
+    inf_pdf.append({'case':case,'detail':detail,'work':gr2,'master':inf5,'faza':faza,'saw_s':tabl_saw_s,'saw_b':tabl_saw_b,'cgm':tabl_cgm,'weld':tabl_weld,'name':inf4[0].point.name,'mark':inf4[0].point.assembly.assembly})
+  Pdf(inf_pdf)
   return
 
 
