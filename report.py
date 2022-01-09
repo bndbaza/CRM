@@ -22,7 +22,6 @@ def Pdf(infs):
       lis.append(('weld',inf))
     if inf['cgm']['tabl_sum']['table_count'] != None:
       lis.append(('cgm',inf))
-  # print(lis)
   lis2 = []
   count = 0
   for i in lis:
@@ -31,30 +30,19 @@ def Pdf(infs):
     else:
       count += 1
     if count <= 15 and len(lis2) < 3:
-      lis2.append(i[0])
-      if len(lis2) == 3:
-        print(lis2)
-      # Pdf1(inf,pdf,lis2)
+      lis2.append(i)
+    elif count <= 32 and len(lis2) < 2:
+      lis2.append(i)
     else:
-      # Pdf1(inf,pdf,lis2)
+      Pdf1(inf,pdf,lis2)
       pdf.showPage()
       if i[0] != 'weld':
-        count += len(i[1][i[0]]['tabl'])
+        count = len(i[1][i[0]]['tabl'])
       else:
-        count += 1
+        count = 1
       lis2 = []
-      lis2.append(i[0])
-    # print(lis2)
-    # print('----------')
-    # for i in range(len(lis)//2 + len(lis)%2):
-    #   lis2 = []
-    #   lis2.append(lis.pop(0))
-    #   try:
-    #     lis2.append(lis.pop(0))
-    #   except:
-    #     pass
-      # Pdf1(inf,pdf,lis2)
-      # pdf.showPage()
+      lis2.append(i)
+  Pdf1(inf,pdf,lis2)
   pdf.save()
 
 
@@ -70,7 +58,6 @@ def Pdf1(inf,pdf,lis):
   ],colWidths=widthList,
     rowHeights=heightList)
   mainTable.setStyle([
-    # ('GRID',(0,0),(-1,-1),1,'red'),
     ('LEFTPADDING',(0,0),(-1,-1),0),
     ('RIGHTPADDING',(0,0),(-1,-1),0),
     ('BOTTOMPADDING',(0,0),(-1,-1),0),
@@ -81,34 +68,27 @@ def Pdf1(inf,pdf,lis):
 
 
 def PrintTab(width,height,inf,lis):
-  heightList = [height*0.07,8+12+32,height*0.15,height*0.07,8+12+32,height*0.15]
+  lis2 = []
+  heightList = []
+
+  for i in lis:
+    c2 = 1
+    if i[0] != 'weld':
+      c2 = (len(i[1][i[0]]['tabl']))
+    heightList.append(height*0.07)
+    heightList.append(8+(c2*12)+32)
+    heightList.append(height*0.15)
+    lis2.append([Header1(width,height*0.07,i[1],i[0])])
+    lis2.append([Body(width,8+(c2*12)+32,i[1],i[0])])
+    lis2.append([Footer(width,height*0.15,i[1],i[0])])
   heightDown = 0
   for i in heightList:
     heightDown = heightDown + i
-  # print(heightDown)
   heightList.append(height - heightDown)
-  # print(height*0.08-34)
-  # if 'cgm' in lis:
-  #   heightList = [height*0.07,height*0.14,height*0.15,height*0.07,height*0.42,height*0.15]
-  # if 'cgm' in lis[0]:
-  #   heightList = [height*0.07,height*0.42,height*0.15,height*0.07,height*0.14,height*0.15]
-  lis2 = [
-    [Header1(width,heightList[0],inf,lis[0])],
-    [Body(width,heightList[1],inf,lis[0])],
-    [Footer(width,heightList[2],inf,lis[0])],
-  ]
-  if len(lis) == 2:
-    lis2.append([Header1(width,heightList[3],inf,lis[1])])
-    lis2.append([Body(width,heightList[4],inf,lis[1])])
-    lis2.append([Footer(width,heightList[5],inf,lis[1])])
-  else:
-    for i in range(3):
-      lis2.append([''])
   lis2.append([''])
   table = Table(lis2,colWidths=width,
     rowHeights=heightList)
   table.setStyle([
-    # ('GRID',(0,0),(-1,-1),1,'red'),
     ('LEFTPADDING',(0,0),(-1,-1),0),
     ('BOTTOMPADDING',(0,0),(-1,-1),0),
   ])
@@ -123,7 +103,6 @@ def Header1(width,height,inf,oper):
   ],colWidths=widthList,
     rowHeights=height)
   table.setStyle([
-    # ('GRID',(0,0),(0,0),1,'red'),
     ('LEFTPADDING',(0,0),(-1,-1),0),
     ('BOTTOMPADDING',(0,0),(-1,-1),0),
   ])
@@ -138,7 +117,6 @@ def Header2(width,height,inf,oper):
   ],colWidths=width,
     rowHeights=heightList)
   table.setStyle([
-    # ('GRID',(0,0),(-1,-1),1,'red'),
     ('LEFTPADDING',(0,0),(-1,-1),0),
     ('BOTTOMPADDING',(0,0),(-1,-1),0),
   ])
@@ -152,8 +130,6 @@ def Header3(width,height,inf,oper):
   ],colWidths=widthList,
     rowHeights=height)
   table.setStyle([
-    # ('GRID',(0,0),(-1,-1),1,'red'),
-    # ('LEFTPADDING',(0,0),(-1,-1),0),
     ('BOTTOMPADDING',(0,0),(-1,-1),10),
     ('BACKGROUND',(1,0),(1,0),inf[oper]['color']),
     ('BACKGROUND',(3,0),(3,0),colors.green),
@@ -190,9 +166,6 @@ def Footer1(width,height,str,image,inf,oper):
     [Footer3(width,heightList[1],inf)],
     [Footer4(width,heightList[2],inf,oper)],
     [Footer5(width,heightList[3],image,inf,oper)],
-    # [''],
-    # [''],
-    # [''],
   ],colWidths=width,
     rowHeights=heightList)
   table.setStyle([
@@ -226,7 +199,6 @@ def Footer3(width,height,inf):
   ],colWidths=width,
     rowHeights=height)
   table.setStyle([
-    # ('GRID',(0,0),(-1,-1),1,'red'),
     ('LEFTPADDING',(0,0),(-1,-1),0),
     ('BOTTOMPADDING',(0,0),(-1,-1),65),
     ('FONTNAME',(0,0),(-1,-1),'rus'),
@@ -243,13 +215,9 @@ def Footer4(width,height,inf,oper):
   ],colWidths=widthList,
     rowHeights=height)
   table.setStyle([
-    # ('GRID',(0,0),(-1,-1),1,'red'),
-    # ('LEFTPADDING',(0,0),(-1,-1),0),
     ('BOTTOMPADDING',(0,0),(-1,-1),0),
     ('FONTNAME',(0,0),(-1,-1),'rus'),
     ('ALIGN',(-1,-1),(-1,-1),'RIGHT'),
-    # ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-    # ('FONTSIZE',(0,0),(-1,-1),60),
   ])
   return table
 
@@ -267,7 +235,6 @@ def Footer5(width,height,image,inf,oper):
     ('BOTTOMPADDING',(0,0),(-1,0),0),
     ('TOPPADDING',(0,0),(-1,0),0),
     ('RIGHTPADDING',(0,0),(-1,0),0),
-    # ('BOTTOMPADDING',(-2,0),(-1,0),13),
     ('BACKGROUND',(-1,0),(-1,0),colors.green),
     ('TEXTCOLOR',(-1,0),(-1,0),'white'),
     ('FONTNAME',(0,0),(-1,-1),'rus'),
@@ -294,10 +261,7 @@ def Footer6(width,height,inf,oper):
     ('RIGHTPADDING',(0,0),(-1,-1),0),
     ('BOTTOMPADDING',(0,0),(-1,-1),0),
     ('FONTNAME',(0,0),(-1,-1),'rus'),
-    # ('FONTSIZE',(0,0),(0,0),8),
-    # ('ALIGN',(0,0),(0,1),'RIGHT'),
     ('ALIGN',(0,0),(-1,-1),'CENTER'),
-    # ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
   ])
   return table
 
@@ -317,20 +281,15 @@ def Body(width,height,inf,oper):
     [Body1(width,heightList[0],inf,oper)],
     [Body2(width,heightList[1],inf,oper)],
     [Body3(width,heightList[2],inf,oper)],
-    # [''],
-    # [''],
     [''],
   ],colWidths=width,
     rowHeights=heightList)
   table.setStyle([
-    # ('GRID',(0,0),(-1,-1),1,'red'),
     ('LEFTPADDING',(0,0),(-1,-1),0),
     ('BOTTOMPADDING',(0,0),(-1,-1),0),
+    ('RIGHTPADDING',(0,0),(-1,-1),0),
     ('ROTATE',(0,0),(0,0),90),
-    # ('FONTNAME',(0,0),(-1,-1),'rus'),
-    # ('ALIGN',(0,0),(0,1),'RIGHT'),
     ('ALIGN',(0,0),(-1,-1),'CENTER'),
-    # ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
   ])
   return table
 
@@ -352,7 +311,6 @@ def Body1(width,height,inf,oper):
     ('TOPPADDING',(0,0),(-1,-1),0),
     ('FONTNAME',(0,0),(-1,-1),'rus'),
     ('FONTSIZE',(0,0),(-1,-1),8),
-    # ('ALIGN',(0,0),(0,1),'RIGHT'),
     ('ALIGN',(0,0),(-1,-1),'CENTER'),
     ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
   ])
@@ -384,10 +342,8 @@ def Body2(width,height,inf,oper):
     ('RIGHTPADDING',(0,0),(-1,-1),0),
     ('BOTTOMPADDING',(0,0),(-1,-1),0),
     ('TOPPADDING',(0,0),(-1,-1),0),
-    # ('PADDING',(0,0),(-1,-1),0),
     ('FONTNAME',(0,0),(-1,-1),'rus'),
     ('FONTSIZE',(0,0),(-1,-1),8),
-    # ('ALIGN',(0,0),(0,1),'RIGHT'),
     ('ALIGN',(0,0),(-1,-1),'CENTER'),
     ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
   ])
@@ -406,10 +362,8 @@ def Body3(width,height,inf,oper):
       ('RIGHTPADDING',(0,0),(-1,-1),0),
       ('BOTTOMPADDING',(0,0),(-1,-1),0),
       ('TOPPADDING',(0,0),(-1,-1),0),
-      # ('PADDING',(0,0),(-1,-1),0),
       ('FONTNAME',(0,0),(-1,-1),'rus'),
       ('FONTSIZE',(0,0),(-1,-1),8),
-      # ('ALIGN',(0,0),(0,1),'RIGHT'),
       ('ALIGN',(0,0),(-1,-1),'CENTER'),
       ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
     ])
@@ -445,7 +399,6 @@ def Inf(details,case):
                   ).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case).group_by(Part.work).objects()
     faza = gr[0].point.faza
     gr1 = {'saw_s':{'weight': None, 'count': None},'saw_b':{'weight': None, 'count': None},'cgm':{'weight': None, 'count': None}}
-    # gr2 = {'saw_s':'','saw_b':'','cgm':'','weld':''}
     gr2 = ''
     gr3 = 'ПФСFWM'
     for i in gr:

@@ -48,7 +48,7 @@ def gettest():
 @app.get('/pdf')
 def getPdf():
   case = '2313/1'
-  detail = [6,8]
+  detail = [1,2,3,4,5,6,7,8,9,10]
   if len(detail) == 0:
     faza = PointPart.select(PointPart.detail).join(Point).join(Drawing).join(Order).where(Point.faza == 1,Order.cas == case).group_by(PointPart.detail)
     for i in faza:
