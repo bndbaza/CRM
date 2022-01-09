@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from db import connection
 from models import Drawing, Order, Part, Point, Hole, Bolt, Nut, Washer, PointPart
 from tekla import Tekla
-from faza import Faza_update, PartPoint
+from faza import Faza_update, PartPoint, Test
 from peewee import fn, JOIN
 from schemas import OrderBase, DrawingBase, PointBase,PartBase, FazaBase
 from report import Pdf, Inf
@@ -48,22 +48,19 @@ def gettest():
 @app.get('/pdf')
 def getPdf():
   case = '2313/1'
-  detail = [1,2,3,4,5,6,7,8,9,10]
+  detail = []
   if len(detail) == 0:
     faza = PointPart.select(PointPart.detail).join(Point).join(Drawing).join(Order).where(Point.faza == 1,Order.cas == case).group_by(PointPart.detail)
     for i in faza:
       detail.append(i.detail)
-  # print(faza[0].detail)
   Inf(detail,case)
   return
 
 
-# @app.get('/test2')
-# def gettest2():
-#   query = PointPart.select(PointPart,Part,Point).join_from(PointPart,Part).join_from(PointPart,Point).where(fn.Substr(Part.profile, 1, 1) != '-').order_by(Point.line)
-#   for i in query:
-#     print(i.point.assembly,i.part.profile,i.point.line)
-#   return 
+@app.get('/test2')
+def gettest2():
+  Test()
+  return 
 
 
 @app.post('/order')

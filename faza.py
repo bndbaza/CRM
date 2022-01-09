@@ -25,9 +25,10 @@ def PartPoint(faza,cas):
   maxpp = PointPart.select(fn.MAX(PointPart.detail)).scalar()
   all = []
   if maxpp == None:
-    maxpp = 0
-  for point in points:
+    maxpp = 1
+  else:
     maxpp += 1
+  for point in points:
     for part in parts:
       if point.assembly == part.assembly:
         oper = {'hole': 0, 'chamfer': 0, 'cgm': 0, 'saw': 0, 'milling': 0}
@@ -43,5 +44,12 @@ def PartPoint(faza,cas):
           oper['milling'] = 1
         d = (point,part,maxpp,oper['hole'],oper['chamfer'],oper['cgm'],oper['saw'],oper['milling'])
         all.append(d)
+    maxpp += 1
   with connection.atomic():
     PointPart.insert_many(all, fields=[PointPart.point,PointPart.part,PointPart.detail,PointPart.hole,PointPart.chamfer,PointPart.cgm,PointPart.saw,PointPart.milling]).execute()
+
+def Test():
+  z = Part.select(Part,fn.COUNT(Part.count).alias).join(Drawing)
+  # print(z)
+  for i in z:
+    print(i.assembly)

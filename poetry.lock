@@ -146,6 +146,24 @@ python-versions = "*"
 six = ">=1.4.0"
 
 [[package]]
+name = "qrcode"
+version = "7.3.1"
+description = "QR Code image generator"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+colorama = {version = "*", markers = "platform_system == \"Windows\""}
+
+[package.extras]
+all = ["zest.releaser", "tox", "pytest", "pytest", "pytest-cov", "pillow"]
+dev = ["tox", "pytest"]
+maintainer = ["zest.releaser"]
+pil = ["pillow"]
+test = ["pytest", "pytest-cov"]
+
+[[package]]
 name = "reportlab"
 version = "3.6.3"
 description = "The Reportlab Toolkit"
@@ -216,7 +234,7 @@ standard = ["httptools (>=0.2.0,<0.4.0)", "watchgod (>=0.6)", "python-dotenv (>=
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "63f815b2cf43ca582b4b53662b8af9352999bd9ce76486cf8dfbafad5a80704d"
+content-hash = "6245861fe48de19ee22f75a5b60ed52eba27f5d1588f2f40d97f71c0e9cf3a6c"
 
 [metadata.files]
 anyio = [
@@ -327,6 +345,9 @@ pymysql = [
 ]
 python-multipart = [
     {file = "python-multipart-0.0.5.tar.gz", hash = "sha256:f7bb5f611fc600d15fa47b3974c8aa16e93724513b49b5f95c81e6624c83fa43"},
+]
+qrcode = [
+    {file = "qrcode-7.3.1.tar.gz", hash = "sha256:375a6ff240ca9bd41adc070428b5dfc1dcfbb0f2507f1ac848f6cded38956578"},
 ]
 reportlab = [
     {file = "reportlab-3.6.3-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:169d7017687c60ddf7690cb349e24ae10d51480d93babc6f81d851aea8a01a25"},

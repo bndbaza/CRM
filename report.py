@@ -6,6 +6,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from models import *
 from peewee import fn, JOIN
+from qr import QRAuth, QRRun, Delpng
 
 pdfmetrics.registerFont(TTFont('rus','arial.ttf'))
 
@@ -44,6 +45,7 @@ def Pdf(infs):
       lis2.append(i)
   Pdf1(inf,pdf,lis2)
   pdf.save()
+  Delpng()
 
 
 
@@ -70,7 +72,6 @@ def Pdf1(inf,pdf,lis):
 def PrintTab(width,height,inf,lis):
   lis2 = []
   heightList = []
-
   for i in lis:
     c2 = 1
     if i[0] != 'weld':
@@ -97,7 +98,7 @@ def PrintTab(width,height,inf,lis):
 
 def Header1(width,height,inf,oper):
   widthList = [80,width-80]
-  img = Image('aut.gif',widthList[0],height,kind='proportional')
+  img = Image(QRAuth(inf['detail'],inf['case'],oper),widthList[0],height,kind='proportional')
   table = Table([
     [img,Header2(widthList[1],height,inf,oper)],
   ],colWidths=widthList,
@@ -122,7 +123,6 @@ def Header2(width,height,inf,oper):
   ])
   return table
 
-
 def Header3(width,height,inf,oper):
   widthList = [width*0.1,width*0.2,width*0.2,width*0.2,width*0.1,width*0.2]
   table = Table([
@@ -145,8 +145,8 @@ def Header3(width,height,inf,oper):
 
 def Footer(width,height,inf,oper):
   widthList = [width*0.35,width*0.3,width*0.35]
-  image_run = 'run.gif'
-  image_aut = 'aut.gif'
+  image_run = QRRun(inf['detail'],inf['case'],oper)
+  image_aut = QRAuth(inf['detail'],inf['case'],oper)
   table = Table([
     [Footer1(widthList[0],height,'Бегунок',image_run,inf,oper),'',Footer1(widthList[0],height,'Авторизация',image_aut,inf,oper)],
   ],colWidths=widthList,
