@@ -7,7 +7,7 @@ def QRAuth(detail,case,oper):
     os.mkdir('QR')
   except:
     pass
-  data = 'Авторизация ' + str(detail) +' '+oper+' '+case
+  data = 'Aut ' + str(detail) +' '+oper+' '+case
   filename = 'QR/aut'+oper+'.png'
   img = qrcode.make(data)
   img.save(filename)
@@ -18,12 +18,14 @@ def QRRun(detail,case,oper):
     os.mkdir('QR')
   except:
     pass
-  data = 'Бегунок ' + str(detail) +' '+oper+' '+case
+  data = 'Run ' + str(detail) +' '+oper+' '+case
   filename = 'QR/run'+oper+'.png'
   img = qrcode.make(data)
   img.save(filename)
   return filename
 
 def Delpng():
-  shutil.rmtree('QR')
-  pass
+  try:
+    shutil.rmtree('QR')
+  except:
+    pass

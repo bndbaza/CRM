@@ -74,10 +74,36 @@ def Tekla(xls,yyy):
         for col in drawings:
           if row[1].replace(' ','') == col.assembly:
             profile = Size(row[4].replace(' ',''))
-            d = (col,int(row[2].replace(' ','')),int(row[3].replace(' ','')),profile[0],profile[1],float(row[5].replace(' ','')),float(row[6].replace(' ','')),row[8].replace(' ',''),row[9].replace(' ',''),profile[2],dates)
+            d = (col,
+                int(row[2].replace(' ','')),
+                int(row[3].replace(' ','')),
+                profile[0],
+                profile[1],
+                float(row[5].replace(' ','')),
+                float(row[6].replace(' ','')),
+                row[8].replace(' ',''),
+                row[9].replace(' ',''),
+                profile[2],
+                profile[3],
+                int(Test(row[11].replace(' ',''))),
+                float(Test(row[12].replace(' ',''),profile[1])),
+                dates)
             post['Part'].append(d)
   with connection.atomic():
-    Part.insert_many(post['Part'], fields=[Part.assembly,Part.number,Part.count,Part.profile,Part.size,Part.length,Part.weight,Part.mark,Part.manipulation,Part.work,Part.create_date]).execute()
+    Part.insert_many(post['Part'], fields=[Part.assembly,
+                                          Part.number,
+                                          Part.count,
+                                          Part.profile,
+                                          Part.size,
+                                          Part.length,
+                                          Part.weight,
+                                          Part.mark,
+                                          Part.manipulation,
+                                          Part.work,
+                                          Part.width,
+                                          Part.perimeter,
+                                          Part.depth,
+                                          Part.create_date]).execute()
   with open(xls.filename,'r', encoding='windows-1251') as file:
     reader = csv.reader(file, delimiter='\t')
     for row in reader:
@@ -130,53 +156,65 @@ def Tekla(xls,yyy):
   return
 
 def Size(str):
-  str = str.replace('х','x')
+  str = str.replace('x','х')
   if str.startswith('Гн.[]'):
-    if int(str.replace('Гн.[]','').split('x')[0]) >= 160:
-      i = ('Труба профильная',str.replace('Гн.[]',''),'saw_b')
+    if int(str.replace('Гн.[]','').split('х')[0]) >= 160:
+      i = ('Труба профильная',str.replace('Гн.[]',''),'saw_b','')
     else:
-      i = ('Труба профильная',str.replace('Гн.[]',''),'saw_s')
+      i = ('Труба профильная',str.replace('Гн.[]',''),'saw_s','')
     return (i)
   elif str.startswith('Гн.['):
-    if int(str.replace('Гн.[','').split('x')[0]) >= 200:  
-      i = ('Швеллер гнутый',str.replace('Гн.[',''),'saw_b')
+    if int(str.replace('Гн.[','').split('х')[0]) >= 200:  
+      i = ('Швеллер гнутый',str.replace('Гн.[',''),'saw_b','')
     else:
-      i = ('Швеллер гнутый',str.replace('Гн.[',''),'saw_s')
+      i = ('Швеллер гнутый',str.replace('Гн.[',''),'saw_s','')
     return (i)
   elif str.startswith('Гн.'):  
-    if int(str.replace('Гн.','').split('x')[0]) >= 160: 
-      i = ('Труба квадратная',str.replace('Гн.',''),'saw_b')
+    if int(str.replace('Гн.','').split('х')[0]) >= 160: 
+      i = ('Труба профильная',str.replace('Гн.',''),'saw_b','')
     else:
-      i = ('Труба квадратная',str.replace('Гн.',''),'saw_s')
+      i = ('Труба профильная',str.replace('Гн.',''),'saw_s','')
     return (i)
   elif str.startswith('['):
     if int(str.replace('[','').replace('П','')) >= 20:
-      i = ('Швеллер',str.replace('[',''),'saw_b')
+      i = ('Швеллер',str.replace('[',''),'saw_b','')
     else:
-      i = ('Швеллер',str.replace('[',''),'saw_s')
+      i = ('Швеллер',str.replace('[',''),'saw_s','')
     return (i)
   elif str.startswith('O'):
-    if int(str.replace('O','')) >= 20:
-      i = ('Труба круглая',str.replace('O',''),'saw_b')
+    i = ('Круг',str.replace('O',''),'saw_s','')
+    return (i)
+  elif str.startswith('ТК'):
+    if float(str.replace('ТК','').split('х')[0]) >= 273:
+      i = ('Труба круглая',str.replace('ТК',''),'saw_b','')
     else:
-      i = ('Труба круглая',str.replace('O',''),'saw_s')
+      i = ('Труба круглая',str.replace('ТК',''),'saw_s','')
     return (i)
   elif str.startswith('L'):
-    if int(str.replace('L','').split('x')[0]) >= 200:
-      i = ('Угол',str.replace('L',''),'saw_b')
+    if int(str.replace('L','').split('х')[0]) >= 200:
+      i = ('Уголок',str.replace('L',''),'saw_b','')
     else:
-      i = ('Угол',str.replace('L',''),'saw_s')
+      i = ('Уголок',str.replace('L',''),'saw_s','')
     return (i)
   elif str.startswith('I'):  
-    i = ('Двутавр',str.replace('I',''),'saw_b')
+    i = ('Двутавр',str.replace('I',''),'saw_b','')
     return (i)
   elif str.startswith('—'):
-    a = str.replace('—','').split('x')
+    a = str.replace('—','').split('х')
     if int(a[0]) > int(a[1]):
-      i = ('Лист',a[1]+'x'+a[0],'cgm')
+      i = ('Лист',a[1],'cgm',a[0])
     else:
-      i = ('Лист',str.replace('—',''),'cgm')
+      i = ('Лист',a[0],'cgm',a[1])
     return (i)
   elif str.startswith('-'):  
-    i = ('Лист',str.replace('-',''),'cgm')
+    i = ('Лист',str.replace('-','').split('х')[0],'cgm',str.replace('-','').split('х')[1])
     return (i)
+
+def Test(i,size=0):
+  if i == '' and size != 0:
+    size = size.split('х')
+    return size[-1]
+  elif i == '' and size == 0:
+    return 0
+  else:
+    return i

@@ -13,6 +13,8 @@
     "models.Washer",
     "models.Hole",
     "models.Chamfer",
-    "models.PointPart"
+    "models.PointPart",
+    "models.HoleNorm",
+    "models.SawNorm"
   ]
 }

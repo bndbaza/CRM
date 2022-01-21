@@ -1,4 +1,5 @@
 import datetime
+from email.policy import default
 from peewee import Model, IntegerField, DateTimeField, CharField, ForeignKeyField, DecimalField, PrimaryKeyField, BooleanField
 from db import connection
 
@@ -49,11 +50,14 @@ class Part(ModelBase):
   count = IntegerField()
   profile = CharField(max_length=100)
   size = CharField(max_length=100)
+  width = CharField(max_length=100,default='')
   length = DecimalField(max_digits=12,decimal_places=3)
   weight = DecimalField(max_digits=12,decimal_places=3)
   mark = CharField(max_length=50)
   manipulation = CharField(max_length=150)
   work = CharField(max_length=10)
+  depth = DecimalField(max_digits=12,decimal_places=3,default=0)
+  perimeter = IntegerField(default=0)
 
 class Weld(ModelBase):
   class Meta:
@@ -130,3 +134,35 @@ class PointPart(ModelBase):
   chamfer = IntegerField(default=0)
   milling = IntegerField(default=0)
   bend = IntegerField(default=0)
+
+class HoleNorm(ModelBase):
+  class Meta:
+    table_name='holenorms'
+  id = PrimaryKeyField(null=False)
+  depth_of = IntegerField()
+  depth_to = IntegerField()
+  diameter = IntegerField()
+  lenght_of = IntegerField()
+  lenght_to = IntegerField()
+  count = IntegerField()
+  norm = DecimalField(max_digits=12,decimal_places=3)
+  metal = CharField(max_length=15)
+
+class SawNorm(ModelBase):
+  class Meta:
+    table_name='sawnorms'
+  id = PrimaryKeyField(null=False)
+  profile = CharField(max_length=50)
+  size = CharField(max_length=50)
+  speed_saw = DecimalField(max_digits=12,decimal_places=3,default=0)
+  speed_feed = DecimalField(max_digits=12,decimal_places=3,default=0)
+  step_tooth = IntegerField(default=0)
+  norm_direct = DecimalField(max_digits=12,decimal_places=3,default=0)
+  norm_oblique = DecimalField(max_digits=12,decimal_places=3,default=0)
+
+class CgmNorm(ModelBase):
+  class Meta:
+    table_name='cgmnorms'
+  id = PrimaryKeyField(null=False)
+  size = IntegerField()
+  norm = DecimalField(max_digits=12,decimal_places=3,default=0)

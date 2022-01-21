@@ -4,10 +4,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from db import connection
 from models import Drawing, Order, Part, Point, Hole, Bolt, Nut, Washer, PointPart
 from tekla import Tekla
-from faza import Faza_update, PartPoint, Test
+from faza import Faza_update, PartPoint, Test, Faza_update_test
 from peewee import fn, JOIN
 from schemas import OrderBase, DrawingBase, PointBase,PartBase, FazaBase
 from report import Pdf, Inf
+from excel import NormExcel
 
 
 app = FastAPI()
@@ -40,14 +41,21 @@ app.add_middleware(
 
 
 @app.get('/test')
-def gettest():
-  PartPoint(1, '2313/1')
+def get_test():
+  PartPoint(1, '2313/3')
+  PartPoint(2, '2313/3')
+  PartPoint(3, '2313/3')
+  return
+
+@app.get('/excel')
+def get_excel():
+  NormExcel()
   return
 
 
 @app.get('/pdf')
-def getPdf():
-  case = '2313/1'
+def get_pdf():
+  case = '2313/3'
   detail = []
   if len(detail) == 0:
     faza = PointPart.select(PointPart.detail).join(Point).join(Drawing).join(Order).where(Point.faza == 1,Order.cas == case).group_by(PointPart.detail)
@@ -57,17 +65,18 @@ def getPdf():
   return
 
 
-@app.get('/test2')
-def gettest2():
-  Test()
-  return 
+# @app.get('/test2')
+# def gettest2():
+#   Test()
+#   return 
 
 
 @app.post('/order')
-async def postTekla(
+async def post_tekla(
   file: UploadFile = File(...),
   order: str = Form(...)
 ):
   Tekla(file,order)
-  Faza_update(order)
+  # Faza_update(order)
+  Faza_update_test(order)
   return
