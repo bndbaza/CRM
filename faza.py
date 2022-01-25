@@ -32,19 +32,6 @@ def Faza_update_test(order):
       pass
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 def PartPoint(faza,cas):
   parts = Part.filter(assembly__cas__cas = cas)
   points = Point.filter(faza = faza,assembly__cas__cas = cas)

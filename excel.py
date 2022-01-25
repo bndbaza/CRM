@@ -36,7 +36,7 @@ def SawNormExcel():
   wb = load_workbook('VVL.xlsx',data_only=True)
   sheet = wb.get_sheet_by_name('Пиление проката')
   post = []
-  for y in range(2,154):
+  for y in range(2,160):
     d = []
     for i in range(1,7):
       if i == 1 and len((sheet.cell(row=y,column=i).value).strip().split(' ')) > 2:

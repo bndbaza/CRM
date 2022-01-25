@@ -207,7 +207,11 @@ def Size(str):
       i = ('Лист',a[0],'cgm',a[1])
     return (i)
   elif str.startswith('-'):  
-    i = ('Лист',str.replace('-','').split('х')[0],'cgm',str.replace('-','').split('х')[1])
+    a = str.replace('-','').split('х')
+    if int(a[0]) > int(a[1]):
+      i = ('Лист',a[1],'cgm',a[0])
+    else:
+      i = ('Лист',a[0],'cgm',a[1])
     return (i)
 
 def Test(i,size=0):
