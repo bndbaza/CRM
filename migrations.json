@@ -15,6 +15,7 @@
     "models.Chamfer",
     "models.PointPart",
     "models.HoleNorm",
-    "models.SawNorm"
+    "models.SawNorm",
+    "models.AssemblyNorm"
   ]
 }

@@ -64,7 +64,7 @@ class Weld(ModelBase):
     table_name='welds'
   id = PrimaryKeyField(null=False)
   create_date = DateTimeField()
-  assembly = ForeignKeyField(Drawing,related_name='welds')
+  assembly = ForeignKeyField(Drawing,backref='welds')
   cathet = IntegerField()
   length = DecimalField(max_digits=12,decimal_places=3)
   count = IntegerField()
@@ -74,7 +74,7 @@ class Bolt(ModelBase):
     table_name='bolts'
   id = PrimaryKeyField(null=False)
   create_date = DateTimeField()
-  assembly = ForeignKeyField(Drawing,related_name='bolts')
+  assembly = ForeignKeyField(Drawing,backref='bolts')
   profile = CharField(max_length=100)
   count = IntegerField()
   gost = CharField(max_length=50)
@@ -85,7 +85,7 @@ class Nut(ModelBase):
     table_name='nuts'
   id = PrimaryKeyField(null=False)
   create_date = DateTimeField()
-  assembly = ForeignKeyField(Drawing,related_name='nuts')
+  assembly = ForeignKeyField(Drawing,backref='nuts')
   profile = CharField(max_length=100)
   count = IntegerField()
   gost = CharField(max_length=50)
@@ -96,7 +96,7 @@ class Washer(ModelBase):
     table_name='washers'
   id = PrimaryKeyField(null=False)
   create_date = DateTimeField()
-  assembly = ForeignKeyField(Drawing,related_name='washers')
+  assembly = ForeignKeyField(Drawing,backref='washers')
   profile = CharField(max_length=100)
   count = IntegerField()
   gost = CharField(max_length=50)
@@ -107,7 +107,7 @@ class Hole(ModelBase):
     table_name='holes'
   id = PrimaryKeyField(null=False)
   create_date = DateTimeField()
-  part = ForeignKeyField(Part,related_name='holes')
+  part = ForeignKeyField(Part,backref='holes')
   diameter = IntegerField()
   count = IntegerField()
   depth = IntegerField()
@@ -117,14 +117,14 @@ class Chamfer(ModelBase):
     table_name='chamfers'
   id = PrimaryKeyField(null=False)
   create_date = DateTimeField()
-  part = ForeignKeyField(Part,related_name='chamfers')
+  part = ForeignKeyField(Part,backref='chamfers')
   length = DecimalField(max_digits=12,decimal_places=3)
 
 class PointPart(ModelBase):
   class Meta:
     table_name='pointparts'
-  point = ForeignKeyField(Point)
-  part = ForeignKeyField(Part)
+  point = ForeignKeyField(Point,backref='pointparts')
+  part = ForeignKeyField(Part,backref='pointparts')
   detail = IntegerField()
   cgm = IntegerField(default=0)
   saw = IntegerField(default=0)
@@ -134,6 +134,7 @@ class PointPart(ModelBase):
   chamfer = IntegerField(default=0)
   milling = IntegerField(default=0)
   bend = IntegerField(default=0)
+  weld = IntegerField(default=1)
 
 class HoleNorm(ModelBase):
   class Meta:
@@ -160,9 +161,15 @@ class SawNorm(ModelBase):
   norm_direct = DecimalField(max_digits=12,decimal_places=3,default=0)
   norm_oblique = DecimalField(max_digits=12,decimal_places=3,default=0)
 
-class CgmNorm(ModelBase):
+class AssemblyNorm(ModelBase):
   class Meta:
-    table_name='cgmnorms'
+    table_name='assemblynorms'
   id = PrimaryKeyField(null=False)
-  size = IntegerField()
+  name = CharField(max_length=250)
+  mass_of = IntegerField()
+  mass_to = IntegerField()
+  count_of = IntegerField()
+  count_to = IntegerField()
+  complexity = DecimalField(max_digits=12,decimal_places=3,default=0)
   norm = DecimalField(max_digits=12,decimal_places=3,default=0)
+  choice = CharField(max_length=100)

@@ -1,9 +1,10 @@
 from openpyxl import load_workbook
-from models import HoleNorm, SawNorm
+from models import HoleNorm, SawNorm, AssemblyNorm
 
 def NormExcel():
   HoleNormExcel()
   SawNormExcel()
+  AssemblyNormExcel()
 
 def HoleNormExcel():
   wb = load_workbook('VVL.xlsx',data_only=True)
@@ -51,3 +52,18 @@ def SawNormExcel():
         d.append(sheet.cell(row=y,column=i).value)
     post.append(d)
   SawNorm.insert_many(post, fields=[SawNorm.profile,SawNorm.size,SawNorm.speed_saw,SawNorm.speed_feed,SawNorm.step_tooth,SawNorm.norm_direct,SawNorm.norm_oblique]).execute()
+
+
+def AssemblyNormExcel():
+  wb = load_workbook('VVL.xlsx',data_only=True)
+  sheet = wb.get_sheet_by_name('Сборка (ЕНиР)')
+  post = []
+  for y in range(17,511):
+    d = []
+    for i in range(1,9):
+      if sheet.cell(row=y,column=i).value == None:
+        d.append('')
+      else:
+        d.append(sheet.cell(row=y,column=i).value)
+    post.append(d)
+  AssemblyNorm.insert_many(post, fields=[AssemblyNorm.name,AssemblyNorm.mass_of,AssemblyNorm.mass_to,AssemblyNorm.count_of,AssemblyNorm.count_to,AssemblyNorm.complexity,AssemblyNorm.norm,AssemblyNorm.choice]).execute()

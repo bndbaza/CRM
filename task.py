@@ -5,8 +5,9 @@ from reportlab.platypus import Table, Image
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from models import *
-from peewee import fn, JOIN
+from peewee import fn, Case, Cast
 from qr import QRAuth, QRRun, Delpng
+import math
 
 pdfmetrics.registerFont(TTFont('rus','arial.ttf'))
 
@@ -105,7 +106,7 @@ def PrintTab(width,height,inf,lis):
 
 
 def Header1(width,height,inf,oper):
-  widthList = [80,width-80]
+  widthList = [60,width-60]
   img = Image(QRAuth(inf['detail'],inf['case'],oper),widthList[0],height,kind='proportional')
   table = Table([
     [img,Header2(widthList[1],height,inf,oper)],
@@ -132,7 +133,7 @@ def Header2(width,height,inf,oper):
   return table
 
 def Header3(width,height,inf,oper):
-  widthList = [width*0.1,width*0.2,width*0.2,width*0.2,width*0.1,width*0.2]
+  widthList = [width*0.05,width*0.2,width*0.15,width*0.15,width*0.1,width*0.35]
   table = Table([
     [inf['name'][0],inf[oper]['name'],'№'+str(inf['detail']),inf['case'],inf['faza'],inf['work']],
   ],colWidths=widthList,
@@ -278,7 +279,7 @@ def Footer7(width,height,inf,oper):
   if oper == 'saw_s' or oper == 'saw_b':
     heightList = []
     tabl = [['Пилы _______________________']]
-    if 'С' in inf['work']:
+    if 'Сп' in inf['work']:
       tabl.append(['Сверловка __________________'])
     for i in range(len(tabl)):
       heightList.append(height/len(tabl))
@@ -301,7 +302,7 @@ def Footer7(width,height,inf,oper):
     tabl = [['ЦГМ ________________________']]
     tabl.append(['Зачистка ___________________'])
     tabl.append(['Правка _____________________'])
-    if 'С' in inf['work']:
+    if 'Сф' in inf['work']:
       tabl.append(['Сверловка __________________'])
     for i in range(len(tabl)):
       heightList.append(height/len(tabl))
@@ -387,7 +388,7 @@ def Body2(width,height,inf,oper):
       string,
       float(inf[oper]['tabl'].point.assembly.weight),
       inf[oper]['tabl'].count,
-      '',
+      round(inf[oper]['norm_assembly']),
       '',
     ]]
     size = height
@@ -458,15 +459,27 @@ def Inf(details,case):
     inf5 = PointPart.select(Part.profile,Part.size,fn.MAX(Part.weight).alias('weight')).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.work != 'cgm').first()
     if inf4.scalar() > 1 and inf7 == 1:
       inf6 = PointPart.select(PointPart,fn.SUM(Part.count).alias('count')).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case).first()
+      try:
+        norm = Drawing.select(Drawing.weight,Point.name,fn.SUM(Part.count).alias('count')).join(Part).join_from(Drawing,Point).where(Drawing.id == inf6.part.assembly).first()
+        norm_assembly = AssemblyNorm.select().where(AssemblyNorm.name == norm.point.name,
+                                                    norm.weight >= AssemblyNorm.mass_of,
+                                                    norm.weight < AssemblyNorm.mass_to,
+                                                    norm.count >= AssemblyNorm.count_of,
+                                                    norm.count < AssemblyNorm.count_to).first()
+        norm_assembly = (norm_assembly.norm * (norm.weight/1000))
+      except:
+        norm_assembly = 0
     else:
       inf6 = None
+      norm_assembly = None
     inf8 = PointPart.select(PointPart,fn.SUM(Part.count).alias('count')).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case).first()
     gr = PointPart.select(Part.work,PointPart.point,
                           fn.SUM(Part.weight * Part.count).alias('weight'),
                           fn.SUM(Part.count).alias('count'),
                           fn.SUM(PointPart.saw).alias('saw'),
                           fn.SUM(PointPart.cgm).alias('cgm'),
-                          fn.SUM(PointPart.hole).alias('hole'),
+                          fn.SUM(Case(None, [((PointPart.hole == 1) & (Part.size.cast('int') >= 14) & (PointPart.cgm == 1),1)], 0)).alias('hole_cgm'),
+                          fn.SUM(Case(None, [((PointPart.hole == 1) & (PointPart.saw == 1),1)], 0)).alias('hole_saw'),
                           fn.SUM(PointPart.bevel).alias('bevel'),
                           fn.SUM(PointPart.notch).alias('notch'),
                           fn.SUM(PointPart.chamfer).alias('chamfer'),
@@ -476,7 +489,7 @@ def Inf(details,case):
     faza = gr[0].point.faza
     gr1 = {'saw_s':{'weight': None, 'count': None},'saw_b':{'weight': None, 'count': None},'cgm':{'weight': None, 'count': None}}
     gr2 = []
-    gr3 = ['Пм','Пб','Ф','С','F','W','M']
+    gr3 = ['Пм','Пб','Сп','Ф','Сф','F','W','M']
     gr4 = ''
     for i in gr:
       gr1[i.work] = {'weight': i.weight, 'count': i.count}
@@ -486,8 +499,10 @@ def Inf(details,case):
         gr2.append('Пб')
       if i.cgm > 0:
         gr2.append('Ф')
-      if i.hole > 0:
-        gr2.append('С')
+      if i.hole_cgm > 0:
+        gr2.append('Сф')
+      if i.hole_saw > 0:
+        gr2.append('Сп')
       if i.chamfer > 0:
         gr2.append('F')
       if inf4.scalar() > 1 and inf7 == 1:
@@ -502,7 +517,7 @@ def Inf(details,case):
     tabl_saw_s = {'tabl':[],'tabl_sum':{'table_count':gr1['saw_s']['count'],'table_weight':gr1['saw_s']['weight']},'name':'ПИЛЫ М','color':colors.blue,'color_t':'white','oper':'пилы'}
     tabl_saw_b = {'tabl':[],'tabl_sum':{'table_count':gr1['saw_b']['count'],'table_weight':gr1['saw_b']['weight']},'name':'ПИЛЫ Б','color':colors.green,'color_t':'white','oper':'пилы'}
     tabl_cgm = {'tabl':[],'tabl_sum':{'table_count':gr1['cgm']['count'],'table_weight':gr1['cgm']['weight']},'name':'ФАСОНКА','color':colors.yellow,'color_t':'black','oper':'цгм'}
-    tabl_weld = {'tabl':inf6,'name':'Сборка','color':colors.red,'color_t':'black','count':inf4.scalar()}
+    tabl_weld = {'tabl':inf6,'norm_assembly': norm_assembly,'name':'Сборка','color':colors.red,'color_t':'black','count':inf4.scalar()}
     tabl_paint ={'tabl':inf8,'name':'Малярка','color':colors.pink,'color_t':'black','count':inf4.scalar()}
     for y in inf:
       for i in inf[y]:
@@ -523,7 +538,7 @@ def Inf(details,case):
         if i.saw == 1:
           try:
             saw = SawNorm.select().where(SawNorm.profile == i.part.profile,SawNorm.size == i.part.size).first()
-            tab.append(float(saw.norm_direct * i.count))
+            tab.append(round(saw.norm_direct * i.count))
           except:
             print(i.part.profile,i.part.size)
             tab.append('+')
@@ -540,7 +555,7 @@ def Inf(details,case):
                                             HoleNorm.depth_to >= i.part.depth,
                                             HoleNorm.count >= hole.count,
                                             HoleNorm.metal == 'Лист').first()
-              tab.append(float(norm.norm * hole.count))
+              tab.append(round(norm.norm * hole.count * i.count))
             elif y != 'cgm':
               norm = HoleNorm.select().where(HoleNorm.diameter >= hole.diameter,
                                             HoleNorm.lenght_of <= int(i.part.length),
@@ -549,7 +564,7 @@ def Inf(details,case):
                                             HoleNorm.depth_to >= i.part.depth,
                                             HoleNorm.count >= hole.count,
                                             HoleNorm.metal == 'Сорт').first()
-              tab.append(float(norm.norm * hole.count))
+              tab.append(round(norm.norm * hole.count * i.count))
             else:
               tab.append('')
           except:

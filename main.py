@@ -9,6 +9,7 @@ from peewee import fn, JOIN
 from schemas import OrderBase, DrawingBase, PointBase,PartBase, FazaBase
 from task import Inf
 from excel import NormExcel
+from faza_list import Pdf, Inf_list
 
 
 app = FastAPI()
@@ -44,6 +45,7 @@ app.add_middleware(
 def get_test():
   PartPoint(1, '2313/3')
   PartPoint(2, '2313/3')
+  PartPoint(4, '2313/3')
   PartPoint(3, '2313/3')
   return
 
@@ -55,7 +57,7 @@ def get_excel():
 
 @app.get('/pdf')
 def get_pdf():
-  z = [1,2,3]
+  z = [1]
   for y in z:
     case = '2313/3'
     detail = []
@@ -67,14 +69,16 @@ def get_pdf():
   return
 
 
-# @app.get('/test2')
-# def gettest2():
-#   Test()
-#   return 
+@app.get('/list_faza')
+def get_list_faza():
+  case = '2313/3'
+  faza = 1
+  Inf_list(faza,case)
+  return 
 
 
 @app.post('/order')
-async def post_tekla(
+def post_tekla(
   file: UploadFile = File(...),
   order: str = Form(...)
 ):

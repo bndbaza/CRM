@@ -97,13 +97,14 @@ def Test():
     for y in yi:
       if i.point == y.point:
         i.detail = y.detail
+        i.weld = 0
         all.append(i)
   for i in xi:
     for y in zi:
       if i.point == y.point:
         i.detail = y.detail
         all.append(i)
-  PointPart.bulk_update(all, fields=[PointPart.detail])
+  PointPart.bulk_update(all, fields=[PointPart.detail,PointPart.weld])
 
 
 

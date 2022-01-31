@@ -47,7 +47,7 @@ def Tekla(xls,yyy):
               row[3].replace(' ','').replace('<','').replace('>','').split('/')[0].split('-')[0],
               row[3].replace(' ','').replace('<','').replace('>','').split('/')[-1].split('-')[0],
               float(row[2].replace(' ','')),
-              row[5].replace(' ',''),
+              row[5].strip(),
               dates)
             post['Point'].append(d)
       if row[0].replace(' ','') == 'WELD':
@@ -119,7 +119,7 @@ def Tekla(xls,yyy):
         for col in drawings:
           if row[1].replace(' ','') == col.assembly:
             part = Part.get(number=int(row[2].replace(' ','')),assembly=col)
-            d = (part,int(row[3].replace(' ','')),int(row[4].replace(' ','')),int(row[5].replace(' ','')) / 2,dates)
+            d = (part,int(row[3].replace(' ','')),(int(row[4].replace(' ','')))/part.count,int(row[5].replace(' ','')) / 2,dates)
             post['Hole'].append(d)
       if row[0].replace(' ','') == 'CHAMFER':
         for col in drawings:
