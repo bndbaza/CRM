@@ -16,6 +16,7 @@
     "models.PointPart",
     "models.HoleNorm",
     "models.SawNorm",
-    "models.AssemblyNorm"
+    "models.AssemblyNorm",
+    "models.Worker"
   ]
 }

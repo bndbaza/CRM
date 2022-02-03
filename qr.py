@@ -7,7 +7,7 @@ def QRAuth(detail,case,oper):
     os.mkdir('QR')
   except:
     pass
-  data = 'Aut ' + str(detail) +' '+oper+' '+case
+  data = 'A ' + str(detail) +' '+oper
   filename = 'QR/aut'+oper+'.png'
   img = qrcode.make(data)
   img.save(filename)

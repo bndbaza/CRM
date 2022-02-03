@@ -2,11 +2,11 @@ from typing import List
 from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
 from db import connection
-from models import Drawing, Order, Part, Point, Hole, Bolt, Nut, Washer, PointPart
+from models import Drawing, Order, Part, Point, Hole, Bolt, Nut, Washer, PointPart, Worker
 from tekla import Tekla
 from faza import Faza_update, PartPoint, Test, Faza_update_test
 from peewee import fn, JOIN
-from schemas import OrderBase, DrawingBase, PointBase,PartBase, FazaBase
+from schemas import OrderBase, DrawingBase, PointBase,PartBase, FazaBase, PointPartBase, WorkerBase
 from task import Inf
 from excel import NormExcel
 from faza_list import Pdf, Inf_list
@@ -60,7 +60,7 @@ def get_pdf():
   z = [1]
   for y in z:
     case = '2313/3'
-    detail = []
+    detail = [19,20]
     if len(detail) == 0:
       faza = PointPart.select(PointPart.detail).join(Point).join(Drawing).join(Order).where(Point.faza == y,Order.cas == case).group_by(PointPart.detail)
       for i in faza:
@@ -86,3 +86,8 @@ def post_tekla(
   # Faza_update(order)
   Faza_update_test(order)
   return
+
+@app.get('/worker/{id}',response_model=WorkerBase)
+def get_detail(id):
+  worker = Worker.select().where(Worker.id == id).first()
+  return worker

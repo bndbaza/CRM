@@ -1,5 +1,6 @@
 import datetime
 from email.policy import default
+from xmlrpc.server import CGIXMLRPCRequestHandler
 from peewee import Model, IntegerField, DateTimeField, CharField, ForeignKeyField, DecimalField, PrimaryKeyField, BooleanField
 from db import connection
 
@@ -173,3 +174,21 @@ class AssemblyNorm(ModelBase):
   complexity = DecimalField(max_digits=12,decimal_places=3,default=0)
   norm = DecimalField(max_digits=12,decimal_places=3,default=0)
   choice = CharField(max_length=100)
+
+class Worker(ModelBase):
+  class Meta:
+    table_name='workers'
+  id = PrimaryKeyField(null=False)
+  surname = CharField(max_length=100)
+  name = CharField(max_length=100)
+  patronymic = CharField(max_length=100)
+  saw = IntegerField()
+  cgm = IntegerField()
+  hole = IntegerField()
+  weld = IntegerField()
+  assembly = IntegerField()
+  bevel = IntegerField()
+  notch = IntegerField()
+  chamfer = IntegerField()
+  milling = IntegerField()
+  bend = IntegerField()

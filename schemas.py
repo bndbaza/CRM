@@ -32,7 +32,7 @@ class PointBase(Base):
   point_y: str
   point_z: float
   faza: int
-  line: int
+  # line: int
 
 
 class PartBase(Base):
@@ -88,9 +88,35 @@ class ChamferBase(Base):
   part: Optional[PartBase]
   length: float
 
+class PointPartBase(BaseModel):
+  id: int
+  point: Optional[PointBase]
+  part: Optional[PartBase]
+  detail: int
+  cgm: int
+  saw: int
+  hole: int
+  bevel: int
+  notch: int
+  chamfer: int
+  milling: int
+  bend: int
+  weld: int
+
+  class Config:
+    orm_mode = True
+
 class FazaBase(BaseModel):
   faza: int
   aaa: Optional[float]
+
+  class Config:
+    orm_mode = True
+
+class WorkerBase(BaseModel):
+  surname: str
+  name: str
+  patronymic: str
 
   class Config:
     orm_mode = True
