@@ -114,6 +114,7 @@ class FazaBase(BaseModel):
     orm_mode = True
 
 class WorkerBase(BaseModel):
+  id: int
   surname: str
   name: str
   patronymic: str

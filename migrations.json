@@ -17,6 +17,9 @@
     "models.HoleNorm",
     "models.SawNorm",
     "models.AssemblyNorm",
-    "models.Worker"
+    "models.Worker",
+    "models.Paint_detail",
+    "models.Assembly_detail",
+    "models.Basic_detail"
   ]
 }

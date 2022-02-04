@@ -192,3 +192,59 @@ class Worker(ModelBase):
   chamfer = IntegerField()
   milling = IntegerField()
   bend = IntegerField()
+
+class Basic_detail(ModelBase):
+  class Meta:
+    table_name='basic_details'
+  id = PrimaryKeyField(null=False)
+  detail = IntegerField()
+  basic = IntegerField()
+  basic_worker = ForeignKeyField(Worker,backref='basic_details',null=True)
+  basic_start = DateTimeField(null=True)
+  basic_end = DateTimeField(null=True)
+  hole = IntegerField(null=True)
+  hole_worker = ForeignKeyField(Worker,backref='basic_details',null=True)
+  hole_start = DateTimeField(null=True)
+  hole_end = DateTimeField(null=True)
+  bevel = IntegerField(null=True)
+  bevel_worker = ForeignKeyField(Worker,backref='basic_details',null=True)
+  bevel_start = DateTimeField(null=True)
+  bevel_end = DateTimeField(null=True)
+  notch = IntegerField(null=True)
+  notch_worker = ForeignKeyField(Worker,backref='basic_details',null=True)
+  notch_start = DateTimeField(null=True)
+  notch_end = DateTimeField(null=True)
+  chamfer = IntegerField(null=True)
+  chamfer_worker = ForeignKeyField(Worker,backref='basic_details',null=True)
+  chamfer_start = DateTimeField(null=True)
+  chamfer_end = DateTimeField(null=True)
+  milling = IntegerField(null=True)
+  milling_worker = ForeignKeyField(Worker,backref='basic_details',null=True)
+  milling_start = DateTimeField(null=True)
+  milling_end = DateTimeField(null=True)
+  bend = IntegerField(null=True)
+  bend_worker = ForeignKeyField(Worker,backref='basic_details',null=True)
+  bend_start = DateTimeField(null=True)
+  bend_end = DateTimeField(null=True)
+
+class Assembly_detail(ModelBase):
+  class Meta:
+    table_name='assembly_details'
+  id = PrimaryKeyField(null=False)
+  assembly = IntegerField(null=True)
+  assembly_worker = ForeignKeyField(Worker,backref='assembly_details',null=True)
+  assembly_start = DateTimeField(null=True)
+  assembly_end = DateTimeField(null=True)
+  weld = IntegerField(null=True)
+  weld_worker = ForeignKeyField(Worker,backref='assembly_details',null=True)
+  weld_start = DateTimeField(null=True)
+  weld_end = DateTimeField(null=True)
+
+class Paint_detail(ModelBase):
+  class Meta:
+    table_name='paint_details'
+  id = PrimaryKeyField(null=False)
+  paint = IntegerField(null=True)
+  pain_worker = ForeignKeyField(Worker,backref='paint_details',null=True)
+  paint_start = DateTimeField(null=True)
+  paint_end = DateTimeField(null=True)

@@ -4,12 +4,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from db import connection
 from models import Drawing, Order, Part, Point, Hole, Bolt, Nut, Washer, PointPart, Worker
 from tekla import Tekla
-from faza import Faza_update, PartPoint, Test, Faza_update_test
+from faza import Faza_update, PartPoint, Test, Faza_update_test, Detail_create, Faza_update_garage
 from peewee import fn, JOIN
 from schemas import OrderBase, DrawingBase, PointBase,PartBase, FazaBase, PointPartBase, WorkerBase
 from task import Inf
 from excel import NormExcel
 from faza_list import Pdf, Inf_list
+from qr import QRUser
 
 
 app = FastAPI()
@@ -43,10 +44,12 @@ app.add_middleware(
 
 @app.get('/test')
 def get_test():
-  PartPoint(1, '2313/3')
-  PartPoint(2, '2313/3')
-  PartPoint(4, '2313/3')
-  PartPoint(3, '2313/3')
+  # PartPoint(1, '2313/3')
+  # PartPoint(2, '2313/3')
+  # PartPoint(4, '2313/3')
+  # PartPoint(3, '2313/3')
+  PartPoint(1, '2307')
+  # Detail_create()
   return
 
 @app.get('/excel')
@@ -59,8 +62,8 @@ def get_excel():
 def get_pdf():
   z = [1]
   for y in z:
-    case = '2313/3'
-    detail = [19,20]
+    case = '2307'
+    detail = []
     if len(detail) == 0:
       faza = PointPart.select(PointPart.detail).join(Point).join(Drawing).join(Order).where(Point.faza == y,Order.cas == case).group_by(PointPart.detail)
       for i in faza:
@@ -84,10 +87,22 @@ def post_tekla(
 ):
   Tekla(file,order)
   # Faza_update(order)
-  Faza_update_test(order)
+  # Faza_update_test(order)
+  Faza_update_garage(order)
   return
 
 @app.get('/worker/{id}',response_model=WorkerBase)
 def get_detail(id):
+  id = id.split(' ')[1]
   worker = Worker.select().where(Worker.id == id).first()
   return worker
+
+@app.get('/qruser/{id}')
+def get_qr_user(id):
+  QRUser(id)
+  return
+
+@app.get('/delete')
+def get_delete():
+  
+  return 

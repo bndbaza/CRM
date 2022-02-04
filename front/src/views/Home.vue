@@ -1,7 +1,27 @@
 <template>
   <div>
-    <p v-for="code in barcodes" v-bind:key="code">{{code}}</p>
-    <!-- <p v-for="user in users" :key="user">{{user.surname}} {{user.name}} {{user.patronymic}}</p> -->
+    <v-container>
+    <v-row justify="space-around">
+      <v-col cols="9">
+        <v-col cols="12" v-for="code in barcodes" :key="code">
+          <v-card color="blue">
+            <v-card-text>
+              <h1>{{code}}</h1>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-col>
+      <v-col cols="3">
+        <v-col cols="12" v-for="user in users" :key="user">
+          <v-card color="green">
+            <v-card-text>
+              <h1>{{user.surname}} {{user.name}} {{user.patronymic}}</h1>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-col>
+    </v-row>
+  </v-container>
   </div>
 </template>
 
@@ -30,10 +50,13 @@ export default {
       const key = String.fromCharCode(event.which);
       if (key) this.barcode += key;
       const isEnter = event.key === 'Enter';
-      const isBarcode = this.barcode.length > 0;
+      const isBarcode = this.barcode.length > 3;
       if (!isEnter || !isBarcode) return;
-      this.processBarcode(this.barcode);
-      this.getDetail(this.barcode)
+      if (this.barcode[1] == 'U') {
+        this.getDetail(this.barcode);
+      }else{
+        this.processBarcode(this.barcode)
+      }
       this.resetBarcode();
     },
     processBarcode(barcode) {

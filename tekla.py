@@ -119,8 +119,11 @@ def Tekla(xls,yyy):
         for col in drawings:
           if row[1].replace(' ','') == col.assembly:
             part = Part.get(number=int(row[2].replace(' ','')),assembly=col)
-            d = (part,int(row[3].replace(' ','')),(int(row[4].replace(' ','')))/part.count,int(row[5].replace(' ','')) / 2,dates)
-            post['Hole'].append(d)
+            if part.profile == 'Лист' and int(part.size) < 14:
+              pass
+            else:
+              d = (part,int(row[3].replace(' ','')),(int(row[4].replace(' ','')))/part.count,int(row[5].replace(' ','')) / 2,dates)
+              post['Hole'].append(d)
       if row[0].replace(' ','') == 'CHAMFER':
         for col in drawings:
           if row[1].replace(' ','') == col.assembly:
@@ -176,7 +179,7 @@ def Size(str):
       i = ('Труба профильная',str.replace('Гн.',''),'saw_s','')
     return (i)
   elif str.startswith('['):
-    if int(str.replace('[','').replace('П','')) >= 20:
+    if int(str.replace('[','').replace('П','').replace('У','')) >= 20:
       i = ('Швеллер',str.replace('[',''),'saw_b','')
     else:
       i = ('Швеллер',str.replace('[',''),'saw_s','')

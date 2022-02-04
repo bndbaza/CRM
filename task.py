@@ -37,6 +37,8 @@ def Pdf(infs):
   for i in lis:
     if i[0] != 'weld' and i[0] != 'paint':
       count += len(i[1][i[0]]['tabl'])
+    # elif i[0] != 'weld' and i[0] == 'paint':
+    #   count += len(i[1][i[0]]['tabl2'])
     else:
       count += 1
     if count <= 15 and len(lis2) < 3:
@@ -48,6 +50,8 @@ def Pdf(infs):
       pdf.showPage()
       if i[0] != 'weld' and i[0] != 'paint':
         count = len(i[1][i[0]]['tabl'])
+      # elif i[0] == 'weld' and i[0] == 'paint':
+      #   count = len(i[1][i[0]]['tabl2'])
       else:
         count = 1
       lis2 = []
@@ -85,6 +89,8 @@ def PrintTab(width,height,inf,lis):
     c2 = 1
     if i[0] != 'weld' and i[0] != 'paint':
       c2 = (len(i[1][i[0]]['tabl']))
+    if i[0] == 'paint' and i[1]['weld']['tabl'] == None:
+      c2 = (len(i[1][i[0]]['tabl2']))
     heightList.append(height*0.07)
     heightList.append(8+(c2*12)+32)
     heightList.append(height*0.15)
@@ -322,6 +328,10 @@ def Body(width,height,inf,oper):
     heightList.append(len(inf[oper]['tabl'])*12)
     heightList.append(12)
     heightList.append(height-20-12-(len(inf[oper]['tabl']*12)))
+  elif inf['weld']['tabl'] == None and oper == 'paint':
+    heightList.append(len(inf[oper]['tabl2'])*12)
+    heightList.append(12)
+    heightList.append(height-20-12-(len(inf[oper]['tabl2']*12)))
   else:
     heightList.append(12)
     heightList.append(12)
@@ -392,7 +402,8 @@ def Body2(width,height,inf,oper):
       '',
     ]]
     size = height
-  elif oper == 'paint':
+
+  elif oper == 'paint' and inf['weld']['tabl'] != None:
     widthList = [width/7]
     if len(str(inf['master'].part.profile).split(' ')) > 1:
       string = str(inf['master'].part.profile).split(' ')[0]+' '+str(inf['master'].part.profile).split(' ')[1][0:2]+' '+str(inf['master'].part.size)
@@ -408,6 +419,17 @@ def Body2(width,height,inf,oper):
       '',
     ]]
     size = height
+
+  elif oper == 'paint' and inf['weld']['tabl'] == None:
+    # print(inf['weld']['tabl'])
+    widthList = [width/7]
+    # if len(str(inf['master'].part.profile).split(' ')) > 1:
+    #   string = str(inf['master'].part.profile).split(' ')[0]+' '+str(inf['master'].part.profile).split(' ')[1][0:2]+' '+str(inf['master'].part.size)
+    # else:
+    #   string = str(inf['master'].part.profile).split(' ')[0]+' '+str(inf['master'].part.size)
+    mas = inf[oper]['tabl2']
+    size = height/len(mas)
+
   table = Table(mas
   ,colWidths=widthList,
     rowHeights=size)
@@ -518,22 +540,30 @@ def Inf(details,case):
     tabl_saw_b = {'tabl':[],'tabl_sum':{'table_count':gr1['saw_b']['count'],'table_weight':gr1['saw_b']['weight']},'name':'ПИЛЫ Б','color':colors.green,'color_t':'white','oper':'пилы'}
     tabl_cgm = {'tabl':[],'tabl_sum':{'table_count':gr1['cgm']['count'],'table_weight':gr1['cgm']['weight']},'name':'ФАСОНКА','color':colors.yellow,'color_t':'black','oper':'цгм'}
     tabl_weld = {'tabl':inf6,'norm_assembly': norm_assembly,'name':'Сборка','color':colors.red,'color_t':'black','count':inf4.scalar()}
-    tabl_paint ={'tabl':inf8,'name':'Малярка','color':colors.pink,'color_t':'black','count':inf4.scalar()}
+    tabl_paint ={'tabl':inf8,'tabl2':[],'name':'Малярка','color':colors.pink,'color_t':'black','count':inf4.scalar()}
     for y in inf:
       for i in inf[y]:
         tab = []
+        tab2 = []
         tab.append(i.point.name)
+        tab2.append(i.point.name)
         tab.append(i.point.assembly.assembly)
+        tab2.append(i.point.assembly.assembly)
         tab.append(i.part.number)
         tab.append(i.count)
+        tab2.append(i.count)
         if len(i.part.profile.split(' ')) > 1:
           tab.append((i.part.profile).split(' ')[0]+' '+(i.part.profile).split(' ')[1][0:2]+' '+i.part.size)
+          tab2.append((i.part.profile).split(' ')[0]+' '+(i.part.profile).split(' ')[1][0:2]+' '+i.part.size)
         elif i.part.profile == 'Лист':
           tab.append((i.part.profile)+' '+i.part.size+'х'+i.part.width)
+          tab2.append((i.part.profile)+' '+i.part.size+'х'+i.part.width)
         else:
           tab.append((i.part.profile)+' '+i.part.size)
+          tab2.append((i.part.profile)+' '+i.part.size)
         tab.append(int(i.part.length))
         tab.append(float(i.weight))
+        tab2.append(float(i.weight))
         tab.append(i.part.mark)
         if i.saw == 1:
           try:
@@ -545,6 +575,7 @@ def Inf(details,case):
         else:
           tab.append('+')
 
+        tab2.append(1)
 
         if i.hole == 1:
           try:
@@ -598,6 +629,8 @@ def Inf(details,case):
           tabl_saw_b['tabl'].append(tab)
         if y == 'cgm':
           tabl_cgm['tabl'].append(tab)
+        tab2.append('')
+        tabl_paint['tabl2'].append(tab2)
     inf_pdf.append({'case':case,'detail':detail,'work':gr2,'master':inf5,'faza':faza,'saw_s':tabl_saw_s,'saw_b':tabl_saw_b,'cgm':tabl_cgm,'weld':tabl_weld,'paint':tabl_paint,'name':inf4[0].point.name,'mark':inf4[0].point.assembly.assembly})
   Pdf(inf_pdf)
   return

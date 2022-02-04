@@ -8,6 +8,41 @@ snapshot = Snapshot()
 
 
 @snapshot.append
+class Worker(peewee.Model):
+    id = PrimaryKeyField(primary_key=True)
+    surname = CharField(max_length=100)
+    name = CharField(max_length=100)
+    patronymic = CharField(max_length=100)
+    saw = IntegerField()
+    cgm = IntegerField()
+    hole = IntegerField()
+    weld = IntegerField()
+    assembly = IntegerField()
+    bevel = IntegerField()
+    notch = IntegerField()
+    chamfer = IntegerField()
+    milling = IntegerField()
+    bend = IntegerField()
+    class Meta:
+        table_name = "workers"
+
+
+@snapshot.append
+class Assembly_detail(peewee.Model):
+    id = PrimaryKeyField(primary_key=True)
+    assembly = IntegerField(null=True)
+    assembly_worker = snapshot.ForeignKeyField(backref='assembly_details', index=True, model='worker', null=True)
+    assembly_start = DateTimeField(null=True)
+    assembly_end = DateTimeField(null=True)
+    weld = IntegerField(null=True)
+    weld_worker = snapshot.ForeignKeyField(backref='assembly_details', index=True, model='worker', null=True)
+    weld_start = DateTimeField(null=True)
+    weld_end = DateTimeField(null=True)
+    class Meta:
+        table_name = "assembly_details"
+
+
+@snapshot.append
 class AssemblyNorm(peewee.Model):
     id = PrimaryKeyField(primary_key=True)
     name = CharField(max_length=250)
@@ -20,6 +55,42 @@ class AssemblyNorm(peewee.Model):
     choice = CharField(max_length=100)
     class Meta:
         table_name = "assemblynorms"
+
+
+@snapshot.append
+class Basic_detail(peewee.Model):
+    id = PrimaryKeyField(primary_key=True)
+    detail = IntegerField()
+    basic = IntegerField()
+    basic_worker = snapshot.ForeignKeyField(backref='basic_details', index=True, model='worker', null=True)
+    basic_start = DateTimeField(null=True)
+    basic_end = DateTimeField(null=True)
+    hole = IntegerField(null=True)
+    hole_worker = snapshot.ForeignKeyField(backref='basic_details', index=True, model='worker', null=True)
+    hole_start = DateTimeField(null=True)
+    hole_end = DateTimeField(null=True)
+    bevel = IntegerField(null=True)
+    bevel_worker = snapshot.ForeignKeyField(backref='basic_details', index=True, model='worker', null=True)
+    bevel_start = DateTimeField(null=True)
+    bevel_end = DateTimeField(null=True)
+    notch = IntegerField(null=True)
+    notch_worker = snapshot.ForeignKeyField(backref='basic_details', index=True, model='worker', null=True)
+    notch_start = DateTimeField(null=True)
+    notch_end = DateTimeField(null=True)
+    chamfer = IntegerField(null=True)
+    chamfer_worker = snapshot.ForeignKeyField(backref='basic_details', index=True, model='worker', null=True)
+    chamfer_start = DateTimeField(null=True)
+    chamfer_end = DateTimeField(null=True)
+    milling = IntegerField(null=True)
+    milling_worker = snapshot.ForeignKeyField(backref='basic_details', index=True, model='worker', null=True)
+    milling_start = DateTimeField(null=True)
+    milling_end = DateTimeField(null=True)
+    bend = IntegerField(null=True)
+    bend_worker = snapshot.ForeignKeyField(backref='basic_details', index=True, model='worker', null=True)
+    bend_start = DateTimeField(null=True)
+    bend_end = DateTimeField(null=True)
+    class Meta:
+        table_name = "basic_details"
 
 
 @snapshot.append
@@ -130,6 +201,17 @@ class Nut(peewee.Model):
 
 
 @snapshot.append
+class Paint_detail(peewee.Model):
+    id = PrimaryKeyField(primary_key=True)
+    paint = IntegerField(null=True)
+    pain_worker = snapshot.ForeignKeyField(backref='paint_details', index=True, model='worker', null=True)
+    paint_start = DateTimeField(null=True)
+    paint_end = DateTimeField(null=True)
+    class Meta:
+        table_name = "paint_details"
+
+
+@snapshot.append
 class Point(peewee.Model):
     id = PrimaryKeyField(primary_key=True)
     create_date = DateTimeField()
@@ -200,25 +282,5 @@ class Weld(peewee.Model):
     count = IntegerField()
     class Meta:
         table_name = "welds"
-
-
-@snapshot.append
-class Worker(peewee.Model):
-    id = PrimaryKeyField(primary_key=True)
-    surname = CharField(max_length=100)
-    name = CharField(max_length=100)
-    patronymic = CharField(max_length=100)
-    saw = IntegerField()
-    cgm = IntegerField()
-    hole = IntegerField()
-    weld = IntegerField()
-    assembly = IntegerField()
-    bevel = IntegerField()
-    notch = IntegerField()
-    chamfer = IntegerField()
-    milling = IntegerField()
-    bend = IntegerField()
-    class Meta:
-        table_name = "workers"
 
 
