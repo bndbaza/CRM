@@ -1,12 +1,13 @@
+from email.encoders import encode_base64
 from typing import List
 from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
 from db import connection
-from models import Drawing, Order, Part, Point, Hole, Bolt, Nut, Washer, PointPart, Worker
+from models import *
 from tekla import Tekla
 from faza import Faza_update, PartPoint, Test, Faza_update_test, Detail_create, Faza_update_garage
 from peewee import fn, JOIN
-from schemas import OrderBase, DrawingBase, PointBase,PartBase, FazaBase, PointPartBase, WorkerBase
+from schemas import OrderBase, DrawingBase, PointBase,PartBase, FazaBase, PointPartBase, WorkerBase, BasicDetailBase, Detail
 from task import Inf
 from excel import NormExcel
 from faza_list import Pdf, Inf_list
@@ -32,14 +33,6 @@ app.add_middleware(
 )
 
 
-# @app.get('/',response_model=List[PartBase])
-# def get():
-#   point = Point.select(Point.faza,fn.SUM(Drawing.weight).alias('aaa')).join(Drawing).group_by(Point.faza)
-#   w = Point.select(Point.assembly).where(Point.faza == 1)
-#   d = Part.select().where(fn.Substr(Part.profile, 1, 1) != '-',Part.assembly.in_(w))
-#   for i in d:
-#     print(i.assembly, i.profile, i.length, i.count)
-#   return list(d)
 
 
 @app.get('/test')
@@ -49,7 +42,12 @@ def get_test():
   # PartPoint(4, '2313/3')
   # PartPoint(3, '2313/3')
   PartPoint(1, '2307')
-  # Detail_create()
+  PartPoint(3, '2307')
+  PartPoint(2, '2307')
+  # Detail_create(1,'2313/3')
+  # Detail_create(2,'2313/3')
+  # Detail_create(3,'2313/3')
+  # Detail_create(1,'2307')
   return
 
 @app.get('/excel')
@@ -60,7 +58,7 @@ def get_excel():
 
 @app.get('/pdf')
 def get_pdf():
-  z = [1]
+  z = [2]
   for y in z:
     case = '2307'
     detail = []
@@ -93,7 +91,7 @@ def post_tekla(
 
 @app.get('/worker/{id}',response_model=WorkerBase)
 def get_detail(id):
-  id = id.split(' ')[1]
+  id = id.replace('\x10','').replace('\xad','').split(' ')[1]
   worker = Worker.select().where(Worker.id == id).first()
   return worker
 
@@ -102,7 +100,56 @@ def get_qr_user(id):
   QRUser(id)
   return
 
-@app.get('/delete')
-def get_delete():
-  
-  return 
+@app.get('/delete/{id}')
+def get_qr_user(id):
+  bolt = Drawing.select().where(Drawing.cas == id)
+  Bolt.delete().where(Bolt.assembly.in_(bolt)).execute()
+  Nut.delete().where(Nut.assembly.in_(bolt)).execute()
+  Washer.delete().where(Washer.assembly.in_(bolt)).execute()
+  Weld.delete().where(Weld.assembly.in_(bolt)).execute()
+  chamfers = Part.select().where(Part.assembly.in_(bolt))
+  Chamfer.delete().where(Chamfer.part.in_(chamfers)).execute()
+  Hole.delete().where(Hole.part.in_(chamfers)).execute()
+  PointPart.delete().where(PointPart.part.in_(chamfers)).execute()
+  Part.delete().where(Part.assembly.in_(bolt)).execute()
+  Point.delete().where(Point.assembly.in_(bolt)).execute()
+  Drawing.delete().where(Drawing.cas == id).execute()
+  Order.delete().where(Order.id == id).execute()
+  return
+
+@app.post('/detail',response_model=BasicDetailBase)
+def get_details(detail: Detail):
+  ab = {'cgm':'Ф','saw_s':'Пм','saw_b':'Пб','hole':'С','assembly':'A','weld':'W','paint':'М','chamfer':'F'}
+  detail_ab = []
+  user = detail.user.replace('\x10','').replace('\xad','').replace('\r','').lower().replace('saw','saw_').split(' ')
+  print(user)
+  detail = detail.detail.replace('\x10','').replace('\xad','').replace('\r','').lower().replace('saw','saw_').split(' ')
+  job = Basic_detail.select().where(Basic_detail.detail == detail[1],Basic_detail.basic == detail[2]).dicts().first()
+
+
+
+
+  basic = Basic_detail.select().where(Basic_detail.detail == detail[1]).dicts()
+  for y in basic:
+    for i in y:
+      if y[i] != None and y[i] != 0 and i != 'id' and i != 'detail':
+        if i == 'basic':
+          detail_ab.append(ab[y[i]])
+
+        else:
+          detail_ab.append(ab[i]+(ab[y['basic']].lower()))
+
+  try:
+    assembly = Assembly_detail.select().where(Assembly_detail.detail == detail[1]).dicts().first()
+    for i in assembly:
+        if assembly[i] != None and assembly[i] != 0 and i != 'id' and i != 'detail':
+          detail_ab.append(ab[i])
+  except:
+    pass
+
+
+  paint = Paint_detail.select().where(Paint_detail.detail == detail[1]).dicts().first()
+  for i in paint:
+      if paint[i] != None and paint[i] != 0 and i != 'id' and i != 'detail':
+        detail_ab.append(ab[i])
+  return job

@@ -2,8 +2,8 @@ from openpyxl import load_workbook
 from models import HoleNorm, SawNorm, AssemblyNorm
 
 def NormExcel():
-  HoleNormExcel()
-  SawNormExcel()
+  # HoleNormExcel()
+  # SawNormExcel()
   AssemblyNormExcel()
 
 def HoleNormExcel():
@@ -58,7 +58,7 @@ def AssemblyNormExcel():
   wb = load_workbook('VVL.xlsx',data_only=True)
   sheet = wb.get_sheet_by_name('Сборка (ЕНиР)')
   post = []
-  for y in range(17,511):
+  for y in range(17,865):
     d = []
     for i in range(1,9):
       if sheet.cell(row=y,column=i).value == None:

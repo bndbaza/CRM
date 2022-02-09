@@ -147,7 +147,7 @@ def Header3(width,height,inf,oper):
   table.setStyle([
     ('BOTTOMPADDING',(0,0),(-1,-1),10),
     ('BACKGROUND',(1,0),(1,0),inf[oper]['color']),
-    ('BACKGROUND',(3,0),(3,0),colors.green),
+    ('BACKGROUND',(3,0),(3,0),inf['color']),
     ('TEXTCOLOR',(1,0),(1,0),inf[oper]['color_t']),
     ('TEXTCOLOR',(3,0),(3,0),'white'),
     ('ALIGN',(1,0),(-1,-1),'CENTER'),
@@ -251,7 +251,7 @@ def Footer5(width,height,image,inf,oper):
     ('BOTTOMPADDING',(0,0),(-1,0),0),
     ('TOPPADDING',(0,0),(-1,0),0),
     ('RIGHTPADDING',(0,0),(-1,0),0),
-    ('BACKGROUND',(-1,0),(-1,0),colors.green),
+    ('BACKGROUND',(-1,0),(-1,0),inf['color']),
     ('TEXTCOLOR',(-1,0),(-1,0),'white'),
     ('FONTNAME',(0,0),(-1,-1),'rus'),
     ('ALIGN',(1,0),(-1,0),'CENTER'),
@@ -356,11 +356,11 @@ def Body(width,height,inf,oper):
 
 def Body1(width,height,inf,oper):
   if oper != 'weld' and oper != 'paint':
-    widthList = [60,35,25,30,130,35,30,50,25,25,25,25,25,25,25]
-    table_list = ['Конструкция','Марка','№','Колич.','Профиль','Длинна','Вес','Марка стали',inf[oper]['oper'],'отв','скос','вырез','фаска','фрез','гибка']
+    widthList = [60,35,30,20,25,110,35,30,50,25,25,25,25,25,25,25]
+    table_list = ['Конструкция','Марка','Чертеж','№','Кол.','Профиль','Длинна','Вес','Марка стали',inf[oper]['oper'],'отв','скос','вырез','фаска','фрез','гибка']
   elif oper == 'weld':
-    widthList = [width/8]
-    table_list = ['Конструкция','Марка','Колич.','Ствол','Масса','Кол. деталей','Тариф сборка','Тариф сварка']
+    widthList = [width/9]
+    table_list = ['Конструкция','Марка','Чертеж','Колич.','Ствол','Масса','Кол. деталей','Тариф сборка','Тариф сварка']
   elif oper == 'paint':
     widthList = [width/7]
     table_list = ['Конструкция','Марка','Колич.','Ствол','Масса','Кол. деталей','Тариф']
@@ -382,11 +382,11 @@ def Body1(width,height,inf,oper):
 
 def Body2(width,height,inf,oper):
   if oper != 'weld' and oper != 'paint':
-    widthList = [60,35,25,30,130,35,30,50,25,25,25,25,25,25,25]
+    widthList = [60,35,30,20,25,110,35,30,50,25,25,25,25,25,25,25]
     mas = inf[oper]['tabl']
     size = height/len(mas)
   elif oper == 'weld':
-    widthList = [width/8]
+    widthList = [width/9]
     if len(str(inf['master'].part.profile).split(' ')) > 1:
       string = str(inf['master'].part.profile).split(' ')[0]+' '+str(inf['master'].part.profile).split(' ')[1][0:2]+' '+str(inf['master'].part.size)
     else:
@@ -394,6 +394,7 @@ def Body2(width,height,inf,oper):
     mas = [[
       inf[oper]['tabl'].point.name,
       inf[oper]['tabl'].point.assembly.assembly,
+      inf[oper]['tabl'].point.draw,
       1,
       string,
       float(inf[oper]['tabl'].point.assembly.weight),
@@ -421,7 +422,6 @@ def Body2(width,height,inf,oper):
     size = height
 
   elif oper == 'paint' and inf['weld']['tabl'] == None:
-    # print(inf['weld']['tabl'])
     widthList = [width/7]
     # if len(str(inf['master'].part.profile).split(' ')) > 1:
     #   string = str(inf['master'].part.profile).split(' ')[0]+' '+str(inf['master'].part.profile).split(' ')[1][0:2]+' '+str(inf['master'].part.size)
@@ -448,13 +448,13 @@ def Body2(width,height,inf,oper):
 
 def Body3(width,height,inf,oper):
   if oper != 'weld' and oper != 'paint':
-    widthList = [60,35,25,30,130,35,30,50,25,25,25,25,25,25,25,]
-    table = Table([['','','',inf[oper]['tabl_sum']['table_count'],'','',float(inf[oper]['tabl_sum']['table_weight']),'','','','','','','','']]
+    widthList = [60,35,30,20,25,110,35,30,50,25,25,25,25,25,25,25]
+    table = Table([['','','','',inf[oper]['tabl_sum']['table_count'],'','',float(inf[oper]['tabl_sum']['table_weight']),'','','','','','','','']]
     ,colWidths=widthList,
       rowHeights=12)
     table.setStyle([
-      ('GRID',(3,0),(3,0),1,'black'),
-      ('GRID',(6,0),(6,0),1,'black'),
+      ('GRID',(4,0),(4,0),1,'black'),
+      ('GRID',(7,0),(7,0),1,'black'),
       ('LEFTPADDING',(0,0),(-1,-1),0),
       ('RIGHTPADDING',(0,0),(-1,-1),0),
       ('BOTTOMPADDING',(0,0),(-1,-1),0),
@@ -549,6 +549,7 @@ def Inf(details,case):
         tab2.append(i.point.name)
         tab.append(i.point.assembly.assembly)
         tab2.append(i.point.assembly.assembly)
+        tab.append(i.point.draw)
         tab.append(i.part.number)
         tab.append(i.count)
         tab2.append(i.count)
@@ -631,7 +632,7 @@ def Inf(details,case):
           tabl_cgm['tabl'].append(tab)
         tab2.append('')
         tabl_paint['tabl2'].append(tab2)
-    inf_pdf.append({'case':case,'detail':detail,'work':gr2,'master':inf5,'faza':faza,'saw_s':tabl_saw_s,'saw_b':tabl_saw_b,'cgm':tabl_cgm,'weld':tabl_weld,'paint':tabl_paint,'name':inf4[0].point.name,'mark':inf4[0].point.assembly.assembly})
+    inf_pdf.append({'case':case,'detail':detail,'work':gr2,'master':inf5,'faza':faza,'saw_s':tabl_saw_s,'saw_b':tabl_saw_b,'cgm':tabl_cgm,'weld':tabl_weld,'paint':tabl_paint,'name':inf4[0].point.name,'mark':inf4[0].point.assembly.assembly,'color':inf4[0].point.assembly.cas.color})
   Pdf(inf_pdf)
   return
 

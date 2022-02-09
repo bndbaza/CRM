@@ -14,6 +14,7 @@ class Order(ModelBase):
   id = PrimaryKeyField(null=False)
   create_date = DateTimeField(default=datetime.datetime.now)
   cas = CharField(max_length=50)
+  color = CharField(max_length=30, null=True)
   
 class Drawing(ModelBase):
   class Meta:
@@ -40,6 +41,7 @@ class Point(ModelBase):
   faza = IntegerField(null=True)
   line = IntegerField(null=True)
   in_work = BooleanField(default=False)
+  draw = IntegerField(null=True)
 
 class Part(ModelBase):
   class Meta:
@@ -198,7 +200,7 @@ class Basic_detail(ModelBase):
     table_name='basic_details'
   id = PrimaryKeyField(null=False)
   detail = IntegerField()
-  basic = IntegerField()
+  basic = CharField(max_length=20)
   basic_worker = ForeignKeyField(Worker,backref='basic_details',null=True)
   basic_start = DateTimeField(null=True)
   basic_end = DateTimeField(null=True)
@@ -231,6 +233,7 @@ class Assembly_detail(ModelBase):
   class Meta:
     table_name='assembly_details'
   id = PrimaryKeyField(null=False)
+  detail = IntegerField()
   assembly = IntegerField(null=True)
   assembly_worker = ForeignKeyField(Worker,backref='assembly_details',null=True)
   assembly_start = DateTimeField(null=True)
@@ -244,6 +247,7 @@ class Paint_detail(ModelBase):
   class Meta:
     table_name='paint_details'
   id = PrimaryKeyField(null=False)
+  detail = IntegerField()
   paint = IntegerField(null=True)
   pain_worker = ForeignKeyField(Worker,backref='paint_details',null=True)
   paint_start = DateTimeField(null=True)

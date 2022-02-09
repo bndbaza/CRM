@@ -1,4 +1,4 @@
-from models import Drawing, Order, Point, Part, PointPart
+from models import Drawing, Order, Point, Part, PointPart, Basic_detail, Assembly_detail,Paint_detail
 from db import connection
 from peewee import fn, JOIN
 from openpyxl import load_workbook
@@ -34,6 +34,12 @@ def Faza_update_test(order):
 def Faza_update_garage(order):
   drawing  = Drawing.select().join(Order).where(Order.cas == order)
   Point.update({Point.faza: 1}).where(Point.assembly << drawing,Point.point_x.cast('int') <= 3).execute()
+  # Point.update({Point.faza: 3}).where(Point.assembly == 510,Point.point_x.cast('int') <= 3).execute()
+  # Point.update({Point.faza: 2}).where(Point.assembly == 528).execute()
+  # Point.update({Point.faza: 2}).where(Point.assembly == 529).execute()
+  # Point.update({Point.faza: 2}).where(Point.assembly == 530).execute()
+  Point.update({Point.faza: 2}).where(Point.assembly << drawing,Point.point_x.cast('int') > 3,Point.point_x.cast('int') <= 10).execute()
+  Point.update({Point.faza: 2}).where(Point.assembly << drawing,Point.point_x.cast('int') > 10).execute()
   return
 
 
@@ -118,26 +124,25 @@ def Test(max2,faza,case):
         all.append(i)
   PointPart.bulk_update(all, fields=[PointPart.detail,PointPart.weld])
 
-def Detail_create():
+def Detail_create(faza,case):
   pointpart_work = PointPart.select(PointPart,
                                     fn.SUM(PointPart.hole),
                                     fn.SUM(PointPart.bevel),
                                     fn.SUM(PointPart.notch),
                                     fn.SUM(PointPart.chamfer),
                                     fn.SUM(PointPart.milling),
-                                    fn.SUM(PointPart.bend)).join(Part).group_by(PointPart.detail,Part.work)
-  d1 = []
-  d2 = []
-  # for i in pointpart_work:
-  #   d1.append((i.detail,i.part.work,i.hole,i.bevel,i.notch,i.chamfer,i.milling,i.bend))
-  # Detail.insert_many(d1, fields=[Detail.detail,Detail.basic,Detail.hole,Detail.bevel,Detail.notch,Detail.chamfer,Detail.milling,Detail.bend]).execute()
-
-  # pointpart_weld = PointPart.select().where(PointPart.weld == 1).group_by(PointPart.detail)
-  # for i in pointpart_weld:
-  #   d2.append(('weld',1,1))
-  # Detail.insert_many(d2, fields=[Detail.basic,Detail.assembly,Detail.weld]).execute()
-
-  # pointpart_paint = PointPart.select().group_by(PointPart.detail)
-  # for i in pointpart_paint:
-  #   d2.append(('paint',1,1))
-  # Detail.insert_many(d2, fields=[Detail.basic,Detail.assembly,Detail.weld]).execute()
+                                    fn.SUM(PointPart.bend)).join(Part).join(Drawing).join(Order).join_from(PointPart,Point).where(Order.cas == case,Point.faza == faza).group_by(PointPart.detail,Part.work)
+  d = []
+  for i in pointpart_work:
+    d.append((i.detail,i.part.work,i.hole,i.bevel,i.notch,i.chamfer,i.milling,i.bend))
+  Basic_detail.insert_many(d, fields=[Basic_detail.detail,Basic_detail.basic,Basic_detail.hole,Basic_detail.bevel,Basic_detail.notch,Basic_detail.chamfer,Basic_detail.milling,Basic_detail.bend]).execute()
+  d = []
+  pointpart_weld = PointPart.select().join(Point).join(Drawing).join(Order).where(PointPart.weld == 1,Order.cas == case,Point.faza == faza).group_by(PointPart.detail)
+  for i in pointpart_weld:
+    d.append((i.detail,1,1))
+  Assembly_detail.insert_many(d, fields=[Assembly_detail.detail,Assembly_detail.assembly,Assembly_detail.weld]).execute()
+  d = []
+  pointpart_paint = PointPart.select().join(Point).join(Drawing).join(Order).where(Order.cas == case,Point.faza == faza).group_by(PointPart.detail)
+  for i in pointpart_paint:
+    d.append((i.detail,1))
+  Paint_detail.insert_many(d, fields=[Paint_detail.detail,Paint_detail.paint]).execute()

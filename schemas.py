@@ -121,3 +121,12 @@ class WorkerBase(BaseModel):
 
   class Config:
     orm_mode = True
+
+class BasicDetailBase(BaseModel):
+  id: int
+  basic: str
+  detail: int
+
+class Detail(BaseModel):
+  detail: str
+  user: str
