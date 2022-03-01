@@ -11,7 +11,7 @@ from peewee import fn, Case
 pdfmetrics.registerFont(TTFont('rus','arial.ttf'))
 
 def Pdf(list,faza,case):
-  pdf = canvas.Canvas('list.pdf', pagesize=A4,bottomup=1)
+  pdf = canvas.Canvas(str(list[0][0])+'list.pdf', pagesize=A4,bottomup=1)
   pdf.setTitle('test')
   width, height = A4
   widthList = [width*0.02,width*0.96,width*0.02,]
@@ -61,7 +61,6 @@ def Head(width,height):
   return table
 
 
-
 def Column(list,width,height):
   table = Table(list,colWidths=width/14,rowHeights=height/len(list))
   table.setStyle([
@@ -71,13 +70,12 @@ def Column(list,width,height):
     ('BOTTOMPADDING',(0,0),(-1,-1),0),
     ('TOPPADDING',(0,0),(-1,-1),0),
     ('FONTNAME',(0,0),(-1,-1),'rus'),
-    # ('FONTSIZE',(0,0),(-1,-1),16),
+    # ('FONTSIZE',(0,0),(-1,-1),7),
     ('ALIGN',(0,0),(-1,-1),'CENTER'),
     ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
   ])
   return table
   
-
 
 def Inf_list(faza,case):
 
@@ -147,28 +145,19 @@ def Inf_list(faza,case):
       lis.append('')
     lis.append('+')
     list.append(lis)
-  Pdf(list,faza,case)
+  print(len(list))
+  list1 = []
+  y = 0
+  z = 0
+  for i in list:
+    y += 1
+    z += 1
+    if y > 50:
+      list1.append(i)
+  Pdf(list1,faza,case)
 
         
 
-
-
-#   list = {'pto':{'list':[],'name':'ПТО','color':colors.grey,'color_text':colors.white},
-#           'saw_s':{'list':[],'name':'ПИЛЫ М','color':colors.blue,'color_text':colors.white},
-#           'saw_b':{'list':[],'name':'ПИЛЫ Б','color':colors.green,'color_text':colors.white},
-#           'cgm':{'list':[],'name':'ФАСОНКА','color':colors.yellow,'color_text':colors.black},
-#           'weld':{'list':[],'name':'СБОРКА','color':colors.red,'color_text':colors.black},
-#           'paint':{'list':[],'name':'МАЛЯРКА','color':colors.pink,'color_text':colors.black},
-#           'ship':{'list':[],'name':'ОТГРУЗКА','color':colors.black,'color_text':colors.white}
-#           }
-#   list['pto']['list'] = Inf_calc(PointPart.select().join(Point).join(Drawing).join(Order).where(Point.faza == faza,Order.cas == case).group_by(PointPart.detail))
-#   list['saw_s']['list'] = Inf_calc(PointPart.select(PointPart.detail).join(Point).join(Drawing).join(Order).join_from(PointPart,Part).where(Point.faza == faza,Order.cas == case,Part.work == 'saw_s').group_by(PointPart.detail))
-#   list['saw_b']['list'] = Inf_calc(PointPart.select(PointPart.detail).join(Point).join(Drawing).join(Order).join_from(PointPart,Part).where(Point.faza == faza,Order.cas == case,Part.work == 'saw_b').group_by(PointPart.detail))
-#   list['cgm']['list'] = Inf_calc(PointPart.select(PointPart.detail).join(Point).join(Drawing).join(Order).join_from(PointPart,Part).where(Point.faza == faza,Order.cas == case,Part.work == 'cgm').group_by(PointPart.detail))
-#   list['weld']['list'] = Inf_calc(PointPart.select(PointPart.detail).join(Point).join(Drawing).join(Order).where(Point.faza == faza,Order.cas == case,PointPart.weld == 1).group_by(PointPart.detail))
-#   list['paint']['list'] = list['pto']['list']
-#   list['ship']['list'] = list['pto']['list']
-#   Pdf(list,faza,case)
 
 
 def Inf_calc(cal):

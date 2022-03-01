@@ -37,8 +37,6 @@ def Pdf(infs):
   for i in lis:
     if i[0] != 'weld' and i[0] != 'paint':
       count += len(i[1][i[0]]['tabl'])
-    # elif i[0] != 'weld' and i[0] == 'paint':
-    #   count += len(i[1][i[0]]['tabl2'])
     else:
       count += 1
     if count <= 15 and len(lis2) < 3:
@@ -50,8 +48,6 @@ def Pdf(infs):
       pdf.showPage()
       if i[0] != 'weld' and i[0] != 'paint':
         count = len(i[1][i[0]]['tabl'])
-      # elif i[0] == 'weld' and i[0] == 'paint':
-      #   count = len(i[1][i[0]]['tabl2'])
       else:
         count = 1
       lis2 = []
@@ -400,7 +396,7 @@ def Body2(width,height,inf,oper):
       float(inf[oper]['tabl'].point.assembly.weight),
       inf[oper]['tabl'].count,
       round(inf[oper]['norm_assembly']),
-      '',
+      round(inf[oper]['norm_weld']),
     ]]
     size = height
 
@@ -482,15 +478,23 @@ def Inf(details,case):
     if inf4.scalar() > 1 and inf7 == 1:
       inf6 = PointPart.select(PointPart,fn.SUM(Part.count).alias('count')).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case).first()
       try:
-        norm = Drawing.select(Drawing.weight,Point.name,fn.SUM(Part.count).alias('count')).join(Part).join_from(Drawing,Point).where(Drawing.id == inf6.part.assembly).first()
+        norm = Drawing.select(Drawing.weight,Drawing.count,Point.name,fn.SUM(Part.count).alias('count_p')).join(Part).join_from(Drawing,Point).where(Drawing.id == inf6.part.assembly).first()
         norm_assembly = AssemblyNorm.select().where(AssemblyNorm.name == norm.point.name,
                                                     norm.weight >= AssemblyNorm.mass_of,
                                                     norm.weight < AssemblyNorm.mass_to,
-                                                    norm.count >= AssemblyNorm.count_of,
-                                                    norm.count < AssemblyNorm.count_to).first()
+                                                    inf6.count >= AssemblyNorm.count_of,
+                                                    inf6.count < AssemblyNorm.count_to).first()
         norm_assembly = (norm_assembly.norm * (norm.weight/1000))
       except:
         norm_assembly = 0
+      try:
+        norm_w = Weld.select().where(Weld.assembly == inf6.part.assembly)
+        norm_weld = 0
+        for w in norm_w:
+          weld = WeldNorm.select((WeldNorm.norm * w.length / 1000 / norm.count).alias('aaa')).where(WeldNorm.cathet == w.cathet).first()
+          norm_weld += weld.aaa
+      except:
+        norm_weld = 0
     else:
       inf6 = None
       norm_assembly = None
@@ -511,7 +515,7 @@ def Inf(details,case):
     faza = gr[0].point.faza
     gr1 = {'saw_s':{'weight': None, 'count': None},'saw_b':{'weight': None, 'count': None},'cgm':{'weight': None, 'count': None}}
     gr2 = []
-    gr3 = ['Пм','Пб','Сп','Ф','Сф','F','W','M']
+    gr3 = ['Пм','Пб','Сп','В','Ф','Сф','F','W','M']
     gr4 = ''
     for i in gr:
       gr1[i.work] = {'weight': i.weight, 'count': i.count}
@@ -523,6 +527,8 @@ def Inf(details,case):
         gr2.append('Ф')
       if i.hole_cgm > 0:
         gr2.append('Сф')
+      if i.notch > 0:
+        gr2.append('В')
       if i.hole_saw > 0:
         gr2.append('Сп')
       if i.chamfer > 0:
@@ -539,7 +545,7 @@ def Inf(details,case):
     tabl_saw_s = {'tabl':[],'tabl_sum':{'table_count':gr1['saw_s']['count'],'table_weight':gr1['saw_s']['weight']},'name':'ПИЛЫ М','color':colors.blue,'color_t':'white','oper':'пилы'}
     tabl_saw_b = {'tabl':[],'tabl_sum':{'table_count':gr1['saw_b']['count'],'table_weight':gr1['saw_b']['weight']},'name':'ПИЛЫ Б','color':colors.green,'color_t':'white','oper':'пилы'}
     tabl_cgm = {'tabl':[],'tabl_sum':{'table_count':gr1['cgm']['count'],'table_weight':gr1['cgm']['weight']},'name':'ФАСОНКА','color':colors.yellow,'color_t':'black','oper':'цгм'}
-    tabl_weld = {'tabl':inf6,'norm_assembly': norm_assembly,'name':'Сборка','color':colors.red,'color_t':'black','count':inf4.scalar()}
+    tabl_weld = {'tabl':inf6,'norm_assembly': norm_assembly,'norm_weld': norm_weld,'name':'Сборка','color':colors.red,'color_t':'black','count':inf4.scalar()}
     tabl_paint ={'tabl':inf8,'tabl2':[],'name':'Малярка','color':colors.pink,'color_t':'black','count':inf4.scalar()}
     for y in inf:
       for i in inf[y]:

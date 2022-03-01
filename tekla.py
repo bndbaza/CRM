@@ -11,35 +11,27 @@ def Tekla(xls,yyy):
   dates = datetime.datetime.today()
   post = {'Drawing': [],'Point':[],'Part':[],'Weld':[],'Bolt':[],'Nut':[],'Washer':[],'Hole':[],'Chamfer':[],'Weight':[]}
   drawings = []
-  non_drawing = Drawing.filter(cas=yyy[0])
-  with open(xls.filename,'r', encoding='windows-1251') as file:
+  with open(xls.filename,'r', encoding='windows-1251',newline='') as file:
     reader = csv.reader(file, delimiter='\t')
     for row in reader:
-      if row[0].replace(' ','') == 'DRAWING' and row[3].replace(' ','') == '1':
-        non = False
-        for i in non_drawing:
-          if i.assembly == row[1].replace(' ',''):
-            non = True
-            break
-        if non == True:
-          non = False
-          continue
+      if row == []: continue
+      if row[0].replace(' ','') == 'DRAWING' and row[3].replace(' ','') == '1' and row[1].replace(' ','').find('(?)') == -1:
         d = (row[1].replace(' ',''),float(row[4].replace(' ','')),yyy[0],dates,int(row[5].replace(' ','')))
-        post['Drawing'].append(d)
+        try:
+          res = Drawing.get(Drawing.assembly == row[1].replace(' ',''),Drawing.cas == yyy[0])
+          res.count = int(row[5].replace(' ',''))
+          res.create_date = dates
+          res.area = float(row[4].replace(' ',''))
+          res.save()
+        except:
+          post['Drawing'].append(d)
   with connection.atomic():
     Drawing.insert_many(post['Drawing'], fields=[Drawing.assembly,Drawing.area,Drawing.cas,Drawing.create_date,Drawing.count]).execute()
     drawings = Drawing.filter(cas=yyy[0])
   with open(xls.filename,'r', encoding='windows-1251') as file:
     reader = csv.reader(file, delimiter='\t')
     for row in reader:
-      non = False
-      for i in non_drawing:
-        if i.assembly == row[1].replace(' ',''):
-          non = True
-          break
-      if non == True:
-        non = False
-        continue
+      if row == []: continue
       if row[0].replace(' ','') == 'ASSEMBLY':
         for col in drawings:
           if row[1].replace(' ','') == col.assembly:
@@ -57,27 +49,47 @@ def Tekla(xls,yyy):
               row[5].strip(),
               draw,
               dates)
-            post['Point'].append(d)
+            try:
+              Point.get(Point.assembly == col,
+                        Point.point_x == row[3].replace(' ','').replace('<','').replace('>','').split('/')[0].split('-')[0],
+                        Point.point_y == row[3].replace(' ','').replace('<','').replace('>','').split('/')[-1].split('-')[0],
+                        Point.point_z == float(row[2].replace(' ','')),
+                        Point.name == row[5].strip(),
+                        Point.draw == draw)
+            except:
+              post['Point'].append(d)
       if row[0].replace(' ','') == 'WELD':
         for col in drawings:
           if row[1].replace(' ','') == col.assembly:
             d = (col,float(row[2].replace(' ','')),float(row[3].replace(' ','')),int(row[4].replace(' ','')),dates)
-            post['Weld'].append(d)
+            try:
+              Weld.get(Weld.assembly == col,Weld.cathet == float(row[2].replace(' ','')),Weld.length == float(row[3].replace(' ','')),Weld.count == int(row[4].replace(' ','')))
+            except:
+              post['Weld'].append(d)
       if row[0].replace(' ','') == 'BOLT':
         for col in drawings:
           if row[1].replace(' ','') == col.assembly:
             d = (col,row[2].replace(' ',''),row[3].replace(' ',''),int(row[4].replace(' ','')),float(row[5].replace(' ','')),dates)
-            post['Bolt'].append(d)
+            try:
+              Bolt.get(Bolt.assembly == col,Bolt.profile == row[2].replace(' ',''),Bolt.gost == row[3].replace(' ',''),Bolt.count == int(row[4].replace(' ','')),Bolt.weight == float(row[5].replace(' ','')))
+            except:
+              post['Bolt'].append(d)
       if row[0].replace(' ','') == 'NUT':
         for col in drawings:
           if row[1].replace(' ','') == col.assembly:
             d = (col,row[2].replace(' ',''),row[3].replace(' ',''),int(row[4].replace(' ','')),float(row[5].replace(' ','')),dates)
-            post['Nut'].append(d)
+            try:
+              Nut.get(Nut.assembly == d[0],Nut.profile == d[1],Nut.gost == d[2],Nut.count == d[3],Nut.weight == d[4])
+            except:
+              post['Nut'].append(d)
       if row[0].replace(' ','') == 'WASHER':
         for col in drawings:
           if row[1].replace(' ','') == col.assembly:
             d = (col,row[2].replace(' ',''),row[3].replace(' ',''),int(row[4].replace(' ','')),float(row[5].replace(' ','')),dates)
-            post['Washer'].append(d)
+            try:
+              Washer.get(Washer.assembly == d[0],Washer.profile == d[1],Washer.gost == d[2],Washer.count == d[3],Washer.weight == d[4])
+            except:
+              post['Washer'].append(d)
       if row[0].replace(' ','') == 'PART':
         for col in drawings:
           if row[1].replace(' ','') == col.assembly:
@@ -96,7 +108,22 @@ def Tekla(xls,yyy):
                 int(Test(row[11].replace(' ',''))),
                 float(Test(row[12].replace(' ',''),profile[1])),
                 dates)
-            post['Part'].append(d)
+            try:
+              Part.get(Part.assembly == d[0],
+                      Part.number == d[1],
+                      Part.count == d[2],
+                      Part.profile == d[3],
+                      Part.size == d[4],
+                      Part.length == d[5],
+                      Part.weight == d[6],
+                      Part.mark == d[7],
+                      Part.manipulation == d[8],
+                      Part.work == d[9],
+                      Part.width == d[10],
+                      Part.perimeter == d[11],
+                      Part.depth == d[12])
+            except:
+              post['Part'].append(d)
   with connection.atomic():
     Part.insert_many(post['Part'], fields=[Part.assembly,
                                           Part.number,
@@ -115,14 +142,7 @@ def Tekla(xls,yyy):
   with open(xls.filename,'r', encoding='windows-1251') as file:
     reader = csv.reader(file, delimiter='\t')
     for row in reader:
-      non = False
-      for i in non_drawing:
-        if i.assembly == row[1].replace(' ',''):
-          non = True
-          break
-      if non == True:
-        non = False
-        continue
+      if row == []: continue
       if row[0].replace(' ','') == 'HOLE':
         for col in drawings:
           if row[1].replace(' ','') == col.assembly:
@@ -131,7 +151,10 @@ def Tekla(xls,yyy):
               pass
             else:
               d = (part,int(row[3].replace(' ','')),(int(row[4].replace(' ','')))/part.count,int(row[5].replace(' ','')) / 2,dates)
-              post['Hole'].append(d)
+              try:
+                Hole.get(Hole.part == d[0],Hole.diameter == d[1],Hole.count == d[2],Hole.depth == d[3])
+              except:
+                post['Hole'].append(d)
       if row[0].replace(' ','') == 'CHAMFER':
         for col in drawings:
           if row[1].replace(' ','') == col.assembly:
@@ -151,6 +174,7 @@ def Tekla(xls,yyy):
   with open(xls.filename,'r', encoding='windows-1251') as file:
     reader = csv.reader(file, delimiter='\t')
     for row in reader:
+      if row == []: continue
       if row[0].replace(' ','') == 'WEIGHT':
         for col in drawings:
           if row[1].replace(' ','') == col.assembly:

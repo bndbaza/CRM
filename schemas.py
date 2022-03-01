@@ -113,7 +113,8 @@ class FazaBase(BaseModel):
   class Config:
     orm_mode = True
 
-class WorkerBase(BaseModel):
+
+class UserBase(BaseModel):
   id: int
   surname: str
   name: str
@@ -122,11 +123,39 @@ class WorkerBase(BaseModel):
   class Config:
     orm_mode = True
 
+class WorkerBase(BaseModel):
+  id: int
+  user: UserBase | None = None
+  oper: str
+  oper_rus: str
+
+  class Config:
+    orm_mode = True
+
+
 class BasicDetailBase(BaseModel):
   id: int
   basic: str
   detail: int
+  worker: WorkerBase | None = None
+  start: datetime.datetime
+  norm: float
+
+  class Config:
+    orm_mode = True
+
+
+class BasicDetailBase1(BaseModel):
+  error: str | None = None
+  worker: List[BasicDetailBase]
+
+  class Config:
+    orm_mode = True
+
 
 class Detail(BaseModel):
   detail: str
   user: str
+
+  class Config:
+    orm_mode = True

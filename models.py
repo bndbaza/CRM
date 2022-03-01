@@ -138,6 +138,7 @@ class PointPart(ModelBase):
   milling = IntegerField(default=0)
   bend = IntegerField(default=0)
   weld = IntegerField(default=1)
+  turning = IntegerField(default=0)
 
 class HoleNorm(ModelBase):
   class Meta:
@@ -177,78 +178,37 @@ class AssemblyNorm(ModelBase):
   norm = DecimalField(max_digits=12,decimal_places=3,default=0)
   choice = CharField(max_length=100)
 
-class Worker(ModelBase):
+class WeldNorm(ModelBase):
   class Meta:
-    table_name='workers'
+    table_name='weldnorms'
+  id = PrimaryKeyField(null=False)
+  cathet = IntegerField()
+  norm = DecimalField(max_digits=12,decimal_places=3,default=0)
+
+class User(ModelBase):
+  class Meta:
+    table_name='users'
   id = PrimaryKeyField(null=False)
   surname = CharField(max_length=100)
   name = CharField(max_length=100)
   patronymic = CharField(max_length=100)
-  saw = IntegerField()
-  cgm = IntegerField()
-  hole = IntegerField()
-  weld = IntegerField()
-  assembly = IntegerField()
-  bevel = IntegerField()
-  notch = IntegerField()
-  chamfer = IntegerField()
-  milling = IntegerField()
-  bend = IntegerField()
 
-class Basic_detail(ModelBase):
+class Worker(ModelBase):
   class Meta:
-    table_name='basic_details'
+    table_name='workers'
+  id = PrimaryKeyField(null=False)
+  user = ForeignKeyField(User,backref='workers')
+  oper = CharField(max_length=100)
+  oper_rus = CharField(max_length=100)
+
+class Detail(ModelBase):
+  class Meta:
+    table_name='details'
   id = PrimaryKeyField(null=False)
   detail = IntegerField()
   basic = CharField(max_length=20)
-  basic_worker = ForeignKeyField(Worker,backref='basic_details',null=True)
-  basic_start = DateTimeField(null=True)
-  basic_end = DateTimeField(null=True)
-  hole = IntegerField(null=True)
-  hole_worker = ForeignKeyField(Worker,backref='basic_details',null=True)
-  hole_start = DateTimeField(null=True)
-  hole_end = DateTimeField(null=True)
-  bevel = IntegerField(null=True)
-  bevel_worker = ForeignKeyField(Worker,backref='basic_details',null=True)
-  bevel_start = DateTimeField(null=True)
-  bevel_end = DateTimeField(null=True)
-  notch = IntegerField(null=True)
-  notch_worker = ForeignKeyField(Worker,backref='basic_details',null=True)
-  notch_start = DateTimeField(null=True)
-  notch_end = DateTimeField(null=True)
-  chamfer = IntegerField(null=True)
-  chamfer_worker = ForeignKeyField(Worker,backref='basic_details',null=True)
-  chamfer_start = DateTimeField(null=True)
-  chamfer_end = DateTimeField(null=True)
-  milling = IntegerField(null=True)
-  milling_worker = ForeignKeyField(Worker,backref='basic_details',null=True)
-  milling_start = DateTimeField(null=True)
-  milling_end = DateTimeField(null=True)
-  bend = IntegerField(null=True)
-  bend_worker = ForeignKeyField(Worker,backref='basic_details',null=True)
-  bend_start = DateTimeField(null=True)
-  bend_end = DateTimeField(null=True)
-
-class Assembly_detail(ModelBase):
-  class Meta:
-    table_name='assembly_details'
-  id = PrimaryKeyField(null=False)
-  detail = IntegerField()
-  assembly = IntegerField(null=True)
-  assembly_worker = ForeignKeyField(Worker,backref='assembly_details',null=True)
-  assembly_start = DateTimeField(null=True)
-  assembly_end = DateTimeField(null=True)
-  weld = IntegerField(null=True)
-  weld_worker = ForeignKeyField(Worker,backref='assembly_details',null=True)
-  weld_start = DateTimeField(null=True)
-  weld_end = DateTimeField(null=True)
-
-class Paint_detail(ModelBase):
-  class Meta:
-    table_name='paint_details'
-  id = PrimaryKeyField(null=False)
-  detail = IntegerField()
-  paint = IntegerField(null=True)
-  pain_worker = ForeignKeyField(Worker,backref='paint_details',null=True)
-  paint_start = DateTimeField(null=True)
-  paint_end = DateTimeField(null=True)
+  oper = CharField(max_length=20)
+  worker = ForeignKeyField(Worker,backref='details',null=True)
+  start = DateTimeField(null=True)
+  end = DateTimeField(null=True)
+  norm = DecimalField(max_digits=12,decimal_places=3,default=0)

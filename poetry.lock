@@ -107,6 +107,22 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "peewee-migrate"
+version = "1.4.7"
+description = "A simple migration engine for Peewee ORM"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+click = ">=6.7"
+peewee = ">=3.3.3"
+
+[package.extras]
+build = ["bump2version", "wheel"]
+tests = ["pytest", "pytest-mypy", "psycopg2-binary"]
+
+[[package]]
 name = "peewee-migrations"
 version = "0.3.22"
 description = "Migration engine for peewee orm"
@@ -264,7 +280,7 @@ standard = ["httptools (>=0.2.0,<0.4.0)", "watchgod (>=0.6)", "python-dotenv (>=
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "fede5f23705441996d51292eb34a51277889e965fd2be3604e70e9806cb26c7d"
+content-hash = "fa98157411038ca1249a9ed1ad05883821f08736c92a6d5a1a069c8c31d67299"
 
 [metadata.files]
 anyio = [
@@ -305,6 +321,10 @@ openpyxl = [
 ]
 peewee = [
     {file = "peewee-3.14.8.tar.gz", hash = "sha256:01bd7f734defb08d7a3346a0c0ca7011bc8d0d685934ec0e001b3371d522ec53"},
+]
+peewee-migrate = [
+    {file = "peewee-migrate-1.4.7.tar.gz", hash = "sha256:45ef69bcec9cb57f773b51aee3aab14c769ddd46cd4662ef9b60da83c744474a"},
+    {file = "peewee_migrate-1.4.7-py3-none-any.whl", hash = "sha256:48f079dab77596806df863da3470f920de26b43a7660faa4a3c19f72209703ee"},
 ]
 peewee-migrations = [
     {file = "peewee_migrations-0.3.22-py3-none-any.whl", hash = "sha256:ce996e71e631afa9f6346856f9634b60cdfe1ce793760a927d349c5ab6a9f70e"},
