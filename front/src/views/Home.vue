@@ -1,11 +1,11 @@
 <template>
   <div>
-      <v-alert v-if="details.error == 'Список Пуст'" type="info" :value="true">
-        <h4>{{details.error}}</h4>
-      </v-alert>
-      <v-alert v-if="details.error != None && details.error != 'Список Пуст'" type="error" :value="true">
-        <h4>{{details.error}}</h4>
-      </v-alert>
+    <v-alert v-if="details.error == 'Список Пуст'" type="info" :value="true">
+      <h4>{{details.error}}</h4>
+    </v-alert>
+    <v-alert v-if="details.error != None && details.error != 'Список Пуст'" type="error" :value="true">
+      <h4>{{details.error}}</h4>
+    </v-alert>
     <v-container>
       <v-row justify="space-around">
         <v-col cols="9">
@@ -67,8 +67,11 @@ export default {
         this.getUser(this.barcode);
         this.processBarcode(this.barcode);
         this.getDetail(this.barcode,this.barcodes);
-      }else{
+      }else if (this.barcode[1] == 'A' & this.user != '') {
         this.getDetail(this.barcode,this.barcodes);
+      }else{
+        this.details = {'error':'Работник не выбран'}
+        this.timerId = setTimeout(() => this.timerRest(), 10000);
       }
       this.resetBarcode();
     },
@@ -91,6 +94,8 @@ export default {
     timerRest() {
       this.details = [];
       this.user = '';
+      this.barcodes = '';
+      this.barcode = '';
     }
   },
 }

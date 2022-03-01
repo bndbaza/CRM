@@ -24,6 +24,7 @@ origins = [
   "http://localhost",
   "http://127.0.0.1:8080",
   "http://192.168.0.75:8080",
+  # "http://192.168.0.213:8080",
 ]
 
 app.add_middleware(
@@ -47,11 +48,12 @@ def get_test():
   # Detail_create(2,'2307')
   # Detail_create(3,'2307')
   # Detail_create(4,'2307')
-  # Detail_create(1,'2325')
-  # Detail_create(2,'2325')
-  # Detail_create(3,'2325')
-  # Detail_create(4,'2325')
-  # Detail_create(5,'2325')
+  Detail_create(1,'2325')
+  Detail_create(2,'2325')
+  Detail_create(3,'2325')
+  Detail_create(4,'2325')
+  Detail_create(5,'2325')
+  Detail_create(6,'2325')
   return
 
 @app.get('/excel')
