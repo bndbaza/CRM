@@ -208,7 +208,29 @@ class Detail(ModelBase):
   detail = IntegerField()
   basic = CharField(max_length=20)
   oper = CharField(max_length=20)
-  worker = ForeignKeyField(Worker,backref='details',null=True)
+  worker_1 = ForeignKeyField(Worker,backref='details_1',null=True)
+  worker_2 = ForeignKeyField(Worker,backref='details_2',null=True)
   start = DateTimeField(null=True)
   end = DateTimeField(null=True)
   norm = DecimalField(max_digits=12,decimal_places=3,default=0)
+
+class Task(ModelBase):
+  class Meta:
+    table_name='tasks'
+  id = PrimaryKeyField(null=False)
+  task = IntegerField()
+  oper = CharField(max_length=20)
+  worker_1 = ForeignKeyField(Worker,backref='tasks_1',null=True)
+  worker_2 = ForeignKeyField(Worker,backref='tasks_2',null=True)
+  start = DateTimeField(null=True)
+  end = DateTimeField(null=True)
+  norm = DecimalField(max_digits=12,decimal_places=3,default=0)
+
+
+class TaskPart(ModelBase):
+  class Meta:
+    table_name='taskparts'
+  id = PrimaryKeyField(null=False)
+  task = ForeignKeyField(Task,backref='taskparts')
+  part = ForeignKeyField(Part,backref='taskparts')
+  finish = BooleanField(default=False)

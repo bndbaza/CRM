@@ -1,6 +1,6 @@
 from peewee import MySQLDatabase
 
-DATABASE_NAME = "CRM"
+DATABASE_NAME = "CRM2"
 USER = "root"
 PASSWORD = "35739517"
 HOST = "192.168.0.51"

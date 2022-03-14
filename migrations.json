@@ -17,9 +17,11 @@
     "models.HoleNorm",
     "models.SawNorm",
     "models.AssemblyNorm",
-    "models.Worker",
     "models.WeldNorm",
+    "models.User",
+    "models.Worker",
     "models.Detail",
-    "models.User"
+    "models.Task",
+    "models.TaskPart"
   ]
 }

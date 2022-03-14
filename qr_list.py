@@ -12,21 +12,22 @@ color = {
   'weld':('black','white'),
   'assembly':('red','black'),
   'saw':('blue','white'),
-  'holl':('green','white'),
+  'hole':('green','white'),
   'cgm':('yellow','black'),
   'bend':('grey','black'),
   'milling':('brown','white'),
   'turning':('white','black'),
   'bevel':('orange','black'),
   'notch':('white','black'),
-  'point':('pink','black')
+  'point':('pink','black'),
+  'chamfer':('violet','black')
 }
 
 
 def QR_pdf():
   pdf = canvas.Canvas('qr.pdf', pagesize=A4)
   pdf.setTitle('')
-  user = Worker.select()
+  user = Worker.select()#.where(Worker.id.in_([77,78]))
   d = []
   y = 1
   z = 1
@@ -54,7 +55,7 @@ def QR_pdf1(pdf,user):
   ],colWidths=widthList,
     rowHeights=heightList)
   mainTable.setStyle([
-    ('GRID',(1,1),(-2,-2),1,'black'),
+    # ('GRID',(1,1),(-2,-2),1,'black'),
     ('LEFTPADDING',(0,0),(-1,-1),0),
     ('RIGHTPADDING',(0,0),(-1,-1),0),
     ('BOTTOMPADDING',(0,0),(-1,-1),0),

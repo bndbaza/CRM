@@ -445,11 +445,12 @@ def Body2(width,height,inf,oper):
 def Body3(width,height,inf,oper):
   if oper != 'weld' and oper != 'paint':
     widthList = [60,35,30,20,25,110,35,30,50,25,25,25,25,25,25,25]
-    table = Table([['','','','',inf[oper]['tabl_sum']['table_count'],'','',float(inf[oper]['tabl_sum']['table_weight']),'','','','','','','','']]
+    # table = Table([['','','','',inf[oper]['tabl_sum']['table_count'],'','',float(inf[oper]['tabl_sum']['table_weight']),'','','','','','','','']]
+    table = Table([['','','','','','','',float(inf[oper]['tabl_sum']['table_weight']),'','','','','','','','']]
     ,colWidths=widthList,
       rowHeights=12)
     table.setStyle([
-      ('GRID',(4,0),(4,0),1,'black'),
+      # ('GRID',(4,0),(4,0),1,'black'),
       ('GRID',(7,0),(7,0),1,'black'),
       ('LEFTPADDING',(0,0),(-1,-1),0),
       ('RIGHTPADDING',(0,0),(-1,-1),0),

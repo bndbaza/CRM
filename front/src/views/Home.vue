@@ -1,15 +1,15 @@
 <template>
   <div>
-    <v-alert v-if="details.error == 'Список Пуст'" type="info" :value="true">
-      <h4>{{details.error}}</h4>
+    <v-alert v-if="user.error == 'Список Пуст'" type="info" :value="true">
+      <h4>{{user.error}}</h4>
     </v-alert>
-    <v-alert v-if="details.error != None && details.error != 'Список Пуст'" type="error" :value="true">
-      <h4>{{details.error}}</h4>
+    <v-alert v-if="user.error != None && user.error != 'Список Пуст'" type="error" :value="true">
+      <h4>{{user.error}}</h4>
     </v-alert>
     <v-container>
       <v-row justify="space-around">
         <v-col cols="9">
-          <v-col cols="12" v-for="detail in details.worker" :key="detail">
+          <v-col cols="12" v-for="detail in user.detail" :key="detail">
             <v-card :color=col>
               <v-card-text>
                 <h1>Наряд №{{detail.detail}} Время начала {{detail.start | date}}</h1>
@@ -18,12 +18,12 @@
           </v-col>
         </v-col>
         <v-col cols="3">
-          <v-col cols="12">
-            <v-card color="green" v-if="user != ''">
+          <v-col cols="12" v-for="worker in user.worker" :key="worker">
+            <v-card color="green">
               <v-card-text>
-                <h1>{{user.user.surname}} {{user.user.name}} {{user.user.patronymic}}</h1>
+                <h1>{{worker.user.surname}} {{worker.user.name}} {{worker.user.patronymic}}</h1>
                 <h1><br></h1>
-                <h1>{{user.oper_rus}}</h1>
+                <h1>{{worker.oper_rus}}</h1>
               </v-card-text>
             </v-card>
           </v-col>
@@ -40,7 +40,6 @@ export default {
     return {
       barcode: '',
       timeout: null,
-      barcodes: '',
       user: '',
       details: [],
       col: "blue",
@@ -64,9 +63,7 @@ export default {
       const isBarcode = this.barcode.length > 3;
       if (!isEnter || !isBarcode) return;
       if (this.barcode[1] == 'U') {
-        this.getUser(this.barcode);
-        this.processBarcode(this.barcode);
-        this.getDetail(this.barcode,this.barcodes);
+        this.getUser(this.barcode,this.user);
       }else if (this.barcode[1] == 'A' & this.user != '') {
         this.getDetail(this.barcode,this.barcodes);
       }else{
@@ -75,26 +72,28 @@ export default {
       }
       this.resetBarcode();
     },
-    processBarcode(barcode) {
-      this.barcodes = barcode;
-    },
     resetBarcode() {
       this.barcode = '';
     },
     getUser(id) {
-      axios.get('http://192.168.0.75:8000/worker/'+id)
-      .then(response => this.user = response.data)
+      let us = '';
+      let ee = 0;
+      if (this.user != '') ee = this.user.worker.length;
+      if (this.user != '' & ee < 2) us = this.user.worker[0].id;
+      axios.post('http://192.168.0.75:8000/worker',{id:id,user:us})
+      .then(response => this.user = response.data);
+      clearTimeout(this.timerId);
+      this.timerId = setTimeout(() => this.timerRest(), 10000);
     },
     getDetail(detail,user) {
       axios.post('http://192.168.0.75:8000/detail',{detail:detail,user: user})
-      .then(response => this.details = response.data)
-      clearTimeout(this.timerId)
+      .then(response => this.details = response.data);
+      clearTimeout(this.timerId);
       this.timerId = setTimeout(() => this.timerRest(), 10000);
     },
     timerRest() {
       this.details = [];
       this.user = '';
-      this.barcodes = '';
       this.barcode = '';
     }
   },

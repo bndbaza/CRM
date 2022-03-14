@@ -7,16 +7,28 @@ from models import *
 from tekla import Tekla
 from faza import Faza_update, PartPoint, Test, Faza_update_test, Detail_create, Faza_update_garage
 from peewee import fn, JOIN
-from schemas import OrderBase, DrawingBase, PointBase,PartBase, FazaBase, PointPartBase, WorkerBase, BasicDetailBase, Detail,BasicDetailBase1
+from schemas import OrderBase, DrawingBase, PointBase,PartBase, FazaBase, PointPartBase, WorkerBase, BasicDetailBase, DetailBase,BasicDetailBase1
 from task import Inf
 from excel import NormExcel, Statement, Cuting
 from faza_list import Pdf, Inf_list
 from qr import QRUser
 from terminal import User_get
 from qr_list import QR_pdf
+from test import AAA, BBB, CCC
 
 
 app = FastAPI()
+
+
+@app.on_event("startup")
+def startup():
+    connection.connect()
+
+@app.on_event("shutdown")
+def shutdown():
+    if not connection.is_closed():
+        connection.close()
+
 app.state.database = connection
 
 
@@ -40,20 +52,18 @@ app.add_middleware(
 
 @app.get('/test')
 def get_test():
-  # PartPoint(6,'2325')
-  # Detail_create(1,'2313/3')
-  # Detail_create(2,'2313/3')
-  # Detail_create(3,'2313/3')
-  # Detail_create(1,'2307')
-  # Detail_create(2,'2307')
-  # Detail_create(3,'2307')
-  # Detail_create(4,'2307')
-  Detail_create(1,'2325')
-  Detail_create(2,'2325')
-  Detail_create(3,'2325')
-  Detail_create(4,'2325')
-  Detail_create(5,'2325')
-  Detail_create(6,'2325')
+  # Detail_create(1,'2325')
+  # Detail_create(2,'2325')
+  # Detail_create(3,'2325')
+  # Detail_create(4,'2325')
+  # Detail_create(5,'2325')
+  # Detail_create(6,'2325')
+  # Detail_create(7,'2325')
+  # Detail_create(8,'2325')
+  # Detail_create(9,'2325')
+  # Detail_create(10,'2325')
+  # PartPoint(9,2325)
+  # PartPoint(10,2325)
   return
 
 @app.get('/excel')
@@ -64,7 +74,7 @@ def get_excel():
 
 @app.get('/pdf')
 def get_pdf():
-  z = [6]
+  z = [9,10]
   for y in z:
     case = '2325'
     detail = []
@@ -73,6 +83,8 @@ def get_pdf():
       for i in faza:
         detail.append(i.detail)
     Inf(detail,case)
+    Statement(y,'2325')
+    Cuting(y,'2325')
   return
 
 
@@ -95,12 +107,6 @@ def post_tekla(
   # Faza_update_garage(order)
   return
 
-@app.get('/worker/{id}',response_model=WorkerBase)
-def get_detail(id):
-  id = id.replace('\x10','').replace('\xad','').replace('\r','').lower().split(' ')
-  worker = Worker.select().where(Worker.id == id[1]).first()
-  return worker
-
 @app.get('/qruser/{id}')
 def get_qr_user(id):
   QR_pdf()
@@ -109,23 +115,12 @@ def get_qr_user(id):
 
 @app.get('/stat')
 def get_stat():
-  # Statement(1,'2325')
-  # Statement(2,'2325')
-  # Statement(3,'2325')
-  # Statement(4,'2307')
-  # Statement(5,'2325')
-  Statement(6,'2325')
+  dd = Part.select(Part.number,fn.COUNT(fn.DISTINCT(Part.profile)).alias('aaa')).join(Drawing).join(Order).where(Order.cas == '2325').group_by(Part.number).having(fn.COUNT(fn.DISTINCT(Part.profile)) > 1)
+  for d in dd:
+    print(d.number,d.aaa)
   return
 
-@app.get('/cut')
-def get_stat():
-  # Cuting(1,'2325')
-  # Cuting(2,'2325')
-  # Cuting(3,'2325')
-  # Cuting(4,'2307')
-  # Cuting(5,'2325')
-  Cuting(6,'2325')
-  return
+
 
 @app.get('/delete/{id}')
 def get_qr_user(id):
@@ -146,8 +141,16 @@ def get_qr_user(id):
 
 
 
+@app.post('/worker',response_model=BasicDetailBase1)
+def get_detail(user: DetailBase):
+  connection.close()
+  base = User_get(user)
+  return base
+
+
+
 @app.post('/detail',response_model=BasicDetailBase1)
-def get_details(detail: Detail):
+def get_details(detail: DetailBase):
   job = User_get(detail)
   return job
 
@@ -166,44 +169,9 @@ def get_error():
     print(i.assembly,i.cou,i._id)
     # Drawing.delete().where(Drawing.id == i._id).execute()
 
-
-
-
-
-
-
-
-  # user = detail.user.replace('\x10','').replace('\xad','').replace('\r','').lower().replace('saw','saw_').split(' ')
-  # detail = detail.detail.replace('\x10','').replace('\xad','').replace('\r','').lower().replace('saw','saw_').split(' ')
-  # ab = {'cgm':'Ф','saw_s':'Пм','saw_b':'Пб','hole':'С','assembly':'A','weld':'W','paint':'М','chamfer':'F'}
-  # detail_ab = []
-  # worker = Worker.select().where(Worker.id == user[1]).first()
-  # job = Basic_detail.select().where(Basic_detail.detail == detail[1],Basic_detail.basic == detail[2]).dicts().first()
-
-  # Basic_detail.update({Basic_detail.basic_worker: worker}).where(Basic_detail.detail == detail[1],Basic_detail.basic == detail[2]).execute()
-  # job = Basic_detail.select().where(Basic_detail.detail == detail[1],Basic_detail.basic == detail[2]).first()
-
-  # print(job)
-
-  # basic = Basic_detail.select().where(Basic_detail.detail == detail[1]).dicts()
-  # for y in basic:
-  #   for i in y:
-  #     if y[i] != None and y[i] != 0 and i != 'id' and i != 'detail':
-  #       if i == 'basic':
-  #         detail_ab.append(ab[y[i]])
-  #       else:
-  #         pass
-          # detail_ab.append(ab[i]+(ab[y['basic']].lower()))
-
-  # try:
-  #   assembly = Assembly_detail.select().where(Assembly_detail.detail == detail[1]).dicts().first()
-  #   for i in assembly:
-  #       if assembly[i] != None and assembly[i] != 0 and i != 'id' and i != 'detail':
-  #         detail_ab.append(ab[i])
-  # except:
-  #   pass
-
-  # paint = Paint_detail.select().where(Paint_detail.detail == detail[1]).dicts().first()
-  # for i in paint:
-  #     if paint[i] != None and paint[i] != 0 and i != 'id' and i != 'detail':
-  #       detail_ab.append(ab[i])
+@app.get('/aaa')
+def get_aaa():
+  # AAA()
+  # BBB()
+  CCC()
+  return

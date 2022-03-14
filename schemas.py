@@ -147,15 +147,22 @@ class BasicDetailBase(BaseModel):
 
 class BasicDetailBase1(BaseModel):
   error: str | None = None
-  worker: List[BasicDetailBase]
+  worker: List[WorkerBase]
+  detail: List[BasicDetailBase]
 
   class Config:
     orm_mode = True
 
 
-class Detail(BaseModel):
-  detail: str
+
+
+class DetailBase(BaseModel):
+  id: str
   user: str
 
   class Config:
+    orm_mode = True
+
+
+  class Meta:
     orm_mode = True

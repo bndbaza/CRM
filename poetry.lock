@@ -72,6 +72,23 @@ doc = ["mkdocs (>=1.1.2,<2.0.0)", "mkdocs-material (>=7.1.9,<8.0.0)", "mdx-inclu
 test = ["pytest (>=6.2.4,<7.0.0)", "pytest-cov (>=2.12.0,<4.0.0)", "mypy (==0.910)", "flake8 (>=3.8.3,<4.0.0)", "black (==21.9b0)", "isort (>=5.0.6,<6.0.0)", "requests (>=2.24.0,<3.0.0)", "httpx (>=0.14.0,<0.19.0)", "email_validator (>=1.1.1,<2.0.0)", "sqlalchemy (>=1.3.18,<1.5.0)", "peewee (>=3.13.3,<4.0.0)", "databases[sqlite] (>=0.3.2,<0.6.0)", "orjson (>=3.2.1,<4.0.0)", "ujson (>=4.0.1,<5.0.0)", "python-multipart (>=0.0.5,<0.0.6)", "flask (>=1.1.2,<3.0.0)", "anyio[trio] (>=3.2.1,<4.0.0)", "types-ujson (==0.1.1)", "types-orjson (==3.6.0)", "types-dataclasses (==0.1.7)"]
 
 [[package]]
+name = "gunicorn"
+version = "20.1.0"
+description = "WSGI HTTP Server for UNIX"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.dependencies]
+setuptools = ">=3.0"
+
+[package.extras]
+eventlet = ["eventlet (>=0.24.1)"]
+gevent = ["gevent (>=1.4.0)"]
+setproctitle = ["setproctitle"]
+tornado = ["tornado (>=0.2)"]
+
+[[package]]
 name = "h11"
 version = "0.12.0"
 description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
@@ -224,6 +241,19 @@ pillow = ">=4.0.0"
 rlpycairo = ["rlPyCairo (>=0.0.5)"]
 
 [[package]]
+name = "setuptools"
+version = "60.9.3"
+description = "Easily download, build, install, upgrade, and uninstall Python packages"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.extras]
+docs = ["sphinx", "jaraco.packaging (>=9)", "rst.linker (>=1.9)", "jaraco.tidelift (>=1.4)", "pygments-github-lexers (==0.0.5)", "sphinx-favicon", "sphinx-inline-tabs", "sphinxcontrib-towncrier", "furo"]
+testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-enabler (>=1.0.1)", "pytest-perf", "mock", "flake8-2020", "virtualenv (>=13.0.0)", "wheel", "pip (>=19.1)", "jaraco.envs (>=2.2)", "pytest-xdist", "sphinx (>=4.3.2)", "jaraco.path (>=3.2.0)", "build", "filelock (>=3.4.0)", "pip-run (>=8.8)", "pytest-black (>=0.3.7)", "pytest-cov", "pytest-mypy (>=0.9.1)"]
+testing-integration = ["pytest", "pytest-xdist", "pytest-enabler", "virtualenv (>=13.0.0)", "tomli", "wheel", "jaraco.path (>=3.2.0)", "jaraco.envs (>=2.2)", "build", "filelock (>=3.4.0)"]
+
+[[package]]
 name = "six"
 version = "1.16.0"
 description = "Python 2 and 3 compatibility utilities"
@@ -280,7 +310,7 @@ standard = ["httptools (>=0.2.0,<0.4.0)", "watchgod (>=0.6)", "python-dotenv (>=
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "fa98157411038ca1249a9ed1ad05883821f08736c92a6d5a1a069c8c31d67299"
+content-hash = "f7de0922181319f738aaf18c731b1ab039ce0e4fd824e76b3a5c6e6a5cbc3383"
 
 [metadata.files]
 anyio = [
@@ -306,6 +336,10 @@ et-xmlfile = [
 fastapi = [
     {file = "fastapi-0.70.1-py3-none-any.whl", hash = "sha256:5367226c7bcd7bfb2e17edaf225fd9a983095b1372281e9a3eb661336fb93748"},
     {file = "fastapi-0.70.1.tar.gz", hash = "sha256:21d03979b5336375c66fa5d1f3126c6beca650d5d2166fbb78345a30d33c8d06"},
+]
+gunicorn = [
+    {file = "gunicorn-20.1.0-py3-none-any.whl", hash = "sha256:9dcc4547dbb1cb284accfb15ab5667a0e5d1881cc443e0677b4882a4067a807e"},
+    {file = "gunicorn-20.1.0.tar.gz", hash = "sha256:e0a968b5ba15f8a328fdfd7ab1fcb5af4470c28aaf7e55df02a99bc13138e6e8"},
 ]
 h11 = [
     {file = "h11-0.12.0-py3-none-any.whl", hash = "sha256:36a3cb8c0a032f56e2da7084577878a035d3b61d104230d4bd49c0c6b555a9c6"},
@@ -459,6 +493,10 @@ reportlab = [
     {file = "reportlab-3.6.5-cp39-cp39-win32.whl", hash = "sha256:85095ef9f3697859064cb1b22f19659bf4ba25e7dadb9c6be65f322cd68ba88f"},
     {file = "reportlab-3.6.5-cp39-cp39-win_amd64.whl", hash = "sha256:28c339d25eab804a8bd004dfaa5a80c7568178561741f4ce6e69dae05d38041f"},
     {file = "reportlab-3.6.5.tar.gz", hash = "sha256:d8fe27ad312671c9347cf5997f7c1017833fac17233f33296281ba9fa0de189a"},
+]
+setuptools = [
+    {file = "setuptools-60.9.3-py3-none-any.whl", hash = "sha256:e4f30b9f84e5ab3decf945113119649fec09c1fc3507c6ebffec75646c56e62b"},
+    {file = "setuptools-60.9.3.tar.gz", hash = "sha256:2347b2b432c891a863acadca2da9ac101eae6169b1d3dfee2ec605ecd50dbfe5"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},

@@ -113,20 +113,6 @@ def Statement(faza,case):
     sheet.cell(row=y,column=7).number_format = BUILTIN_FORMATS[1]
   book.save('stat '+str(faza)+' '+case+'.xlsx')
 
-  # stat = Point.select(Point,Drawing,fn.SUM(Drawing.weight).alias('weight'),fn.COUNT(Point.assembly).alias('count'),(fn.SUM(Drawing.weight) * fn.COUNT(Point.assembly)).alias('weight_')).join(Drawing).join(Order).where(Order.cas == case).group_by(Point.assembly).order_by(Drawing.assembly)
-  # y = 1
-  # sheet.cell(row=y,column=1).value = 'Марка'
-  # sheet.cell(row=y,column=2).value = 'Количество'
-  # sheet.cell(row=y,column=3).value = 'Вес'
-  # sheet.cell(row=y,column=4).value = 'Вес общий'
-  # for i in stat:
-  #   y+=1
-  #   sheet.cell(row=y,column=1).value = i.assembly.assembly
-  #   sheet.cell(row=y,column=2).value = int(i.count)
-  #   sheet.cell(row=y,column=3).value = i.assembly.weight
-  #   sheet.cell(row=y,column=4).value = i.assembly.weight * i.count
-  # book.save('statall '+str(faza)+' '+case+'.xlsx')
-
 
 def Cuting(faza,case):
   book = Workbook()
@@ -148,7 +134,6 @@ def Cuting(faza,case):
 def User_worker():
   wb = load_workbook('VVL.xlsx',data_only=True)
   sheet = wb.get_sheet_by_name('users')
-  # d = []
   post = []
   for y in range(3,39):
     b = (sheet.cell(row=y,column=1).value).replace('.',' ').strip().split(' ')
@@ -159,3 +144,8 @@ def User_worker():
       if sheet.cell(row=y,column=i).value == 1:
         post.append([user,sheet.cell(row=2,column=i).value,sheet.cell(row=1,column=i).value])
   Worker.insert_many(post, fields=[Worker.user,Worker.oper,Worker.oper_rus]).execute()
+
+def Temp():
+  book = Workbook()
+  sheet = book.active
+  fas = 0

@@ -203,6 +203,7 @@ def Detail_create(faza,case):
     try:
       d.append((i.detail,'weld','assembly',norm_assembly.norm * (i.point.assembly.weight / 1000)))
     except:
+      d.append((i.detail,'weld','assembly'))
       print(i.point.name)
     weld = Weld.select().where(Weld.assembly == i.point.assembly)
     norm_weld = 0
