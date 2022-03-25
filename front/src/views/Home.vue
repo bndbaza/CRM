@@ -1,101 +1,96 @@
 <template>
-  <div>
-    <v-alert v-if="user.error == 'Список Пуст'" type="info" :value="true">
-      <h4>{{user.error}}</h4>
-    </v-alert>
-    <v-alert v-if="user.error != None && user.error != 'Список Пуст'" type="error" :value="true">
-      <h4>{{user.error}}</h4>
-    </v-alert>
-    <v-container>
-      <v-row justify="space-around">
-        <v-col cols="9">
-          <v-col cols="12" v-for="detail in user.detail" :key="detail">
-            <v-card :color=col>
-              <v-card-text>
-                <h1>Наряд №{{detail.detail}} Время начала {{detail.start | date}}</h1>
-              </v-card-text>
-            </v-card>
+  <v-app id="inspire">
+    <v-app-bar
+      app
+      color="white"
+      flat
+    >
+      <v-container class="py-0 fill-height">
+        <v-avatar
+          class="mr-10"
+          color="grey darken-1"
+          size="32"
+        ></v-avatar>
+
+        <v-btn
+          v-for="link in links"
+          :key="link"
+          text
+        >
+          {{ link }}
+        </v-btn>
+
+        <v-spacer></v-spacer>
+
+        <v-responsive max-width="260">
+          <v-text-field
+            dense
+            flat
+            hide-details
+            rounded
+            solo-inverted
+          ></v-text-field>
+        </v-responsive>
+      </v-container>
+    </v-app-bar>
+
+    <v-main class="grey lighten-3">
+      <v-container fluid>
+        <v-row>
+          <v-col cols="2">
+            <v-sheet rounded="lg">
+              <v-list color="transparent">
+                <v-list-item
+                  v-for="n in 5"
+                  :key="n"
+                  link
+                >
+                  <v-list-item-content>
+                    <v-list-item-title>
+                      List Item {{ n }}
+                    </v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+
+                <v-divider class="my-2"></v-divider>
+
+                <v-list-item
+                  link
+                  color="grey lighten-4"
+                >
+                  <v-list-item-content>
+                    <v-list-item-title>
+                      Refresh
+                    </v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
+            </v-sheet>
           </v-col>
-        </v-col>
-        <v-col cols="3">
-          <v-col cols="12" v-for="worker in user.worker" :key="worker">
-            <v-card color="green">
-              <v-card-text>
-                <h1>{{worker.user.surname}} {{worker.user.name}} {{worker.user.patronymic}}</h1>
-                <h1><br></h1>
-                <h1>{{worker.oper_rus}}</h1>
-              </v-card-text>
-            </v-card>
+
+          <v-col>
+            <v-sheet
+              min-height="70vh"
+              rounded="lg"
+            >
+              <!--  -->
+            </v-sheet>
           </v-col>
-        </v-col>
-      </v-row>
-    </v-container>
-  </div>
+        </v-row>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
 
 <script>
-import axios from 'axios'
-export default {
-  data() {
-    return {
-      barcode: '',
-      timeout: null,
-      user: '',
-      details: [],
-      col: "blue",
-      timerId: null,
-    }
-  },
-  mounted() {
-    window.addEventListener('keydown', this.onGlobalKeyDown);
-  },
-  destroyed() {
-    window.removeEventListener('keydown', this.onGlobalKeyDown);
-  },
-  methods: {
-    onGlobalKeyDown(event) {
-      clearTimeout(this.timeout);
-      const THRESHOLD = 30;
-      this.timeout = setTimeout(() => { this.resetBarcode(); }, THRESHOLD);
-      const key = String.fromCharCode(event.which);
-      if (key) this.barcode += key;
-      const isEnter = event.key === 'Enter';
-      const isBarcode = this.barcode.length > 3;
-      if (!isEnter || !isBarcode) return;
-      if (this.barcode[1] == 'U') {
-        this.getUser(this.barcode,this.user);
-      }else if (this.barcode[1] == 'A' & this.user != '') {
-        this.getDetail(this.barcode,this.barcodes);
-      }else{
-        this.details = {'error':'Работник не выбран'}
-        this.timerId = setTimeout(() => this.timerRest(), 10000);
-      }
-      this.resetBarcode();
-    },
-    resetBarcode() {
-      this.barcode = '';
-    },
-    getUser(id) {
-      let us = '';
-      let ee = 0;
-      if (this.user != '') ee = this.user.worker.length;
-      if (this.user != '' & ee < 2) us = this.user.worker[0].id;
-      axios.post('http://192.168.0.75:8000/worker',{id:id,user:us})
-      .then(response => this.user = response.data);
-      clearTimeout(this.timerId);
-      this.timerId = setTimeout(() => this.timerRest(), 10000);
-    },
-    getDetail(detail,user) {
-      axios.post('http://192.168.0.75:8000/detail',{detail:detail,user: user})
-      .then(response => this.details = response.data);
-      clearTimeout(this.timerId);
-      this.timerId = setTimeout(() => this.timerRest(), 10000);
-    },
-    timerRest() {
-      this.details = [];
-      this.user = '';
-      this.barcode = '';
-    }
-  },
-}
+  export default {
+    data: () => ({
+      links: [
+        'Заказы',
+        'Messages',
+        'Profile',
+        'Загрузка модели',
+      ],
+    }),
+  }
 </script>
