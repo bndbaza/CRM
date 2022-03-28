@@ -2,12 +2,13 @@ from email.encoders import encode_base64
 from typing import List
 from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
+from test import AAA
 from db import connection
 from models import *
 from tekla import Tekla
 from faza import Faza_update, PartPoint, Test, Faza_update_test, Detail_create, Faza_update_garage, Task_create
 from peewee import fn, JOIN
-from schemas import DetailBase1, OrderBase, DrawingBase, PointBase,PartBase, FazaBase, PointPartBase, WorkerBase, BasicDetailBase, DetailBase,BasicDetailBase1
+from schemas import DetailBase1, OneDetailBase, OrderBase, DrawingBase, PointBase,PartBase, FazaBase, PointPartBase, WorkerBase, BasicDetailBase, DetailBase,BasicDetailBase1
 from task import Inf
 from excel import NormExcel, Statement, Cuting
 from faza_list import Pdf, Inf_list
@@ -15,7 +16,7 @@ from qr import QRUser
 from terminal import Detail_post, User_get
 from qr_list import QR_pdf
 from sawing_list import Sawing
-from test import AAA
+from correction import Correction
 
 
 app = FastAPI()
@@ -145,20 +146,21 @@ def get_qr_user(id):
 
 
 @app.post('/worker',response_model=BasicDetailBase1)
-def get_detail(user: DetailBase):
+def get_worker(user: DetailBase):
   connection.close()
   base = User_get(user)
   return base
 
 
 
-@app.post('/detail',response_model=BasicDetailBase1)
+@app.post('/details',response_model=BasicDetailBase1)
 def get_details(detail: DetailBase1):
   job = Detail_post(detail)
   return job
 
 @app.get('/task',response_model=List[BasicDetailBase])
 def get_task():
+  connection.close()
   go = Detail.select().where(Detail.to_work == True,Detail.end == None)
   return list(go)
 
@@ -179,8 +181,24 @@ def get_error():
   Detail.update({Detail.to_work: False, Detail.worker_1: None,Detail.worker_2: None,Detail.start: None,Detail.end:None}).execute()
   Task.update({Task.worker_1: None,Task.worker_2: None,Task.start: None,Task.end:None}).execute()
 
+@app.get('/correction')
+def get_correction():
+  Correction()
+  return
+
+@app.get('/index',response_model=List[BasicDetailBase])
+def get_index():
+  index = Detail.select().where(Detail.to_work == True, Detail.end == None,Detail.basic.in_(['weld','set','paint']))
+  return list(index)
+
+@app.get('/detail/{id}',response_model=OneDetailBase)
+def get_detail(id):
+  pointparts = PointPart.select().where(PointPart.detail == id)
+  pp = PointPart.select(Part.id).join(Part).join_from(PointPart,Point).where(PointPart.detail == id).tuples()
+  details = Detail.select().where(Detail.detail == id,Detail.basic.in_(['weld','set','paint']))
+  tasks = TaskPart.select().join(Task).where(TaskPart.part.in_(pp),Task.faza == pointparts[0].point.faza)
+  return {'pointparts': list(pointparts), 'details':list(details), 'tasks':list(tasks)}
+
 @app.get('/aaa')
 def get_aaa():
   AAA()
-  # Sawing(8,'2325')
-  return

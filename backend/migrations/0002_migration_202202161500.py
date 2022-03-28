@@ -91,11 +91,20 @@ class Chamfer(peewee.Model):
 
 
 @snapshot.append
+class User(peewee.Model):
+    id = PrimaryKeyField(primary_key=True)
+    surname = CharField(max_length=100)
+    name = CharField(max_length=100)
+    patronymic = CharField(max_length=100)
+    class Meta:
+        table_name = "users"
+
+
+@snapshot.append
 class Worker(peewee.Model):
     id = PrimaryKeyField(primary_key=True)
     user = snapshot.ForeignKeyField(backref='workers', index=True, model='user')
     oper = CharField(max_length=100)
-    oper_rus = CharField(max_length=100)
     class Meta:
         table_name = "workers"
 
@@ -106,12 +115,9 @@ class Detail(peewee.Model):
     detail = IntegerField()
     basic = CharField(max_length=20)
     oper = CharField(max_length=20)
-    worker_1 = snapshot.ForeignKeyField(backref='details_1', index=True, model='worker', null=True)
-    worker_2 = snapshot.ForeignKeyField(backref='details_2', index=True, model='worker', null=True)
+    worker = snapshot.ForeignKeyField(backref='details', index=True, model='worker', null=True)
     start = DateTimeField(null=True)
     end = DateTimeField(null=True)
-    norm = DecimalField(auto_round=False, decimal_places=3, default=0, max_digits=12, rounding='ROUND_HALF_EVEN')
-    to_work = BooleanField(default=False)
     class Meta:
         table_name = "details"
 
@@ -187,7 +193,6 @@ class PointPart(peewee.Model):
     milling = IntegerField(default=0)
     bend = IntegerField(default=0)
     weld = IntegerField(default=1)
-    turning = IntegerField(default=0)
     class Meta:
         table_name = "pointparts"
 
@@ -204,16 +209,6 @@ class SawNorm(peewee.Model):
     norm_oblique = DecimalField(auto_round=False, decimal_places=3, default=0, max_digits=12, rounding='ROUND_HALF_EVEN')
     class Meta:
         table_name = "sawnorms"
-
-
-@snapshot.append
-class User(peewee.Model):
-    id = PrimaryKeyField(primary_key=True)
-    surname = CharField(max_length=100)
-    name = CharField(max_length=100)
-    patronymic = CharField(max_length=100)
-    class Meta:
-        table_name = "users"
 
 
 @snapshot.append

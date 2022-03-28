@@ -106,6 +106,7 @@ class Detail(peewee.Model):
     detail = IntegerField()
     basic = CharField(max_length=20)
     oper = CharField(max_length=20)
+    worker = snapshot.ForeignKeyField(backref='details', index=True, model='worker', null=True)
     worker_1 = snapshot.ForeignKeyField(backref='details_1', index=True, model='worker', null=True)
     worker_2 = snapshot.ForeignKeyField(backref='details_2', index=True, model='worker', null=True)
     start = DateTimeField(null=True)
@@ -207,6 +208,33 @@ class SawNorm(peewee.Model):
 
 
 @snapshot.append
+class Task(peewee.Model):
+    id = PrimaryKeyField(primary_key=True)
+    task = IntegerField()
+    oper = CharField(max_length=20)
+    worker_1 = snapshot.ForeignKeyField(backref='tasks_1', index=True, model='worker', null=True)
+    worker_2 = snapshot.ForeignKeyField(backref='tasks_2', index=True, model='worker', null=True)
+    start = DateTimeField(null=True)
+    end = DateTimeField(null=True)
+    norm = DecimalField(auto_round=False, decimal_places=3, default=0, max_digits=12, rounding='ROUND_HALF_EVEN')
+    faza = IntegerField()
+    order = snapshot.ForeignKeyField(backref='tasks', index=True, model='order')
+    class Meta:
+        table_name = "tasks"
+
+
+@snapshot.append
+class TaskPart(peewee.Model):
+    id = PrimaryKeyField(primary_key=True)
+    task = snapshot.ForeignKeyField(backref='taskparts', index=True, model='task', null=True)
+    part = snapshot.ForeignKeyField(backref='taskparts', index=True, model='part', null=True)
+    finish = BooleanField(default=False)
+    count = IntegerField()
+    class Meta:
+        table_name = "taskparts"
+
+
+@snapshot.append
 class User(peewee.Model):
     id = PrimaryKeyField(primary_key=True)
     surname = CharField(max_length=100)
@@ -250,3 +278,9 @@ class WeldNorm(peewee.Model):
         table_name = "weldnorms"
 
 
+def forward(old_orm, new_orm):
+    detail = new_orm['detail']
+    return [
+        # Apply default value False to the field detail.to_work,
+        detail.update({detail.to_work: False}).where(detail.to_work.is_null(True)),
+    ]

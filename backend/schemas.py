@@ -1,3 +1,4 @@
+from itertools import count
 from typing import Optional, List, Dict
 from pydantic import BaseModel
 import datetime
@@ -36,7 +37,7 @@ class PointBase(Base):
 
 
 class PartBase(Base):
-  assembly: Optional[DrawingBase]
+  assembly: DrawingBase
   number: int
   count: int
   profile: str
@@ -90,8 +91,8 @@ class ChamferBase(Base):
 
 class PointPartBase(BaseModel):
   id: int
-  point: Optional[PointBase]
-  part: Optional[PartBase]
+  point: PointBase
+  part: PartBase
   detail: int
   cgm: int
   saw: int
@@ -141,6 +142,7 @@ class BasicDetailBase(BaseModel):
   worker_1: WorkerBase | None = None
   worker_2: WorkerBase | None = None
   start: datetime.datetime | None = None
+  end: datetime.datetime | None = None
   norm: float
 
   class Config:
@@ -150,9 +152,21 @@ class TaskBase(BaseModel):
   id: int
   task: int
   oper: str
-  worker: WorkerBase | None = None
-  start: datetime.datetime
+  worker_1: WorkerBase | None = None
+  worker_2: WorkerBase | None = None
+  start: datetime.datetime | None = None
+  end: datetime.datetime | None = None
   norm: float
+
+  class Config:
+    orm_mode = True
+
+class TaskPartBase(BaseModel):
+  id: int
+  task: TaskBase
+  part: PartBase
+  count: int
+  finish: int
 
   class Config:
     orm_mode = True
@@ -189,3 +203,12 @@ class GoWork(BaseModel):
 
   class Config:
     orm_mode = True
+
+
+class OneDetailBase(BaseModel):
+  pointparts: List[PointPartBase]
+  details: List[BasicDetailBase]
+  tasks: List[TaskPartBase]
+
+  class Config:
+    orm_mode =True
