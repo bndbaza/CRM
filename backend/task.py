@@ -4,71 +4,89 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.platypus import Table, Image
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
+# from models import PointPart, Part, Point
 from models import *
 from peewee import fn, Case, Cast
-from qr import QRAuth, QRRun, Delpng
-import math
+from qr import QRAuth, QRRun
 
 pdfmetrics.registerFont(TTFont('rus','arial.ttf'))
 
-def Pdf(infs):
-  string = infs[0]['case'].split('/')
-  if len(string) > 1:
-    string = string[0] + '.' + string[1]
-  else:
-    string = string[0]
-  pdf = canvas.Canvas(string+ ' ' +str(infs[0]['faza'])+'.pdf', pagesize=A4,bottomup=1)
+general = {}
+
+stroka = 12
+
+vid = 'Закладные'
+
+def BaseInfo(details,case):
+  info = PointPart.select(PointPart,fn.MAX(Part.length).alias('length')).join(Part).where(PointPart.detail.in_(details),PointPart.weld == 1).group_by(PointPart.detail)
+  noweld = []
+  for now in PointPart.select().where(PointPart.detail.in_(details),PointPart.weld == 0).group_by(PointPart.detail):
+    noweld.append(PointPart.select(PointPart,fn.MAX(Part.length).alias('length'),fn.SUM(Part.count).alias('count')).join(Part).join_from(PointPart,Point).where(PointPart.detail == now.detail,PointPart.weld == 0).group_by(Part.number))
+  nowelds = []
+  while len(noweld) > 7:
+    nowelds.append([noweld.pop(),noweld.pop(),noweld.pop(),noweld.pop(),noweld.pop(),noweld.pop(),noweld.pop()])
+  if noweld:
+    nowelds.append(noweld)
+  bases = []
+  d = []
+  size = 0
+  for i in info:
+    b = len(i.part.assembly.parts)*stroka+140
+    if (size + b)<= 816 and i == info[-1]:
+      d.append(i)
+      bases.append(d)
+    elif (size + b)> 816 and i == info[-1]:
+      bases.append(d)
+      bases.append([i])
+    elif (size + b)<= 816:
+      size += b
+      d.append(i)
+    else:
+      bases.append(d)
+      d = [i]
+      size = b
+    
+  try:
+    general['case'] = info[0].part.assembly.cas.cas
+    general['faza'] = info[0].point.faza
+    general['color'] = info[0].part.assembly.cas.color
+  except:
+    general['case'] = noweld[0][0].part.assembly.cas.cas
+    general['faza'] = noweld[0][0].point.faza
+    general['color'] = noweld[0][0].part.assembly.cas.color
+  return Pdf(bases,nowelds)
+
+def Pdf(bases,nowelds):
+  case = general['case']
+  faza = general['faza']
+  pdf = canvas.Canvas(f'reports/Наряды {case} {faza}.pdf', pagesize=A4,bottomup=1)
   pdf.setTitle('test')
-  lis = []
-  for inf in infs:
-    if inf['saw_s']['tabl_sum']['table_count'] != None:
-      lis.append(('saw_s',inf))
-    if inf['saw_b']['tabl_sum']['table_count'] != None:
-      lis.append(('saw_b',inf))
-    if inf['weld']['tabl'] != None:
-      lis.append(('weld',inf))
-    if inf['paint']['tabl'] != None:
-      lis.append(('paint',inf))
-    if inf['cgm']['tabl_sum']['table_count'] != None:
-      lis.append(('cgm',inf))
-  lis2 = []
-  count = 0
-  inf=infs
-  for i in lis:
-    if i[0] != 'weld' and i[0] != 'paint':
-      count += len(i[1][i[0]]['tabl'])
-    else:
-      count += 1
-    if count <= 15 and len(lis2) < 3:
-      lis2.append(i)
-    elif count <= 32 and len(lis2) < 2:
-      lis2.append(i)
-    else:
-      Pdf1(inf,pdf,lis2)
+  for base in bases:
+    Pdf1(pdf,base=base)
+    pdf.showPage()
+  if len(nowelds)>0:
+    for noweld in nowelds:
+      Pdf1(pdf,noweld=noweld)
       pdf.showPage()
-      if i[0] != 'weld' and i[0] != 'paint':
-        count = len(i[1][i[0]]['tabl'])
-      else:
-        count = 1
-      lis2 = []
-      lis2.append(i)
-  Pdf1(inf,pdf,lis2)
   pdf.save()
-  Delpng()
+  return f'reports/Наряды {case} {faza}.pdf'
 
-
-
-def Pdf1(inf,pdf,lis):
+def Pdf1(pdf,base=0,noweld=0):
   width, height = A4
   widthList = [width*0.02,width*0.96,width*0.02,]
   heightList = [height*0.015,height*0.97,height*0.015,]
+  if noweld:
+    vid = Compl(widthList[1],heightList[1],noweld)
+  else:
+    vid = PrintTab(widthList[1],heightList[1],base)
   mainTable = Table([
     ['','',''],
-    ['',PrintTab(widthList[1],heightList[1],inf,lis),''],
+    ['',vid,''],
     ['','',''],
   ],colWidths=widthList,
     rowHeights=heightList)
   mainTable.setStyle([
+    # ('GRID',(0,0),(-1,-1),1,'red'),
     ('LEFTPADDING',(0,0),(-1,-1),0),
     ('RIGHTPADDING',(0,0),(-1,-1),0),
     ('BOTTOMPADDING',(0,0),(-1,-1),0),
@@ -77,54 +95,51 @@ def Pdf1(inf,pdf,lis):
   mainTable.wrapOn(pdf,0,0)
   mainTable.drawOn(pdf,0,0)
 
-
-def PrintTab(width,height,inf,lis):
-  lis2 = []
+def PrintTab(width,height,base):
+  # print(height*0.07 + 40 + height*0.05)
+  lis = []
   heightList = []
-  for i in lis:
-    c2 = 1
-    if i[0] != 'weld' and i[0] != 'paint':
-      c2 = (len(i[1][i[0]]['tabl']))
-    if i[0] == 'paint' and i[1]['weld']['tabl'] == None:
-      c2 = (len(i[1][i[0]]['tabl2']))
+  for i in base:
+    c2 = (len(i.part.assembly.parts))
     heightList.append(height*0.07)
     heightList.append(8+(c2*12)+32)
-    heightList.append(height*0.15)
-    lis2.append([Header1(width,height*0.07,i[1],i[0])])
-    lis2.append([Body(width,8+(c2*12)+32,i[1],i[0])])
-    lis2.append([Footer(width,height*0.15,i[1],i[0])])
+    heightList.append(height*0.05)
+    lis.append([Header(width,height*0.07,i)])
+    lis.append([Body(width,8+(c2*12)+32,i,c2)])
+    lis.append([Footer(width,height*0.05,i)])
   heightDown = 0
   for i in heightList:
     heightDown = heightDown + i
   heightList.append(height - heightDown)
-  lis2.append([''])
-  table = Table(lis2,colWidths=width,
+  lis.append([''])
+  table = Table(lis,colWidths=width,
     rowHeights=heightList)
   table.setStyle([
+    # ('GRID',(0,0),(-1,-1),1,'red'),
     ('LEFTPADDING',(0,0),(-1,-1),0),
     ('BOTTOMPADDING',(0,0),(-1,-1),0),
   ])
   return table
 
-
-def Header1(width,height,inf,oper):
+def Header(width,height,base):
   widthList = [60,width-60]
-  img = Image(QRAuth(inf['detail'],inf['case'],oper),widthList[0],height,kind='proportional')
+  img = Image(QRAuth(base.detail,general['case'],'weld'),widthList[0],height,kind='proportional')
   table = Table([
-    [img,Header2(widthList[1],height,inf,oper)],
+    [img,Header1(widthList[1],height,base)],
   ],colWidths=widthList,
     rowHeights=height)
   table.setStyle([
+    # ('GRID',(0,0),(-1,-1),1,'red'),
     ('LEFTPADDING',(0,0),(-1,-1),0),
     ('BOTTOMPADDING',(0,0),(-1,-1),0),
   ])
   return table
 
-def Header2(width,height,inf,oper):
+def Header1(width,height,base):
   heightList = [height*0.2,height*0.3,height*0.5]
   table = Table([
     [''],
-    [Header3(width,heightList[1],inf,oper)],
+    [Header2(width,heightList[1],base)],
     ['']
   ],colWidths=width,
     rowHeights=heightList)
@@ -134,214 +149,164 @@ def Header2(width,height,inf,oper):
   ])
   return table
 
-def Header3(width,height,inf,oper):
-  widthList = [width*0.05,width*0.2,width*0.15,width*0.15,width*0.1,width*0.35]
+def Header2(width,height,base):
+  try:
+    base.count
+    color = 'purple'
+    name = 'K'
+  except:
+    color = 'red'
+    name = 'KCW'
+  widthList = [width*0.1,width*0.2,width*0.2,width*0.2,width*0.2,width*0.1]
   table = Table([
-    [inf['name'][0],inf[oper]['name'],'№'+str(inf['detail']),inf['case'],inf['faza'],inf['work']],
+    [general['faza'],name,'№'+str(base.detail),general['case'],'','']
   ],colWidths=widthList,
     rowHeights=height)
   table.setStyle([
     ('BOTTOMPADDING',(0,0),(-1,-1),10),
-    ('BACKGROUND',(1,0),(1,0),inf[oper]['color']),
-    ('BACKGROUND',(3,0),(3,0),inf['color']),
-    ('TEXTCOLOR',(1,0),(1,0),inf[oper]['color_t']),
-    ('TEXTCOLOR',(3,0),(3,0),'white'),
+    ('BACKGROUND',(1,0),(1,0),color),
+    ('BACKGROUND',(3,0),(3,0),general['color']),
+    ('TEXTCOLOR',(1,0),(1,0),'white'),
+    ('TEXTCOLOR',(3,0),(3,0),'black'),
     ('ALIGN',(1,0),(-1,-1),'CENTER'),
-    ('ALIGN',(0,0),(0,0),'RIGHT'),
+    ('ALIGN',(0,0),(0,0),'CENTER'),
     ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
     ('FONTSIZE',(0,0),(-1,-1),14),
     ('FONTNAME',(0,0),(-1,-1),'rus')
   ])
   return table
 
-def Footer(width,height,inf,oper):
-  widthList = [width*0.35,width*0.3,width*0.35]
-  image_run = QRRun(inf['detail'],inf['case'],oper)
-  image_aut = QRAuth(inf['detail'],inf['case'],oper)
+def Footer(width,height,base):
+  # widthList = [width*0.35,width*0.3,width*0.35]
+  widthList = [width*0.05,width*0.9,width*0.05]
+  image_run = QRRun(base.detail,general['case'],'weld')
   table = Table([
-    [Footer1(widthList[0],height,'Бегунок',image_run,inf,oper),Footer7(widthList[0],height,inf,oper),Footer1(widthList[0],height,'Авторизация',image_aut,inf,oper)],
+    # [Footer1(widthList[0],height,image_run,base),Footer5(widthList[1],height),Footer1(widthList[2],height,image_run,base)],
+    ['',Footer5(widthList[1],height),''],
   ],colWidths=widthList,
     rowHeights=height)
   table.setStyle([
-    ('GRID',(0,0),(0,0),1,'black'),
-    ('GRID',(-1,-1),(-1,-1),1,'black'),
+    # ('GRID',(0,0),(0,0),1,'black'),
+    # ('GRID',(-1,-1),(-1,-1),1,'black'),
     ('LEFTPADDING',(0,0),(-1,-1),0),
     ('BOTTOMPADDING',(0,0),(-1,-1),0),
   ])
   return table
 
-def Footer1(width,height,str,image,inf,oper):
-  heightList = [height*0.1,height*0.5,height*0.1,height*0.3]
+def Footer1(width,height,image,base):
+  heightList = [height*0.1,height*0.9]
   table = Table([
-    [Footer2(width,heightList[0],str,inf,oper)],
-    [Footer3(width,heightList[1],inf)],
-    [Footer4(width,heightList[2],inf,oper)],
-    [Footer5(width,heightList[3],image,inf,oper)],
+    ['Байкалстальстрой     +7(3952)407-203'],
+    [Footer2(width,heightList[1],image,base)],
   ],colWidths=width,
     rowHeights=heightList)
   table.setStyle([
-    ('GRID',(-1,-1),(-1,-1),1,'black'),
+    # ('GRID',(-1,-1),(-1,-1),1,'black'),
     ('LEFTPADDING',(0,0),(-1,-1),0),
     ('BOTTOMPADDING',(0,0),(-1,-1),0),
+    ('FONTSIZE',(0,0),(-1,-1),10),
+    ('FONTNAME',(0,0),(-1,-1),'rus'),
+    ('ALIGN',(0,0),(0,0),'RIGHT'),
+    ('VALIGN',(0,0),(0,0),'MIDDLE'),
   ])
   return table
 
-def Footer2(width,height,str,inf,oper):
-  abbreviation = {'ПИЛЫ М':'Пм','ПИЛЫ Б':'Пб','Сборка':'С','ФАСОНКА':'Ф','Малярка':'М'}
-  widthList = [width*0.1,width*0.8,width*0.1]
+def Footer2(width,height,image,base):
+  widthList = [width*0.4,width*0.6]
   table = Table([
-    [inf['faza'],str,abbreviation[inf[oper]['name']]],
+    [Footer3(widthList[0],height,base),Footer4(widthList[1],height,image,base)],
   ],colWidths=widthList,
     rowHeights=height)
   table.setStyle([
-    ('GRID',(-1,-1),(-1,-1),1,'black'),
+    # ('GRID',(0,0),(-1,-1),1,'red'),
     ('LEFTPADDING',(0,0),(-1,-1),0),
-    ('RIGHTPADDING',(0,0),(-1,0),0),
-    ('BACKGROUND',(-1,-1),(-1,-1),inf[oper]['color']),
-    ('TEXTCOLOR',(-1,-1),(-1,-1),inf[oper]['color_t']),
+    ('BOTTOMPADDING',(0,0),(-1,-1),0),
+    ('FONTSIZE',(0,0),(-1,-1),10),
     ('FONTNAME',(0,0),(-1,-1),'rus'),
-    ('ALIGN',(0,0),(-1,-1),'CENTER'),
-    ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+    # ('ALIGN',(0,0),(0,0),'RIGHT'),
+    # ('VALIGN',(0,0),(0,0),'MIDDLE'),
   ])
   return table
 
-def Footer3(width,height,inf):
+def Footer3(width,height,base):
+  heightList = height/5
+  try:
+    length = base.length
+  except:
+    length = base.part.length
   table = Table([
-    [inf['detail']],
+    ['наряд '+str(base.detail)],
+    ['длина ст. '+str(int(length))],
+    ['вес '+str(float(base.part.assembly.weight))],
+    ['заказ '+general['case']],
+    ['фаза '+str(general['faza'])],
   ],colWidths=width,
-    rowHeights=height)
-  table.setStyle([
-    ('LEFTPADDING',(0,0),(-1,-1),0),
-    ('BOTTOMPADDING',(0,0),(-1,-1),65),
-    ('FONTNAME',(0,0),(-1,-1),'rus'),
-    ('ALIGN',(0,0),(-1,-1),'CENTER'),
-    ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-    ('FONTSIZE',(0,0),(-1,-1),60),
-  ])
-  return table
-
-def Footer4(width,height,inf,oper):
-  widthList = [width*0.5,width*0.5]
-  table = Table([
-    [inf['mark'],inf['work']],
-  ],colWidths=widthList,
-    rowHeights=height)
-  table.setStyle([
-    ('BOTTOMPADDING',(0,0),(-1,-1),0),
-    ('FONTNAME',(0,0),(-1,-1),'rus'),
-    ('ALIGN',(-1,-1),(-1,-1),'RIGHT'),
-  ])
-  return table
-
-def Footer5(width,height,image,inf,oper):
-  widthList = [width*0.25,width*0.4,width*0.1,width*0.25]
-  img = Image(image,widthList[1],height,kind='proportional')
-  table = Table([
-    [Footer6(widthList[0],height,inf,oper),img,inf['name'][0],inf['case']],
-  ],colWidths=widthList,
-    rowHeights=height)
-  table.setStyle([
-    ('GRID',(0,0),(0,0),1,'black'),
-    ('GRID',(-1,-1),(-1,-1),1,'black'),
-    ('LEFTPADDING',(0,0),(-1,0),0),
-    ('BOTTOMPADDING',(0,0),(-1,0),0),
-    ('TOPPADDING',(0,0),(-1,0),0),
-    ('RIGHTPADDING',(0,0),(-1,0),0),
-    ('BACKGROUND',(-1,0),(-1,0),inf['color']),
-    ('TEXTCOLOR',(-1,0),(-1,0),'white'),
-    ('FONTNAME',(0,0),(-1,-1),'rus'),
-    ('ALIGN',(1,0),(-1,0),'CENTER'),
-    ('VALIGN',(1,0),(-1,0),'MIDDLE'),
-    ('FONTSIZE',(2,0),(2,0),16),
-    ('FONTSIZE',(3,0),(3,0),14),
-  ])
-  return table
-
-
-def Footer6(width,height,inf,oper):
-  heightList = [height/3,height/3,height/3]
-  i = inf['master'].part.size
-  if oper != 'weld' and oper != 'paint':
-    table_list = [[i],[inf[oper]['tabl_sum']['table_count']],[float(inf[oper]['tabl_sum']['table_weight'])]]
-  else:
-    table_list = [[i],[1],[float(inf[oper]['tabl'].part.assembly.weight)]]
-  table = Table(table_list,colWidths=width,
     rowHeights=heightList)
   table.setStyle([
-    ('GRID',(0,0),(-1,-1),1,'black'),
-    ('LEFTPADDING',(0,0),(-1,-1),0),
-    ('RIGHTPADDING',(0,0),(-1,-1),0),
+    # ('GRID',(0,0),(-1,-1),1,'red'),
+    # ('LEFTPADDING',(0,0),(-1,-1),0),
     ('BOTTOMPADDING',(0,0),(-1,-1),0),
+    ('FONTSIZE',(0,1),(-1,-1),10),
+    ('FONTSIZE',(0,0),(0,0),18),
     ('FONTNAME',(0,0),(-1,-1),'rus'),
-    ('ALIGN',(0,0),(-1,-1),'CENTER'),
+    # ('ALIGN',(0,0),(0,0),'RIGHT'),
+    ('VALIGN',(0,0),(0,0),'MIDDLE'),
   ])
   return table
 
-def Footer7(width,height,inf,oper):
-  if oper == 'saw_s' or oper == 'saw_b':
-    heightList = []
-    tabl = [['Пилы _______________________']]
-    if 'Сп' in inf['work']:
-      tabl.append(['Сверловка __________________'])
-    for i in range(len(tabl)):
-      heightList.append(height/len(tabl))
-  elif oper == 'weld':
-    heightList = []
-    tabl = [['Сборка _____________________']]
-    if 'W' in inf['work']:
-      tabl.append(['Сварка _____________________'])
-    for i in range(len(tabl)):
-      heightList.append(height/len(tabl))
-  elif oper == 'paint':
-    heightList = []
-    tabl = [['Маляр ______________________']]
-    # if 'W' in inf['work']:
-    #   tabl.append(['Сварка _____________________'])
-    for i in range(len(tabl)):
-      heightList.append(height/len(tabl))
-  else:
-    heightList = []
-    tabl = [['ЦГМ ________________________']]
-    tabl.append(['Зачистка ___________________'])
-    tabl.append(['Правка _____________________'])
-    if 'Сф' in inf['work']:
-      tabl.append(['Сверловка __________________'])
-    for i in range(len(tabl)):
-      heightList.append(height/len(tabl))
-  table = Table(tabl
-  ,colWidths=width,
+def Footer4(width,height,image,base):
+  heightList = [height*0.6,height*0.4]
+  img = Image(image,width,heightList[0],kind='proportional')
+  table = Table([
+    [img],
+    [base.part.assembly.assembly],
+  ],colWidths=width,
     rowHeights=heightList)
   table.setStyle([
-    ('BOTTOMPADDING',(0,0),(-1,-1),0),
+    # ('GRID',(0,0),(-1,-1),1,'red'),
+    ('LEFTPADDING',(0,0),(-1,-1),0),
+    # ('TOPPADDING',(0,0),(-1,-1),0),
+    ('FONTSIZE',(0,0),(-1,-1),30),
     ('FONTNAME',(0,0),(-1,-1),'rus'),
+    ('ALIGN',(0,0),(-1,-1),'RIGHT'),
     ('VALIGN',(0,0),(-1,-1),'TOP'),
   ])
   return table
 
-def Body(width,height,inf,oper):
+def Footer5(width,height):
+  # heightList = [height*0.6,height*0.4]
+  heightList = height/2
+  widthList = width/2
+  table = Table([
+    ['Комплектовщик_______________','Сборщик_____________________'],
+    ['Сварщик_____________________','Маляр_______________________'],
+  ],colWidths=widthList,
+    rowHeights=heightList)
+  table.setStyle([
+    # ('GRID',(0,0),(-1,-1),1,'red'),
+    ('LEFTPADDING',(0,0),(-1,-1),0),
+    # ('TOPPADDING',(0,0),(-1,-1),0),
+    # ('FONTSIZE',(0,0),(-1,-1),30),
+    ('FONTNAME',(0,0),(-1,-1),'rus'),
+    ('ALIGN',(0,0),(-1,-1),'CENTER'),
+    ('VALIGN',(0,0),(-1,-1),'TOP'),
+  ])
+  return table
+
+def Body(width,height,base,row):
   heightList = [20]
-  if oper != 'weld' and oper != 'paint':
-    heightList.append(len(inf[oper]['tabl'])*12)
-    heightList.append(12)
-    heightList.append(height-20-12-(len(inf[oper]['tabl']*12)))
-  elif inf['weld']['tabl'] == None and oper == 'paint':
-    heightList.append(len(inf[oper]['tabl2'])*12)
-    heightList.append(12)
-    heightList.append(height-20-12-(len(inf[oper]['tabl2']*12)))
-  else:
-    heightList.append(12)
-    heightList.append(12)
-    heightList.append(height-20-12-12)
+  heightList.append(row*stroka)
+  heightList.append(height-20-(row*stroka))
 
 
   table = Table([
-    [Body1(width,heightList[0],inf,oper)],
-    [Body2(width,heightList[1],inf,oper)],
-    [Body3(width,heightList[2],inf,oper)],
+    [Body1(heightList[0],base)],
+    [Body2(width,heightList[1],base,row)],
     [''],
   ],colWidths=width,
     rowHeights=heightList)
   table.setStyle([
+    # ('GRID',(0,0),(-1,-1),1,'red'),
     ('LEFTPADDING',(0,0),(-1,-1),0),
     ('BOTTOMPADDING',(0,0),(-1,-1),0),
     ('RIGHTPADDING',(0,0),(-1,-1),0),
@@ -350,16 +315,17 @@ def Body(width,height,inf,oper):
   ])
   return table
 
-def Body1(width,height,inf,oper):
-  if oper != 'weld' and oper != 'paint':
-    widthList = [60,35,30,20,25,110,35,30,50,25,25,25,25,25,25,25]
-    table_list = ['Конструкция','Марка','Чертеж','№','Кол.','Профиль','Длина','Вес','Марка стали',inf[oper]['oper'],'отв','скос','вырез','фаска','фрез','гибка']
-  elif oper == 'weld':
-    widthList = [width/9]
-    table_list = ['Конструкция','Марка','Чертеж','Колич.','Ствол','Масса','Кол. деталей','Тариф сборка','Тариф сварка']
-  elif oper == 'paint':
-    widthList = [width/7]
-    table_list = ['Конструкция','Марка','Колич.','Ствол','Масса','Кол. деталей','Тариф']
+def Body1(height,base):
+  try:
+    if base.point.name == vid:
+      widthList = [50,85,30,30,50,135,60,55,75]
+      table_list = ['Марка','Чертеж','Сбор.№','№','Кол.','Профиль','Длина','Вес','Марка стали']
+    else:
+      widthList = [60,35,55,45,50,135,60,55,75]
+      table_list = ['Конструкция','Марка','Чертеж','№','Кол.','Профиль','Длина','Вес','Марка стали']
+  except:
+    widthList = [60,35,55,45,50,135,60,55,75]
+    table_list = ['Конструкция','Марка','Чертеж','№','Кол.','Профиль','Длина','Вес','Марка стали']
   table = Table([table_list]
   ,colWidths=widthList,
     rowHeights=height)
@@ -376,59 +342,39 @@ def Body1(width,height,inf,oper):
   ])
   return table
 
-def Body2(width,height,inf,oper):
-  if oper != 'weld' and oper != 'paint':
-    widthList = [60,35,30,20,25,110,35,30,50,25,25,25,25,25,25,25]
-    mas = inf[oper]['tabl']
-    size = height/len(mas)
-  elif oper == 'weld':
-    widthList = [width/9]
-    if len(str(inf['master'].part.profile).split(' ')) > 1:
-      string = str(inf['master'].part.profile).split(' ')[0]+' '+str(inf['master'].part.profile).split(' ')[1][0:2]+' '+str(inf['master'].part.size)
-    else:
-      string = str(inf['master'].part.profile).split(' ')[0]+' '+str(inf['master'].part.size)
-    mas = [[
-      inf[oper]['tabl'].point.name,
-      inf[oper]['tabl'].point.assembly.assembly,
-      inf[oper]['tabl'].point.draw,
-      1,
-      string,
-      float(inf[oper]['tabl'].point.assembly.weight),
-      inf[oper]['tabl'].count,
-      round(inf[oper]['norm_assembly']),
-      round(inf[oper]['norm_weld']),
-    ]]
-    size = height
 
-  elif oper == 'paint' and inf['weld']['tabl'] != None:
-    widthList = [width/7]
-    if len(str(inf['master'].part.profile).split(' ')) > 1:
-      string = str(inf['master'].part.profile).split(' ')[0]+' '+str(inf['master'].part.profile).split(' ')[1][0:2]+' '+str(inf['master'].part.size)
+def Body2(width,height,base,row):
+  try:
+    if base.point.name == vid:
+      widthList = [50,85,30,30,50,135,60,55,75]
     else:
-      string = str(inf['master'].part.profile).split(' ')[0]+' '+str(inf['master'].part.size)
-    mas = [[
-      inf[oper]['tabl'].point.name,
-      inf[oper]['tabl'].point.assembly.assembly,
-      1,
-      string,
-      float(inf[oper]['tabl'].point.assembly.weight),
-      inf[oper]['tabl'].count,
-      '',
-    ]]
-    size = height
+      widthList = [60,35,55,45,50,135,60,55,75]
+  except:
+    widthList = [60,35,55,45,50,135,60,55,75]
 
-  elif oper == 'paint' and inf['weld']['tabl'] == None:
-    widthList = [width/7]
-    # if len(str(inf['master'].part.profile).split(' ')) > 1:
-    #   string = str(inf['master'].part.profile).split(' ')[0]+' '+str(inf['master'].part.profile).split(' ')[1][0:2]+' '+str(inf['master'].part.size)
-    # else:
-    #   string = str(inf['master'].part.profile).split(' ')[0]+' '+str(inf['master'].part.size)
-    mas = inf[oper]['tabl2']
-    size = height/len(mas)
+  heightList = height/row
+  mas = []
+  try:
+    base[0].count
+    for i in base:
+      x = ''
+      if i.part.width != None and i.part.width !='': x='x'
+      if i.point.name == vid:
+        mas.append((i.point.name,i.point.assembly.assembly,i.point.draw,f'{i.part.number}({i.part.sn})',i.count,i.part.profile+' '+i.part.size+x+i.part.width,int(i.part.length),float(i.part.weight),i.part.mark))
+      else:
+        mas.append((i.point.name,i.point.assembly.assembly,i.point.draw,i.part.number,i.count,i.part.profile+' '+i.part.size+x+i.part.width,int(i.part.length),float(i.part.weight),i.part.mark))
+  except:
+    for i in base.part.assembly.parts:
+      x = ''
+      if i.width != None and i.width !='': x='x'
+      if base.point.name == vid:
+        mas.append((base.point.assembly.assembly,base.point.draw,i.sn,i.number,i.count,i.profile+' '+i.size+x+i.width,int(i.length),float(i.weight),i.mark))
+      else:
+        mas.append((base.point.name,base.point.assembly.assembly,base.point.draw,i.number,i.count,i.profile+' '+i.size+x+i.width,int(i.length),float(i.weight),i.mark))
 
   table = Table(mas
   ,colWidths=widthList,
-    rowHeights=size)
+    rowHeights=heightList)
   table.setStyle([
     ('GRID',(0,0),(-1,-1),1,'black'),
     ('LEFTPADDING',(0,0),(-1,-1),0),
@@ -442,206 +388,52 @@ def Body2(width,height,inf,oper):
   ])
   return table
 
-def Body3(width,height,inf,oper):
-  if oper != 'weld' and oper != 'paint':
-    widthList = [60,35,30,20,25,110,35,30,50,25,25,25,25,25,25,25]
-    # table = Table([['','','','',inf[oper]['tabl_sum']['table_count'],'','',float(inf[oper]['tabl_sum']['table_weight']),'','','','','','','','']]
-    table = Table([['','','','','','','',float(inf[oper]['tabl_sum']['table_weight']),'','','','','','','','']]
-    ,colWidths=widthList,
-      rowHeights=12)
-    table.setStyle([
-      # ('GRID',(4,0),(4,0),1,'black'),
-      ('GRID',(7,0),(7,0),1,'black'),
-      ('LEFTPADDING',(0,0),(-1,-1),0),
-      ('RIGHTPADDING',(0,0),(-1,-1),0),
-      ('BOTTOMPADDING',(0,0),(-1,-1),0),
-      ('TOPPADDING',(0,0),(-1,-1),0),
-      ('FONTNAME',(0,0),(-1,-1),'rus'),
-      ('FONTSIZE',(0,0),(-1,-1),8),
-      ('ALIGN',(0,0),(-1,-1),'CENTER'),
-      ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-    ])
-    return table
-  else:
-    return ''
+def Compl(width,height,nowelds):
+  # import math
+  # x=0
+  # for i in noweld:
+  #   x += i.count
+  # x = math.ceil(x/3)
+  lis = []
+  heightList = []
+  for noweld in nowelds:
+    c2 = len(noweld)
+    heightList.append(height*0.07)
+    heightList.append(8+(c2*12)+32)
+    # heightList.append(height*0.15*x)
+    # heightList.append(height*0.05)
+    lis.append([Header(width,height*0.07,noweld[0])])
+    lis.append([Body(width,8+(c2*12)+32,noweld,c2)])
+    # lis.append([FooterCompl(width,height*0.05,noweld)])
+  table = Table(lis,colWidths=width,
+    rowHeights=heightList)
+  table.setStyle([
+    ('LEFTPADDING',(0,0),(-1,-1),0),
+    ('BOTTOMPADDING',(0,0),(-1,-1),0),
+  ])
+  return table
 
 
-
-def Inf(details,case):
-  inf_pdf = []
-  for detail in details:
-    inf1 = PointPart.select(PointPart,(fn.SUM(Part.count) * Part.weight).alias('weight'),fn.SUM(Part.count).alias('count')).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.work == 'saw_b').group_by(Part.number)
-    inf2 = PointPart.select(PointPart,(fn.SUM(Part.count) * Part.weight).alias('weight'),fn.SUM(Part.count).alias('count')).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.work == 'saw_s').group_by(Part.number)
-    inf3 = PointPart.select(PointPart,(fn.SUM(Part.count) * Part.weight).alias('weight'),fn.SUM(Part.count).alias('count')).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.work == 'cgm').group_by(Part.number)
-    inf4 = PointPart.select(fn.SUM(Part.count).alias('count'),PointPart).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case)
-    inf7 = PointPart.select().join(Point).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case).group_by(PointPart.point).count()
-    inf5 = PointPart.select(Part.profile,Part.size,fn.MAX(Part.weight).alias('weight')).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case,Part.work != 'cgm').first()
-    if inf4.scalar() > 1 and inf7 == 1:
-      inf6 = PointPart.select(PointPart,fn.SUM(Part.count).alias('count')).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case).first()
-      try:
-        norm = Drawing.select(Drawing.weight,Drawing.count,Point.name,fn.SUM(Part.count).alias('count_p')).join(Part).join_from(Drawing,Point).where(Drawing.id == inf6.part.assembly).first()
-        norm_assembly = AssemblyNorm.select().where(AssemblyNorm.name == norm.point.name,
-                                                    norm.weight >= AssemblyNorm.mass_of,
-                                                    norm.weight < AssemblyNorm.mass_to,
-                                                    inf6.count >= AssemblyNorm.count_of,
-                                                    inf6.count < AssemblyNorm.count_to).first()
-        norm_assembly = (norm_assembly.norm * (norm.weight/1000))
-      except:
-        norm_assembly = 0
-      try:
-        norm_w = Weld.select().where(Weld.assembly == inf6.part.assembly)
-        norm_weld = 0
-        for w in norm_w:
-          weld = WeldNorm.select((WeldNorm.norm * w.length / 1000 / norm.count).alias('aaa')).where(WeldNorm.cathet == w.cathet).first()
-          norm_weld += weld.aaa
-      except:
-        norm_weld = 0
+def FooterCompl(width,height,bases):
+  widthList = [width/3,width/3,width/3]
+  noweld = PointPart.select().where(PointPart.detail == bases[0].detail)
+  image_run = QRRun(bases[0].detail,general['case'],'weld')
+  tab = []
+  d = []
+  for base in noweld:
+    if len(d) < 3 and base == noweld[-1]:
+      d.append(Footer1(widthList[0],height,image_run,base))
+      tab.append(d)
+    elif len(d) < 3:
+      d.append(Footer1(widthList[0],height,image_run,base))
     else:
-      inf6 = None
-      norm_assembly = None
-    inf8 = PointPart.select(PointPart,fn.SUM(Part.count).alias('count')).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case).first()
-    gr = PointPart.select(Part.work,PointPart.point,
-                          fn.SUM(Part.weight * Part.count).alias('weight'),
-                          fn.SUM(Part.count).alias('count'),
-                          fn.SUM(PointPart.saw).alias('saw'),
-                          fn.SUM(PointPart.cgm).alias('cgm'),
-                          fn.SUM(Case(None, [((PointPart.hole == 1) & (Part.size.cast('int') >= 14) & (PointPart.cgm == 1),1)], 0)).alias('hole_cgm'),
-                          fn.SUM(Case(None, [((PointPart.hole == 1) & (PointPart.saw == 1),1)], 0)).alias('hole_saw'),
-                          fn.SUM(PointPart.bevel).alias('bevel'),
-                          fn.SUM(PointPart.notch).alias('notch'),
-                          fn.SUM(PointPart.chamfer).alias('chamfer'),
-                          fn.SUM(PointPart.milling).alias('milling'),
-                          fn.SUM(PointPart.bend).alias('bend'),
-                  ).join(Part).join(Drawing).join(Order).where(PointPart.detail == detail,Order.cas == case).group_by(Part.work).objects()
-    faza = gr[0].point.faza
-    gr1 = {'saw_s':{'weight': None, 'count': None},'saw_b':{'weight': None, 'count': None},'cgm':{'weight': None, 'count': None}}
-    gr2 = []
-    gr3 = ['Пм','Пб','Сп','В','Ф','Сф','F','W','M']
-    gr4 = ''
-    for i in gr:
-      gr1[i.work] = {'weight': i.weight, 'count': i.count}
-      if i.saw > 0 and i.work == 'saw_s':
-        gr2.append('Пм')
-      if i.saw > 0 and i.work == 'saw_b':
-        gr2.append('Пб')
-      if i.cgm > 0:
-        gr2.append('Ф')
-      if i.hole_cgm > 0:
-        gr2.append('Сф')
-      if i.notch > 0:
-        gr2.append('В')
-      if i.hole_saw > 0:
-        gr2.append('Сп')
-      if i.chamfer > 0:
-        gr2.append('F')
-      if inf4.scalar() > 1 and inf7 == 1:
-        gr2.append('W')
-      gr2.append('M')
-    for i in gr3:
-      if i in gr2:
-        gr4 += i+' '
-    gr2 = gr4
-      
-    inf = {'saw_b':inf1,'saw_s':inf2,'cgm':inf3}
-    tabl_saw_s = {'tabl':[],'tabl_sum':{'table_count':gr1['saw_s']['count'],'table_weight':gr1['saw_s']['weight']},'name':'ПИЛЫ М','color':colors.blue,'color_t':'white','oper':'пилы'}
-    tabl_saw_b = {'tabl':[],'tabl_sum':{'table_count':gr1['saw_b']['count'],'table_weight':gr1['saw_b']['weight']},'name':'ПИЛЫ Б','color':colors.green,'color_t':'white','oper':'пилы'}
-    tabl_cgm = {'tabl':[],'tabl_sum':{'table_count':gr1['cgm']['count'],'table_weight':gr1['cgm']['weight']},'name':'ФАСОНКА','color':colors.yellow,'color_t':'black','oper':'цгм'}
-    tabl_weld = {'tabl':inf6,'norm_assembly': norm_assembly,'norm_weld': norm_weld,'name':'Сборка','color':colors.red,'color_t':'black','count':inf4.scalar()}
-    tabl_paint ={'tabl':inf8,'tabl2':[],'name':'Малярка','color':colors.pink,'color_t':'black','count':inf4.scalar()}
-    for y in inf:
-      for i in inf[y]:
-        tab = []
-        tab2 = []
-        tab.append(i.point.name)
-        tab2.append(i.point.name)
-        tab.append(i.point.assembly.assembly)
-        tab2.append(i.point.assembly.assembly)
-        tab.append(i.point.draw)
-        tab.append(i.part.number)
-        tab.append(i.count)
-        tab2.append(i.count)
-        if len(i.part.profile.split(' ')) > 1:
-          tab.append((i.part.profile).split(' ')[0]+' '+(i.part.profile).split(' ')[1][0:2]+' '+i.part.size)
-          tab2.append((i.part.profile).split(' ')[0]+' '+(i.part.profile).split(' ')[1][0:2]+' '+i.part.size)
-        elif i.part.profile == 'Лист':
-          tab.append((i.part.profile)+' '+i.part.size+'х'+i.part.width)
-          tab2.append((i.part.profile)+' '+i.part.size+'х'+i.part.width)
-        else:
-          tab.append((i.part.profile)+' '+i.part.size)
-          tab2.append((i.part.profile)+' '+i.part.size)
-        tab.append(int(i.part.length))
-        tab.append(float(i.weight))
-        tab2.append(float(i.weight))
-        tab.append(i.part.mark)
-        if i.saw == 1:
-          try:
-            saw = SawNorm.select().where(SawNorm.profile == i.part.profile,SawNorm.size == i.part.size).first()
-            tab.append(round(saw.norm_direct * i.count))
-          except:
-            print(i.part.profile,i.part.size,'111')
-            tab.append('+')
-        else:
-          tab.append('+')
-
-        tab2.append(1)
-
-        if i.hole == 1:
-          try:
-            hole = Hole.select().where(Hole.part == i.part).first()
-            if y == 'cgm' and int(i.part.size) >= 14:
-              norm = HoleNorm.select().where(HoleNorm.diameter >= hole.diameter,
-                                            HoleNorm.depth_of <= i.part.depth,
-                                            HoleNorm.depth_to >= i.part.depth,
-                                            HoleNorm.count >= hole.count,
-                                            HoleNorm.metal == 'Лист').first()
-              tab.append(round(norm.norm * hole.count * i.count))
-            elif y != 'cgm':
-              norm = HoleNorm.select().where(HoleNorm.diameter >= hole.diameter,
-                                            HoleNorm.lenght_of <= int(i.part.length),
-                                            HoleNorm.lenght_to >= int(i.part.length),
-                                            HoleNorm.depth_of <= i.part.depth,
-                                            HoleNorm.depth_to >= i.part.depth,
-                                            HoleNorm.count >= hole.count,
-                                            HoleNorm.metal == 'Сорт').first()
-              tab.append(round(norm.norm * hole.count * i.count))
-            else:
-              tab.append('')
-          except:
-            print(i.part.profile,i.part.size,'222')
-            tab.append('0')
-        else:
-          tab.append('')
-        if i.bevel == 1:
-          tab.append('+')
-        else:
-          tab.append('')
-        if i.notch == 1:
-          tab.append('+')
-        else:
-          tab.append('')
-        if i.chamfer == 1:
-          tab.append('+')
-        else:
-          tab.append('')
-        if i.milling == 1:
-          tab.append('+')
-        else:
-          tab.append('')
-        if i.bend == 1:
-          tab.append('+')
-        else:
-          tab.append('')
-        if y == 'saw_s':
-          tabl_saw_s['tabl'].append(tab)
-        if y == 'saw_b':
-          tabl_saw_b['tabl'].append(tab)
-        if y == 'cgm':
-          tabl_cgm['tabl'].append(tab)
-        tab2.append('')
-        tabl_paint['tabl2'].append(tab2)
-    inf_pdf.append({'case':case,'detail':detail,'work':gr2,'master':inf5,'faza':faza,'saw_s':tabl_saw_s,'saw_b':tabl_saw_b,'cgm':tabl_cgm,'weld':tabl_weld,'paint':tabl_paint,'name':inf4[0].point.name,'mark':inf4[0].point.assembly.assembly,'color':inf4[0].point.assembly.cas.color})
-  Pdf(inf_pdf)
-  return
-
-
-
+      tab.append(d)
+      d = [Footer1(widthList[0],height,image_run,base)]
+  table = Table([''],colWidths=widthList,
+    rowHeights=height)
+  table.setStyle([
+    ('GRID',(0,0),(-1,-1),1,'black'),
+    ('LEFTPADDING',(0,0),(-1,-1),0),
+    ('BOTTOMPADDING',(0,0),(-1,-1),0),
+  ])
+  return table

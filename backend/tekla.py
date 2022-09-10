@@ -147,7 +147,7 @@ def Tekla(xls,yyy):
         for col in drawings:
           if row[1].replace(' ','') == col.assembly:
             part = Part.get(number=int(row[2].replace(' ','')),assembly=col)
-            if part.profile == 'Лист' and int(part.size) < 14:
+            if part.profile == 'Лист' and int(part.size) < 15:
               pass
             else:
               d = (part,int(row[3].replace(' ','')),(int(row[4].replace(' ','')))/part.count,int(row[5].replace(' ','')) / 2,dates)
@@ -191,6 +191,8 @@ def Tekla(xls,yyy):
   return
 
 def Size(str):
+  if str == 'TK52х4':
+    print(str)
   str = str.replace('x','х')
   if str.startswith('Гн.[]'):
     if int(str.replace('Гн.[]','').split('х')[0]) >= 160:
@@ -227,11 +229,25 @@ def Size(str):
   elif str.startswith('O'):
     i = ('Круг',str.replace('O',''),'saw_s','')
     return (i)
+
   elif str.startswith('ТК'):
     if float(str.replace('ТК','').split('х')[0]) >= 273:
       i = ('Труба круглая',str.replace('ТК',''),'saw_b','')
     else:
       i = ('Труба круглая',str.replace('ТК',''),'saw_s','')
+
+    return (i)
+  elif str.startswith('TЭ'):
+    if float(str.replace('TЭ','').split('х')[0]) >= 273:
+      i = ('Труба круглая',str.replace('TЭ',''),'saw_b','')
+    else:
+      i = ('Труба круглая',str.replace('TЭ',''),'saw_s','')
+    return (i)
+  elif str.startswith('TБ'):
+    if float(str.replace('TБ','').split('х')[0]) >= 273:
+      i = ('Труба круглая',str.replace('TБ',''),'saw_b','')
+    else:
+      i = ('Труба круглая',str.replace('TБ',''),'saw_s','')
     return (i)
   elif str.startswith('L'):
     if int(str.replace('L','').split('х')[0]) >= 200:
@@ -255,6 +271,26 @@ def Size(str):
       i = ('Лист',a[1],'cgm',a[0])
     else:
       i = ('Лист',a[0],'cgm',a[1])
+    return (i)
+  elif str.startswith('Риф'):  
+    a = str.replace('Риф','').split('х')
+    if int(a[0]) > int(a[1]):
+      i = ('Лист РИФ',a[1],'cgm',a[0])
+    else:
+      i = ('Лист РИФ',a[0],'cgm',a[1])
+    return (i)
+  elif str.startswith('ПВ'):  
+    a = str.replace('ПВ','').split('х')
+    if int(a[0]) > int(a[1]):
+      i = ('Лист ПВ',a[1],'cgm',a[0])
+    else:
+      i = ('Лист ПВ',a[0],'cgm',a[1])
+    return (i)
+  elif str.startswith('TK'):
+    if float(str.replace('TK','').split('х')[0]) >= 273:
+      i = ('Труба круглая',str.replace('TK',''),'saw_b','')
+    else:
+      i = ('Труба круглая',str.replace('TK',''),'saw_s','')
     return (i)
 
 def Test(i,size=0):

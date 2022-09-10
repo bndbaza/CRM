@@ -1,53 +1,48 @@
 <template>
-  <div>
-    <v-data-table
-      :headers="headers"
-      :items="detail"
-      hide-default-footer
-      :items-per-page="1000"
-      class="elevation-1"
-    >
-      <template v-slot:[`item.start`]="{ item }">
-        <template v-if="item.start">
-          {{ item.start | date }} {{item.worker_1.user.surname}} {{item.worker_1.user.name}} {{item.worker_1.user.patronymic}}
-        </template>
-      </template>
-      <template v-slot:[`item.oper`]="{ item }">
-        <template>
-          {{ trans[item.oper] }}
-        </template>
-      </template>
-      <template v-slot:[`item.detail`]="{ item }">
-        <template>
-          <nuxt-link :to="'/detail/'+item.detail">
-            {{ item.detail }}
-          </nuxt-link>
-        </template>
-      </template>
-    </v-data-table>
-  </div>
+  <v-container>
+    <v-simple-table>
+    <template v-slot:default>
+      <thead>
+        <tr>
+          <th class="text-left">
+            Номер заказа
+          </th>
+          <th class="text-left">
+            Наименование
+          </th>
+          <th class="text-left">
+            Цвет
+          </th>
+          <th class="text-left">
+            Статус
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          v-for="order in orders"
+          :key="order.id" 
+        >
+          <td><nuxt-link :to="'/order/'+order.cas">{{ order.cas }}</nuxt-link></td>
+          <td>{{ order.name }}</td>
+          <td><v-chip :color="order.color"></v-chip></td>
+          <td>{{ order.status }}</td>
+        </tr>
+      </tbody>
+    </template>
+  </v-simple-table>
+  </v-container>
 </template>
 
 <script>
 export default {
   data(){
     return{
-      detail:[],
-      headers:[
-        {text:'Наряд',value:'detail'},
-        {text:'Стадия',value:'oper'},
-        {text:'Начало',value:'start'}
-      ],
-      trans:{
-        assembly:'Сборка',
-        set:'Комплектовка',
-        weld:'Сварка',
-        paint:'Покраска'
-      }
+      orders: []
     }
   },
   async mounted(){
-    this.detail = await this.$axios.$get('http://192.168.0.75:8000/index')
+    this.orders = await this.$axios.$get(this.$store.state.db.host+'index')
   }
 }
 </script>

@@ -21,14 +21,18 @@ color = {
   'notch':('white','black'),
   'point':('pink','black'),
   'chamfer':('violet','black'),
-  'set':('indigo','white')
+  'set':('indigo','white'),
+  'paint':('black','white'),
+  'chief':('black','white'),
+  'joint':('black','white'),
+  'no_metal':('black','white'),
 }
 
 
-def QR_pdf():
+def QR_pdf(qr_list):
   pdf = canvas.Canvas('qr.pdf', pagesize=A4)
   pdf.setTitle('')
-  user = Worker.select().where(Worker.id.in_([65,3,85,68,6,79,28,41,11,64,32,58]))
+  user = Worker.select().where(Worker.id.in_(qr_list))
   d = []
   y = 1
   z = 1
@@ -43,6 +47,7 @@ def QR_pdf():
       y += 1
     z += 1
   pdf.save()
+  return 'qr.pdf'
 
 def QR_pdf1(pdf,user):
   width, height = A4
@@ -106,9 +111,13 @@ def Job(width,height,user):
 def Job1(list,width,height):
   heightList = [height*0.2,height*0.2,height*0.2,height*0.4]
   img = Image(QRUser(list),heightList[3],height,kind='proportional')
+  try:
+    text = f'{list.user.surname} {list.user.name[0]} {list.user.patronymic[0]}'
+  except:
+    text = f'{list.user.surname} {list.user.name[0]}'
   table = Table([
     [list.oper_rus],
-    [list.user.surname +' '+ list.user.name +' '+ list.user.patronymic],
+    [text],
     [''],
     [img]
   ],colWidths=width,rowHeights=heightList)

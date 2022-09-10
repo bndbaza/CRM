@@ -4,10 +4,10 @@ from models import HoleNorm, Part, PointPart, SawNorm, AssemblyNorm, WeldNorm, P
 from peewee import fn
 
 def NormExcel():
-  HoleNormExcel()
-  SawNormExcel()
+  # HoleNormExcel()
+  # SawNormExcel()
   AssemblyNormExcel()
-  WeldNormExcel()
+  # WeldNormExcel()
   # User_worker()
 
 def HoleNormExcel():
@@ -62,7 +62,7 @@ def AssemblyNormExcel():
   wb = load_workbook('VVL.xlsx',data_only=True)
   sheet = wb.get_sheet_by_name('Сборка (ЕНиР)')
   post = []
-  for y in range(17,865):
+  for y in range(866,885):
     d = []
     for i in range(1,9):
       if sheet.cell(row=y,column=i).value == None:
@@ -111,7 +111,8 @@ def Statement(faza,case):
     sheet.cell(row=y,column=7).value = i.point.assembly.weight * i.count
     sheet.cell(row=y,column=6).number_format = BUILTIN_FORMATS[1]
     sheet.cell(row=y,column=7).number_format = BUILTIN_FORMATS[1]
-  book.save('stat '+str(faza)+' '+case+'.xlsx')
+  book.save(f'reports/Ведомость {case} {faza}.xlsx')
+  return f'reports/Ведомость {case} {faza}.xlsx'
 
 
 def Cuting(faza,case):
@@ -129,7 +130,8 @@ def Cuting(faza,case):
     sheet.cell(row=y,column=2).value = i.point.draw
     sheet.cell(row=y,column=3).value = i.part.size
     sheet.cell(row=y,column=4).value = i.count
-  book.save('cut '+str(faza)+' '+case+'.xlsx')
+  book.save(f'reports/Детали {case} {faza}.xlsx')
+  return f'reports/Детали {case} {faza}.xlsx'
 
 def User_worker():
   wb = load_workbook('VVL.xlsx',data_only=True)
@@ -149,3 +151,35 @@ def Temp():
   book = Workbook()
   sheet = book.active
   fas = 0
+
+
+def Tag(faza,case):
+  book = Workbook()
+  sheet = book.active
+  tags = PointPart.select(PointPart,Drawing,Point,fn.MAX(Part.length).alias('length'),(fn.COUNT(Part.id) / fn.COUNT(fn.DISTINCT(Part.id))).alias('count')).join(Point).join(Drawing).join(Order).join_from(PointPart,Part).where(Order.cas == case,Point.faza == faza).group_by(Point.assembly,PointPart.detail).order_by(PointPart.detail)
+  y = 1
+  sheet.cell(row=y,column=1).value = 'наряд'
+  sheet.cell(row=y,column=2).value = 'длина'
+  sheet.cell(row=y,column=3).value = 'вес'
+  sheet.cell(row=y,column=4).value = 'заказ'
+  sheet.cell(row=y,column=5).value = 'фаза'
+  sheet.cell(row=y,column=6).value = 'марка'
+  sheet.cell(row=y,column=7).value = 'qr'
+  sheet.cell(row=y,column=8).value = 'чертёж'
+  sheet.cell(row=y,column=9).value = 'Количество'
+  for i in tags:
+    y += 1
+    sheet.cell(row=y,column=1).value = i.detail
+    sheet.cell(row=y,column=2).value = i.length
+    sheet.cell(row=y,column=3).value = float(i.part.assembly.weight)
+    sheet.cell(row=y,column=4).value = i.part.assembly.cas.cas
+    sheet.cell(row=y,column=5).value = i.point.faza
+    sheet.cell(row=y,column=6).value = i.part.assembly.assembly
+    sheet.cell(row=y,column=7).value = 'Run '+str(i.detail)+' weld '+i.part.assembly.cas.cas
+    sheet.cell(row=y,column=8).value = i.point.draw
+    if i.weld == 1:
+      sheet.cell(row=y,column=9).value = 2
+    else:
+      sheet.cell(row=y,column=9).value = 1
+  book.save(f'reports/Пример {case} {faza}.xlsx')
+  return f'reports/Пример {case} {faza}.xlsx'

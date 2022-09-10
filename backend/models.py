@@ -1,7 +1,6 @@
 import datetime
-from email.policy import default
-from xmlrpc.server import CGIXMLRPCRequestHandler
-from peewee import Model, IntegerField, DateTimeField, CharField, ForeignKeyField, DecimalField, PrimaryKeyField, BooleanField
+from peewee import Model, IntegerField, DateTimeField, CharField, ForeignKeyField, DecimalField, PrimaryKeyField, BooleanField, BigIntegerField
+# from peewee import *
 from db import connection
 
 class ModelBase(Model):
@@ -15,6 +14,14 @@ class Order(ModelBase):
   create_date = DateTimeField(default=datetime.datetime.now)
   cas = CharField(max_length=50)
   color = CharField(max_length=30, null=True)
+  status = CharField(max_length=100, null=True)
+  name = CharField(max_length=500,null=True)
+  contract = CharField(max_length=500,null=True)
+  customer = CharField(max_length=500,null=True)
+  consignee = CharField(max_length=500,null=True)
+  weight = DecimalField(max_digits=12,decimal_places=3,null=True)
+
+  
   
 class Drawing(ModelBase):
   class Meta:
@@ -41,7 +48,8 @@ class Point(ModelBase):
   faza = IntegerField(null=True)
   line = IntegerField(null=True)
   in_work = BooleanField(default=False)
-  draw = IntegerField(null=True)
+  draw = CharField(max_length=250,null=True)
+
 
 class User(ModelBase):
   class Meta:
@@ -50,6 +58,9 @@ class User(ModelBase):
   surname = CharField(max_length=100)
   name = CharField(max_length=100)
   patronymic = CharField(max_length=100)
+  telegram = BigIntegerField(null=True)
+  username = CharField(max_length=100,null=True)
+  ip = CharField(max_length=16,null=True)
 
 class Worker(ModelBase):
   class Meta:
@@ -91,6 +102,14 @@ class Part(ModelBase):
   work = CharField(max_length=10)
   depth = DecimalField(max_digits=12,decimal_places=3,default=0)
   perimeter = IntegerField(default=0)
+  sn = CharField(max_length=50,null=True)
+
+class WeldNorm(ModelBase):
+  class Meta:
+    table_name='weldnorms'
+  id = PrimaryKeyField(null=False)
+  cathet = IntegerField()
+  norm = DecimalField(max_digits=12,decimal_places=3,default=0)
 
 class Weld(ModelBase):
   class Meta:
@@ -98,7 +117,7 @@ class Weld(ModelBase):
   id = PrimaryKeyField(null=False)
   create_date = DateTimeField()
   assembly = ForeignKeyField(Drawing,backref='welds')
-  cathet = IntegerField()
+  cathet = ForeignKeyField(WeldNorm,backref='welds')
   length = DecimalField(max_digits=12,decimal_places=3)
   count = IntegerField()
 
@@ -169,6 +188,7 @@ class PointPart(ModelBase):
   bend = IntegerField(default=0)
   weld = IntegerField(default=1)
   turning = IntegerField(default=0)
+  joint = IntegerField(default=0)
 
 class HoleNorm(ModelBase):
   class Meta:
@@ -208,21 +228,28 @@ class AssemblyNorm(ModelBase):
   norm = DecimalField(max_digits=12,decimal_places=3,default=0)
   choice = CharField(max_length=100)
 
-class WeldNorm(ModelBase):
-  class Meta:
-    table_name='weldnorms'
-  id = PrimaryKeyField(null=False)
-  cathet = IntegerField()
-  norm = DecimalField(max_digits=12,decimal_places=3,default=0)
 
-class User(ModelBase):
-  class Meta:
-    table_name='users'
-  id = PrimaryKeyField(null=False)
-  surname = CharField(max_length=100)
-  name = CharField(max_length=100)
-  patronymic = CharField(max_length=100)
 
+class Faza(ModelBase):
+  class Meta:
+    table_name='fazas'
+  id = PrimaryKeyField(null=False)
+  detail = IntegerField()
+  faza = IntegerField(null=True)
+  case = ForeignKeyField(Order,backref='details',null=True)
+  weight = DecimalField(max_digits=12,decimal_places=3,default=0)
+  area = DecimalField(max_digits=12,decimal_places=3,default=0)
+  kmd = IntegerField(default=3)
+  in_work = IntegerField(default=1)
+  preparation = IntegerField(default=1)
+  set = IntegerField(default=0)
+  assembly = IntegerField(default=0)
+  weld = IntegerField(default=0)
+  paint = IntegerField(default=0)
+  packed = IntegerField(default=0)
+  shipment = IntegerField(default=0)
+  in_object = IntegerField(default=0)
+  mount = IntegerField(default=0)
 
 class Detail(ModelBase):
   class Meta:
@@ -237,7 +264,7 @@ class Detail(ModelBase):
   end = DateTimeField(null=True)
   norm = DecimalField(max_digits=12,decimal_places=3,default=0)
   to_work = BooleanField(default=False)
-
+  faza = ForeignKeyField(Faza,backref='details')
 
 class TaskPart(ModelBase):
   class Meta:
@@ -247,3 +274,135 @@ class TaskPart(ModelBase):
   part = ForeignKeyField(Part,backref='taskparts',null=True)
   finish = BooleanField(default=False)
   count = IntegerField()
+
+class PrintBirk(ModelBase):
+  class Meta:
+    table_name='printbirks'
+  id = PrimaryKeyField(null=False)
+  create_date = DateTimeField(default=datetime.datetime.now)
+  detail = IntegerField()
+  length = IntegerField()
+  weight = DecimalField(max_digits=12,decimal_places=3,default=0)
+  case = CharField(max_length=30)
+  faza = IntegerField()
+  mark = CharField(max_length=30)
+  qr = CharField(max_length=40)
+  count = IntegerField()
+  draw = CharField()
+
+class Stage(ModelBase):
+  class Meta:
+    table_name='stages'
+  id = PrimaryKeyField(null=False)
+  kmd = IntegerField(default=0)
+  in_work = IntegerField(default=0)
+  preparation = IntegerField(default=0)
+  set = IntegerField(default=0)
+  assembly = IntegerField(default=0)
+  weld = IntegerField(default=0)
+  paint = IntegerField(default=0)
+  shipment = IntegerField(default=0)
+  in_object = IntegerField(default=0)
+  mount = IntegerField(default=0)
+
+class DetailUser(ModelBase):
+  class Meta:
+    table_name='detailusers'
+  id = PrimaryKeyField(null=False)
+  detail = ForeignKeyField(Detail,backref='detailusers')
+  worker = ForeignKeyField(Worker,backref='detailusers')
+  weight = DecimalField(max_digits=12,decimal_places=3,default=0)
+  norm = DecimalField(max_digits=12,decimal_places=3,default=0)
+
+
+
+class Shipment(ModelBase):
+  class Meta:
+    table_name='shipments'
+  id = PrimaryKeyField(null=False)
+  order = ForeignKeyField(Order,backref='shipments',null=True)
+  number = IntegerField()
+  date = DateTimeField(null=True)
+  car = CharField(max_length=250)
+  number_car = CharField(max_length=250)
+  driver = CharField(max_length=250)
+  ready = CharField(max_length=200,null=True)
+
+
+
+class Packed(ModelBase):
+  class Meta:
+    table_name='packeds'
+  id = PrimaryKeyField(null=False)
+  number = IntegerField()
+  size = CharField(max_length=150,null=True)
+  shipment = ForeignKeyField(Shipment,backref='packeds',null=True)
+  pack = CharField(max_length=50,null=True)
+  date = DateTimeField(default=datetime.datetime.now)
+  order = ForeignKeyField(Order,backref='packeds',null=True)
+  ready = CharField(max_length=200,null=True)
+  
+
+  
+
+class DetailPack(ModelBase):
+  class Meta:
+    table_name='detailpacks'
+  id = PrimaryKeyField(null=False)
+  detail = ForeignKeyField(Faza,backref='detailpacks')
+  pack = ForeignKeyField(Packed,backref='detailpacks',null=True)
+
+
+class Reg(ModelBase):
+  class Meta:
+    table_name='regs'
+  id = PrimaryKeyField(null=False)
+  surname = CharField(max_length=100)
+  name = CharField(max_length=100)
+  patronymic = CharField(max_length=100)
+  telegram = BigIntegerField(null=True)
+  username = CharField(max_length=100,null=True)
+  user = ForeignKeyField(User,backref='regs',null=True)
+
+
+# class TestTime(ModelBase):
+#   class Meta:
+#     table_name='testtimes'
+#   id = PrimaryKeyField(null=False)
+#   mark = CharField(max_length=100)
+#   x = CharField(max_length=100)
+#   y = CharField(max_length=100)
+#   z = CharField(max_length=100)
+#   name = CharField(max_length=100)
+#   paint = IntegerField()
+  
+class Otc(ModelBase):
+  class Meta:
+    table_name='otcs'
+  id = PrimaryKeyField(null=False)
+  detail = ForeignKeyField(Faza,backref='otcs')
+  worker = ForeignKeyField(Worker,backref='otcs',null=True)
+  start = DateTimeField(default=datetime.datetime.now)
+  end = DateTimeField(null=True)
+  oper = CharField(max_length=100)
+  error = IntegerField(default=0)
+  usc = BooleanField(default=False)
+  fix = BooleanField(default=False)
+  
+class Coating(ModelBase):
+  class Meta:
+    table_name='coatings'
+  id = PrimaryKeyField(null=False)
+  number = IntegerField()
+  name = CharField(max_length=250)
+  color = CharField(max_length=150)
+  depth = DecimalField(max_digits=12,decimal_places=3,default=0)
+  price = IntegerField()
+
+class PointPaint(ModelBase):
+  class Meta:
+    table_name='pointpaints'
+  id = PrimaryKeyField(null=False)
+  coat = ForeignKeyField(Coating,backref='pointpaints')
+  point = ForeignKeyField(Point,backref='pointpaints')
+  number = CharField(max_length=150)

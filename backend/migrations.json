@@ -22,6 +22,16 @@
     "models.Worker",
     "models.Detail",
     "models.Task",
-    "models.TaskPart"
+    "models.TaskPart",
+    "models.PrintBirk",
+    "models.Faza",
+    "models.DetailUser",
+    "models.Shipment",
+    "models.Packed",
+    "models.DetailPack",
+    "models.Reg",
+    "models.Otc",
+    "models.Coating",
+    "models.PointPaint"
   ]
 }

@@ -1,25 +1,9 @@
-from models import Drawing, Part, Point, PointPart, Task, TaskPart, Worker, Detail
+import asyncio
+from models import DetailUser, Drawing, Faza, Part, Point, PointPart, Task, TaskPart, User, Worker, Detail, Otc
+from peewee import fn
 import datetime
 from db import connection
-
-# def User_get(detail):
-#   error = None
-#   user = detail.user.replace('\x10','').replace('\xad','').replace('\r','').lower().split(' ')
-#   print(user)
-#   detail = detail.detail.replace('\x10','').replace('\xad','').replace('\r','').lower().replace('saw','saw_').split(' ')
-#   worker = Worker.select().where(Worker.id == user).first()
-#   d = Detail.select().where(Detail.detail == detail[1],Detail.oper == worker.oper).first()
-#   if detail[0] != 'u':
-#     print(detail,d,worker.oper)
-#   if detail[0] != 'u' and d != None and d.basic == detail[2] and (d.worker == None or d.worker == worker):
-#     error = Detail_post(d,worker)
-#   elif detail[0] !='u':
-#     error = 'Невозможно взять наряд'
-#   job = Detail.select().where(Detail.worker_1 == worker,Detail.end == None)
-#   if len(job) == 0 and error == None:
-#     error = 'Список Пуст'
-#   job = {'worker': list(job),'error':error}
-#   return job
+from send_bot import AllReport, Bots
 
 
 def User_get(user):
@@ -42,14 +26,21 @@ def Detail_post(detail):
   detail = detail.detail.replace('\x10','').replace('\xad','').replace('\r','').lower().split(' ')
   if detail[0] == 'a':
     task = Detail.get(Detail.detail == detail[1],Detail.oper == users[0].oper)
-    error,user2 = Detail_choise(task,users,task.to_work,0)
+    error,user2 = Detail_choise(task,users,task.to_work,True,'detail')
   elif detail[0] == 't':
-    task = Task.get(Task.task == detail[1])
+    task = Task.get(Task.id == detail[1])
     user_list = []
     for user in users:
       user_list.append(user.id)
-    one = Task.select().where((Task.worker_1.in_(user_list)) | (Task.worker_2.in_(user_list)),Task.end == None)
-    error,user2 = Detail_choise(task,users,1,len(one))
+    try:
+      one = Task.select(fn.MIN(Task.start).alias('min')).where((Task.worker_1.in_(user_list)) | (Task.worker_2.in_(user_list)),Task.end == None) 
+      if (one[0].min + datetime.timedelta(days=1)) > datetime.datetime.today():
+        time = True
+      else:
+        time = False
+    except:
+      time = True
+    error,user2 = Detail_choise(task,users,1,time,'task')
   base = Detail_result(users[0].id,users,user2, error)
   return base
 
@@ -74,66 +65,162 @@ def Detail_result(id,worker,user,error):
   return base
 
 
-def Detail_choise(task,users,to_work,one):
+def Detail_choise(task,users,to_work,one,stad):
   error = None
   user2 = None
+  oper = None
+  if task.oper == 'assembly':
+    oper = 'set'
+  elif task.oper == 'weld':
+    oper = 'assembly'
+  faza = task.faza
   dates = datetime.datetime.today()
   if to_work == 0:
     error = 'Предшедствующие операции не выполнены'
+  elif task.end != None:
+    error = 'Операция уже выполнена'
   elif users[0].oper in task.oper and str(users[0].id) in [str(task.worker_1),str(task.worker_2)]:
-    if dates - task.start <= datetime.timedelta(seconds=3):
-      error = 'Прошло менее 5 минут'
-    else:
-      task.end = dates
-      task.save()
-      try:
-        task.detail
-        Detail_end(task)
-      except:
-        Task_end(task)
-  elif one > 0:
+    error = Detail_close(task,dates,stad)
+  elif one == False:
     error = 'Необходимо закончить задание'
   elif users[0].oper in task.oper and task.start == None:
-    task.start = dates
-    task.worker_1 = users[0].id
-    task.save()
+    Detail_open(task,dates,faza,users,stad)
+  elif oper != None and task.start == None:
+    task_close = Detail.get(Detail.detail == task.detail,Detail.oper == oper)
+    if task_close.start == None:
+      error = 'Неверная операция'
+    else: 
+      error = Detail_close(task_close,dates,stad)
+      if error == None:
+        Detail_open(task,dates,faza,users,stad)
   else:
     error = 'Неверная операция'
   if len(users) == 2:
     task.worker_2 = users[1].id
+    task.save()
     user2 = users[1].id
   return error, user2
 
 def Task_end(task):
-  tp = TaskPart.select(TaskPart.part).join(Task).where(Task.end != None).tuples()
-  pp = PointPart.select(PointPart.detail).join(Point).join(Drawing).where(PointPart.part.not_in(tp),Point.faza == task.faza,Drawing.cas == task.order).group_by(PointPart.detail).tuples()
-  ppp = PointPart.select(PointPart.detail).join(Point).join(Drawing).where(PointPart.detail.not_in(pp),Point.faza == task.faza,Drawing.cas == task.order).group_by(PointPart.detail).tuples()
-  dd = Detail.select().where(Detail.detail.in_(ppp),Detail.oper == 'set',Detail.to_work == False)
+  # tp2 = TaskPart.select(TaskPart.part).join(Task).where(Task.end == None,Task.faza == task.faza).group_by(TaskPart.part).tuples()
+  # tp = TaskPart.select(TaskPart.part).join(Task).where(TaskPart.part.not_in(tp2),Task.end != None,Task.faza == task.faza).tuples()
+  # pp = PointPart.select(PointPart.detail).join(Point).join(Drawing).where(PointPart.part.not_in(tp),Point.faza == task.faza,Drawing.cas == task.order).group_by(PointPart.detail).tuples()
+  # ppp = PointPart.select(PointPart.detail).join(Point).join(Drawing).where(PointPart.detail.not_in(pp),Point.faza == task.faza,Drawing.cas == task.order).group_by(PointPart.detail).tuples()
+  # dd = Detail.select().where(Detail.detail.in_(ppp),Detail.oper == 'set',Detail.to_work == False)
+  
+  tp = TaskPart.select(TaskPart.part).join(Task).where(Task.end == None,Task.faza == task.faza,Task.order == task.order).tuples()
+  pp = PointPart.select(PointPart.detail).join(Point).join(Drawing).where(PointPart.part.in_(tp),Point.faza == task.faza,Drawing.cas == task.order).group_by(PointPart.detail).tuples()
+  dd = Detail.select().join(Faza).where(Detail.detail.not_in(pp),Detail.oper == 'set',Detail.to_work == False,Faza.faza == task.faza,Faza.case == task.order)
+  
+  
+  print(len(tp),len(pp),len(dd))
   if len(dd) != 0:
     for d in dd:
+      print(d.detail)
       d.to_work = True
     with connection.atomic():
       Detail.bulk_update(dd,fields=[Detail.to_work])
+  faza = Faza.select().where(Faza.detail.not_in(pp),Faza.faza == task.faza,Faza.case == task.order)
+  if len(faza) != 0:
+    for i in faza:
+      i.preparation = 3
+      if i.set == 0:
+        i.set = 1
+    with connection.atomic():
+      Faza.bulk_update(faza,fields=[Faza.preparation,Faza.set])
 
 
 def Detail_end(task):
-  opers = ['assembly','weld','paint']
-  details = Detail.select().where(Detail.detail == task.detail,Detail.oper.in_(opers),Detail.to_work == False)
-  for detail in details:
-    if detail.oper == opers[0]:
-      detail.to_work = True
-      detail.save()
-      break
-    elif detail.oper == opers[1]:
-      detail.to_work = True
-      detail.save()
-      break
-    elif detail.oper == opers[2]:
-      detail.to_work = True
-      detail.save()
-      break
-    else:
-      break
+  opers = {'set':'assembly','assembly':'weld','weld':'paint'}
+  try:
 
+    detail = Detail.get(Detail.detail == task.detail,Detail.oper == opers[task.oper])
+    if task.oper != 'weld':
+      detail.to_work = True
 
+    detail.save()
+    faza = task.faza
+    if task.oper == 'set':
+      faza.set = 3
+      faza.assembly = 1
+    elif task.oper == 'assembly':
+      faza.assembly = 3
+      faza.weld = 1
+    elif task.oper == 'weld':
+      otc = Otc.select().where(Otc.detail == faza,Otc.oper == 'weld').first()
+      if otc == None:
+        otc = Otc.create(detail=faza,start=datetime.datetime.today(),oper='weld')
+      else:
+        otc.fix = 0
+        otc.error += 1
+        otc.save()
+      worker = Worker.select(User.telegram).join(User).where(Worker.oper.in_(['otc'])).tuples()
+      asyncio.run(AllReport(worker,f'{faza.detail} {task.worker_1.user.surname} Наряд на проверку сварки'))
+      faza.weld = 3
+      # faza.paint = 1
+    faza.save()
+  except:
+    print('11111111111111111')
+    # Otc.get_or_create(detail=faza,start=datetime.datetime.today(),oper='weld')
+    # otc = Worker.select(User.telegram).join(User).where(Worker.oper.in_(['admin'])).tuples()
+    # AllReport(otc,f'{faza.detail} {detail.worker_1.user.surname} Наряд на проверку сварки')
+    detail = Detail.get(Detail.detail == task.detail,Detail.oper == 'paint')
+    detail.to_work = True
+    detail.save()
+    faza = task.faza
+    faza.paint = 1
+    faza.set = 3
+    faza.assembly = 3
+    faza.weld = 3
+    faza.save()
 
+def Detail_open(task,dates,faza,users,stad):
+  task.start = dates
+  task.worker_1 = users[0].id
+  task.save()
+  if stad == 'task':
+    faza = Faza.select().where(Faza.faza == task.faza)
+    if len(faza) != 0:
+      for i in faza:
+        i.in_work = 3
+      with connection.atomic():
+        Faza.bulk_update(faza,fields=[Faza.in_work])
+    d = []
+    for i in task.taskparts:
+      d.append(i.part.id)
+    pointpart = PointPart.select(PointPart.detail).join(Point).where(Point.faza == task.faza,PointPart.part.in_(d)).group_by(PointPart.detail).tuples()
+    fazapp = Faza.select().where(Faza.detail.in_(pointpart))
+    for i in fazapp:
+      i.preparation = 2
+    with connection.atomic():
+        Faza.bulk_update(fazapp,fields=[Faza.preparation])
+  elif stad == 'detail':
+    if task.oper == 'set':
+      faza.set = 2
+    elif task.oper == 'assembly':
+      faza.assembly = 2
+    elif task.oper == 'weld':
+      faza.weld = 2
+    faza.save()
+
+def Detail_close(task,dates,stad):
+  error = None
+  if dates - task.start <= datetime.timedelta(minutes=1):
+    error = 'Прошло менее 30 минут'
+  else:
+    task.end = dates
+    task.save()
+    if stad == 'detail':
+      data = []
+      if task.worker_2 != None:
+        data.append((task.id,task.worker_1,task.faza.weight / 2,task.norm / 2))
+        data.append((task.id,task.worker_2,task.faza.weight / 2,task.norm / 2))
+      else:
+        data.append((task.id,task.worker_1,task.faza.weight,task.norm))
+      print(data)
+      with connection.atomic():
+        DetailUser.insert_many(data,fields=[DetailUser.detail,DetailUser.worker,DetailUser.weight,DetailUser.norm]).execute()
+      Detail_end(task)
+    elif stad == 'task':
+      Task_end(task)
+  return error
