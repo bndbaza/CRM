@@ -18,7 +18,7 @@ pdfmetrics.registerFont(TTFont('rus','arial.ttf'))
 p_style = ParagraphStyle(name='Normal',fontName='rus',fontSize=9,)
 end = {'page':1,'finish':False}
 
-hstr = 15
+hstr = 12
 
 def ShipmentList(id):
   pdf = canvas.Canvas(f'media/Машина {id}.pdf', pagesize=A4)
@@ -32,7 +32,7 @@ def ShipmentList(id):
       count += len(PointPart.select(PointPart,fn.COUNT(fn.DISTINCT(PointPart.point)).alias('count')).join(Point).join(Drawing).where(PointPart.detail == det.detail.detail).group_by(PointPart.detail,Drawing.id))
     if tab['count'] == 0 and count > 50 and end['page'] == 1:
       pass
-    elif tab['count'] + count > 37 and end['page'] == 1:
+    elif tab['count'] + count > 40 and end['page'] == 1:
       Pdf(pdf,ship,tab)
       pdf.showPage()
       tab['count'] = 0
@@ -53,7 +53,7 @@ def ShipmentList(id):
         if float(detail.detail.weight) != name.count * float(name.point.assembly.weight):
           print(detail.detail.detail,detail.detail.weight,name.count * float(name.point.assembly.weight))
         index += 1
-      if len(dic['detail']) >= 37 and end['page'] == 1:
+      if len(dic['detail']) >= 40 and end['page'] == 1:
         tab['count'] += len(dic['detail'])
         tab['tab'].append(dic)
         Pdf(pdf,ship,tab)
@@ -105,7 +105,7 @@ def Pdf(pdf,id,tab):
 
 def Header(tab,pdf,ship,width,height):
   index = 1
-  heightList = [70,15,135,25,tab['count'] * hstr,60,30,15,height - 355 - tab['count'] * hstr]
+  heightList = [70,15,145,25,tab['count'] * hstr,15,60,30,15,height - 380 - tab['count'] * hstr]
   ship.date = datetime.datetime.today()
   ship.save()
   if end['finish'] == True and end['page'] == 1:
@@ -115,6 +115,7 @@ def Header(tab,pdf,ship,width,height):
       [Header2(pdf,ship,width,heightList[2])],
       [Body1(width,25)],
       [Body2(tab,width,heightList[4])],
+      [],
       [Footer1(tab,width,75)],
       [''],
       [''],
@@ -138,13 +139,14 @@ def Header(tab,pdf,ship,width,height):
       rowHeights=heightList)
 
   elif end['finish'] == True and end['page'] != 1:
-    heightList = [0,0,0,25,tab['count'] * hstr,60,30,15,height - 205 - tab['count'] * hstr]
+    heightList = [0,0,0,25,tab['count'] * hstr,15,60,30,15,height - 220 - tab['count'] * hstr]
     table = Table([
       [''],
       [''],
       [''],
       [Body1(width,25)],
       [Body2(tab,width,heightList[4])],
+      [],
       [Footer1(tab,width,75)],
       [''],
       [''],
@@ -201,7 +203,7 @@ def Header1(pdf,pack,width,height):
 
 def Header2(pdf,pack,width,height):
   widthList = [width*0.4,width*0.6]
-  heightList = [15,25,25,25,25,20]
+  heightList = [25,25,15,35,25,20]
   table = Table([
     ['Номер договора, спецификации',Paragraph(pack.order.contract,p_style)],
     ['Поставщик (наименование, адрес, ИНН):',Paragraph('ООО «Байкалстальстрой», 666037, Иркутская область, город Шелехов, улица Известковая, дом 2, ИНН 3810061670',p_style)],
@@ -242,6 +244,39 @@ def Body1(width,height):
     ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
   ])
   return table
+
+
+def fake(height=15):
+  widthList = [25,95,79,57,47,31.5,50,57,75,55]
+  table = Table([
+    ['41',
+    'Метизы',
+    '',
+    '',
+    'кг.',
+    '',
+    '1514.48',
+    '',
+    '',
+    'Ящик'],
+  ],colWidths=widthList,
+    rowHeights=height)
+  table.setStyle([
+    ('GRID',(0,0),(-1,-1),1,'black'),
+    ('FONTSIZE',(0,0),(-1,-1),9),
+    ('FONTNAME',(0,0),(-1,-1),'rus'),
+    ('ALIGN',(-1,-1),(-1,-1),'CENTER'),
+    ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+  ])
+  return table
+
+
+
+
+
+
+
+
 
 def Body2(tab,width,height):
   widthList = [384.5,187]

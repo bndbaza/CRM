@@ -117,7 +117,8 @@ export default {
         notch:'Вырез',
         chamfer:'Фаска',
         milling:'Фрезеровка',
-        joint:'Стыковка'
+        joint:'Стыковка',
+        bend:'Гибка'
       }
     }
   },

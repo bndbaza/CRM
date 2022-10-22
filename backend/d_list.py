@@ -11,7 +11,7 @@ def Dlist():
   case = Order.get_or_create(cas=ord)[0]
   excel = {}
   dates = datetime.today()
-  wb = load_workbook(f'{ord}.xlsx',data_only=True)
+  wb = load_workbook(f'{ord} 2.xlsx',data_only=True)
   sheet = wb.get_sheet_by_name('Диспетчерский')
   mark = ''
   draw = ''
@@ -26,7 +26,7 @@ def Dlist():
       count = int((sheet.cell(row=i,column=23).value))
       drawing = Drawing.create(assembly = mark,weight = 0,area = 0,cas = case,create_date = dates,count = count,more = 0)
       for c in range(count):
-        point = Point.create(assembly = drawing,point_x = 0,point_y = 0,point_z = 0,name = 'Закладные',faza = 3,draw = draw,create_date = dates)
+        point = Point.create(assembly = drawing,point_x = 0,point_y = 0,point_z = 0,name = 'Закладные',faza = 5,draw = draw,create_date = dates)
       excel[drawing] = []
 
     if sheet.cell(row=i,column=9).value != None:
@@ -112,6 +112,7 @@ def CalcDlist(ord):
 
 
 def Size(str):
+  print(str)
   str = str.replace('x','х')
 
   if str.startswith('Тр.Ø'):
@@ -119,6 +120,13 @@ def Size(str):
       i = ('Труба круглая',str.replace('Тр.Ø',''),'saw_b','')
     else:
       i = ('Труба круглая',str.replace('Тр.Ø',''),'saw_s','')
+    return (i)
+
+  elif str.startswith('Тр.'):
+    if float(str.replace('Тр.','').split('х')[0]) >= 273:
+      i = ('Труба круглая',str.replace('Тр.',''),'saw_b','')
+    else:
+      i = ('Труба круглая',str.replace('Тр.',''),'saw_s','')
     return (i)
   
   elif str.startswith('Шв.6,5'):
@@ -134,6 +142,10 @@ def Size(str):
 
   elif str.startswith('Кр.Ø'):
     i = ('Круг',str.replace('Кр.Ø',''),'saw_s','')
+    return (i)
+
+  elif str.startswith('Круг '):
+    i = ('Круг',str.replace('Круг ',''),'saw_s','')
     return (i)
 
   elif str.startswith('Арм.Ø'):

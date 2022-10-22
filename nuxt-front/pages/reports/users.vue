@@ -53,11 +53,11 @@
             class="elevation-1"
           >
             <template v-slot:[`item.norm`]="{ item }">
-              <template v-if="item.worker_2">
-                {{ item.norm / 2 | norm }}
-              </template>
-              <template v-else>
-                {{ item.norm | norm}}
+              {{ item.norm | norm }}
+            </template>
+            <template v-slot:[`item.end`]="{ item }">
+              <template v-if="item.task != 'Итог'">
+                {{ Replace(item.end)}}
               </template>
             </template>
           </v-data-table>
@@ -66,7 +66,7 @@
             v-if="value == 'Покраска'"
             :headers="headers2"
             hide-default-footer
-            :items-per-page="1000"
+            :items-per-page="5000"
             :items="keys"
             single-select="true"
             item-key="id"
@@ -78,6 +78,12 @@
               </template>
               <template v-else>
                 {{ item.norm | money}}
+              </template>
+              
+            </template>
+            <template v-slot:[`item.end`]="{ item }">
+              <template v-if="item.task != 'Итог'">
+                {{ Replace(item.end)}}
               </template>
             </template>
           </v-data-table>
@@ -92,11 +98,16 @@
             item-key="id"
             class="elevation-1"
           >
+            <template v-slot:[`item.end`]="{ item }">
+              <template v-if="item.task != 'Итог'">
+                {{ Replace(item.end)}}
+              </template>
+            </template>
           </v-data-table>
 
 
           <v-data-table
-            v-if="value != 'Сварка' && value != 'Сборка' && value != 'Комплектовка' && value != 'Покраска'"
+            v-if="value != 'Сварка' && value != 'Сборка' && value != 'Комплектовка' && value != 'Покраска'  && value != 'Сверловка' && value != 'Пилы' && value != 'Скос'"
             :headers="headers3"
             hide-default-footer
             :items-per-page="1000"
@@ -105,6 +116,51 @@
             item-key="id"
             class="elevation-1"
           >
+            <template v-slot:[`item.end`]="{ item }">
+              <template v-if="item.task != 'Итог'">
+                {{ Replace(item.end)}}
+              </template>
+            </template>
+          </v-data-table>
+
+          <v-data-table
+            v-if="value == 'Сверловка'"
+            :headers="headers5"
+            hide-default-footer
+            :items-per-page="1000"
+            :items="keys"
+            single-select="true"
+            item-key="id"
+            class="elevation-1"
+          >
+            <template v-slot:[`item.norm`]="{ item }">
+              {{ item.norm | norm }}
+            </template>
+            <template v-slot:[`item.end`]="{ item }">
+              <template v-if="item.task != 'Итог'">
+                {{ Replace(item.end)}}
+              </template>
+            </template>
+          </v-data-table>
+
+          <v-data-table
+            v-if="value == 'Пилы' || value == 'Скос'"
+            :headers="headers6"
+            hide-default-footer
+            :items-per-page="1000"
+            :items="keys"
+            single-select="true"
+            item-key="id"
+            class="elevation-1"
+          >
+            <template v-slot:[`item.norm`]="{ item }">
+              {{ item.norm | norm }}
+            </template>
+            <template v-slot:[`item.end`]="{ item }">
+              <template v-if="item.task != 'Итог'">
+                {{ Replace(item.end)}}
+              </template>
+            </template>
           </v-data-table>
         </v-col>
       </v-row>
@@ -128,6 +184,7 @@ export default {
       ],
       headers2: [
         { text: 'Наряд', value: 'detail' },
+        { text: 'Дата', value: 'end' },
         { text: 'Марка', value: 'mark' },
         { text: 'Чертеж', value: 'draw' },
         { text: 'Наименование', value: 'name' },
@@ -136,6 +193,7 @@ export default {
       ],
       headers4: [
         { text: 'Наряд', value: 'detail' },
+        { text: 'Дата', value: 'end' },
         { text: 'Марка', value: 'mark' },
         { text: 'Чертеж', value: 'draw' },
         { text: 'Наименование', value: 'name' },
@@ -143,9 +201,26 @@ export default {
       ],
       headers3: [
         { text: 'Задание', value: 'task' },
+        { text: 'Дата', value: 'end' },
         { text: 'Профиль', value: 'profile' },
         { text: 'Размер', value: 'size' },
         { text: 'Количество', value: 'count_all' },
+      ],
+      headers5: [
+        { text: 'Задание', value: 'task' },
+        { text: 'Дата', value: 'end' },
+        { text: 'Профиль', value: 'profile' },
+        { text: 'Размер', value: 'size' },
+        { text: 'Количество', value: 'count' },
+        { text: 'Норма', value: 'norm' },
+      ],
+      headers6: [
+        { text: 'Задание', value: 'task' },
+        { text: 'Дата', value: 'end' },
+        { text: 'Профиль', value: 'profile' },
+        { text: 'Размер', value: 'size' },
+        { text: 'Количество', value: 'count_all' },
+        { text: 'Норма', value: 'norm' },
       ],
     }
   },
@@ -159,6 +234,17 @@ export default {
     async ReportUser() {
       this.show_user = true
       this.report = await this.$axios.$get(this.$store.state.db.host+'report/user/'+this.user[0].id+'/'+this.start+'/'+this.end)
+    },
+    Replace(text) {
+      text = text.split('T')[0]
+      text = new Date(text.split('-'))
+      var options = {
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+      };
+      text = text.toLocaleString("ru",options)
+      return text
     },
   }
 }

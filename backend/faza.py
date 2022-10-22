@@ -6,11 +6,14 @@ from openpyxl import load_workbook
 def Faza_update(order):
   post = []
   points = Point.select().where(Order.cas == order,Point.line == None).join(Drawing).join(Order).order_by(Point.point_z,Point.point_y,Point.point_x)
+
+  
+
   line1 = Point.select(fn.MAX(Point.line).alias('line'),fn.MAX(Point.faza).alias('faza')).where(Order.cas == order).join(Drawing).join(Order).order_by(Point.point_z,Point.point_y,Point.point_x).first()
   if line1.line != None:
     weight = Point.select(fn.SUM(Drawing.weight).alias('weight')).where(Order.cas == order,Point.faza == line1.faza).join(Drawing).join(Order).order_by(Point.point_z,Point.point_y,Point.point_x).first()
     line = int(line1.line) + 1 
-    faza=line1.faza
+    faza=line1.faza + 1
   else:
     line = 1
     faza = 1
@@ -31,7 +34,6 @@ def Faza_update(order):
   Point.bulk_update(post, fields=[Point.line,Point.faza])
 
 
-
 def Faza_update_test(order):
   wb = load_workbook('faza.xlsx',data_only=True)
   sheet = wb.get_sheet_by_name('2313.3')
@@ -47,7 +49,6 @@ def Faza_update_garage(order):
   drawing  = Drawing.select().join(Order).where(Order.cas == order)
   Point.update({Point.faza: 4}).where(Point.assembly << drawing,Point.faza == 5).execute()
   return
-
 
 
 def PartPoint(faza,cas):
@@ -100,8 +101,8 @@ def PartPoint(faza,cas):
   
 def Test(max2,faza,case):
   zi = PointPart.select(PointPart,fn.COUNT(PointPart.detail).alias('aaa')).join(Point).join(Drawing).where(Point.faza == faza,Drawing.cas == case).group_by(PointPart.detail).having(fn.COUNT(PointPart.detail) != 1)
-  yi = PointPart.select(PointPart,fn.COUNT(PointPart.detail).alias('aaa')).join(Point).join(Drawing).where(Point.faza == faza,Drawing.cas == case).group_by(PointPart.detail).having(fn.COUNT(PointPart.detail) == 1)
-  ti = PointPart.select(PointPart,fn.COUNT(PointPart.detail).alias('aaa')).join(Point).join(Drawing).where(Point.faza == faza,Drawing.cas == case,((Drawing.assembly.contains('Ш-')) | (Point.name == 'Шайба'))).group_by(PointPart.detail).having(fn.COUNT(PointPart.detail) == 1)
+  yi = PointPart.select(PointPart,fn.COUNT(PointPart.detail).alias('aaa')).join(Point).join(Drawing).where(Point.faza == faza,Drawing.cas == case,Point.name != 'Монтажная пластина').group_by(PointPart.detail).having(fn.COUNT(PointPart.detail) == 1)
+  ti = PointPart.select(PointPart,fn.COUNT(PointPart.detail).alias('aaa')).join(Point).join(Drawing).where(Point.faza == faza,Drawing.cas == case,((Drawing.assembly.contains('Ш-')) | (Point.name == 'Монтажная пластина') | (Point.name == 'Шайба'))).group_by(PointPart.detail).having(fn.COUNT(PointPart.detail) == 1)
   xi = PointPart.select().join(Point).join(Drawing).where(Point.faza == faza,Drawing.cas == case)
   index = max2
   all = []
@@ -172,7 +173,7 @@ def Detail_create(faza,case):
       d.append((i.detail,'weld','assembly',norm_assembly.norm * (i.point.assembly.weight / 1000),faza_tab))
     except:
       d.append((i.detail,'weld','assembly',0,faza_tab))
-      print(f'Нет в базе {i.point.name}')
+      print(f'Нет в базе {i.point.name} {i.count} {i.point.assembly.weight}')
 
     weld = Weld.select().where(Weld.assembly == i.point.assembly)
     norm_weld = 0

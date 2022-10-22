@@ -7,7 +7,7 @@ from package_list import PackList
 from pdf_act_otc import ActEveryDay
 from shipment_list import ShipmentList
 from tekla3 import PdfGenerate, PointPartInsert
-from test import AAA, ASS, BBB, CCC, DDD, DEDR, DELDEL, FOOD, GGG, HHH, KOZ, LLL, METALL, NNN, NORMSAW, PAINT, PL, PP, QWE, SHIP, TEST, USS, UUU, WELDCOR, WELDNORM, XXX, YYY, ZAE, ZZZ, rrr
+from test import AAA, ASS, BBB, CCC, CORRECT, DDD, DEDR, DELDEL, FOOD, GGG, HHH, HOLEC, HOLECOF, JJ, JKL, JN, KOZ, LLL, METALL, NNN, NORMSAW, PAINT, PIN, PL, PP, QWE, SAWCOF, SHIP, TEST, TTT, USS, UUU, WELDCOF, WELDCOR, WELDNORM, XXX, YYY, ZAE, ZZZ, rrr
 from db import connection
 from models import *
 from tekla import Tekla
@@ -26,7 +26,8 @@ from d_list import Dlist
 from shipment import Start
 import asyncio
 from fastapi.responses import FileResponse
-from test2 import NormPaint, Time, Time4, UserNorm
+from test2 import PAINTNONE, NormPaint, Time, Time4, Time5, UserNorm
+import operations
 
 app = FastAPI()
 
@@ -63,9 +64,12 @@ app.add_middleware(
 
 @app.get('/test')
 def get_test():
-  fazas = [3]
-  order = Order.get(Order.cas == '2342')
+  fazas = [1]
+  order = Order.get(Order.cas == '23256')
   for faza in fazas:
+    if Faza.select().where(Faza.case == order,Faza.faza == faza).first() != None:
+      print('УЖЕ ЕСТЬ')
+      return
     PartPoint(faza,order)
     Detail_create(faza,order)
     Task_create(faza,order)
@@ -80,9 +84,9 @@ def get_excel():
 
 @app.get('/pdf')
 def get_pdf():
-  z = [3]
+  z = [1]
   for y in z:
-    case = '2342'
+    case = '23504'
     detail = []
     if len(detail) == 0:
       faza = PointPart.select(PointPart.detail).join(Point).join(Drawing).join(Order).where(Point.faza == y,Order.cas == case).group_by(PointPart.detail)
@@ -128,7 +132,11 @@ def post_tekla(
       point = Point.select(Point.faza).join(Drawing).join(Order).where(Order.cas == order).group_by(Point.faza).tuples()
       pointpart = PointPart.select(Point.faza).join(Point).join(Drawing).join(Order).where(Order.cas == order).group_by(Point.faza).tuples()
       result = list(set(point) - set(pointpart))
-      result.remove(max(result))
+      print(f'result {result}')
+      try:
+        result.remove(max(result))
+      except:
+        result = [max(point) + 1,]
       d = []
       for i in result:
         d.append(i[0])
@@ -142,7 +150,9 @@ def post_tekla(
 
 @app.get('/qruser')
 def get_qr_user():
-  QR_pdf([209,210])
+  # weld = Worker.select(Worker.id).where(Worker.oper == 'weld').tuples()
+
+  QR_pdf((210,))
   # QRUser(id)
   connection.close()
   return
@@ -242,23 +252,35 @@ def get_stage(id):
   # return list(index)
   stage = []
   if id == '0':
+    # stage.append({'name':'Заготовка','faza':list(Faza.select(Faza,Order.color.alias('color'),Otc.fix).join(Order).join_from(Faza,Otc,JOIN.LEFT_OUTER).where(Order.status == 'В работе',Faza.set == 0).order_by(Faza.detail).dicts())})
     stage.append({'name':'Заготовка','faza':list(Faza.select(Faza,Order.color.alias('color')).join(Order).where(Order.status == 'В работе',Faza.set == 0).order_by(Faza.detail).dicts())})
+    # stage.append({'name':'Готов к комплектации','faza':list(Faza.select(Faza,Order.color.alias('color'),Otc.fix).join(Order).join_from(Faza,Otc,JOIN.LEFT_OUTER).where(Order.status == 'В работе',Faza.set == 1).order_by(Faza.detail).dicts())})
     stage.append({'name':'Готов к комплектации','faza':list(Faza.select(Faza,Order.color.alias('color')).join(Order).where(Order.status == 'В работе',Faza.set == 1).order_by(Faza.detail).dicts())})
+    # stage.append({'name':'В комплектации','faza':list(Faza.select(Faza,Order.color.alias('color'),Otc.fix).join(Order).join_from(Faza,Otc,JOIN.LEFT_OUTER).where(Order.status == 'В работе',Faza.set == 2).order_by(Faza.detail).dicts())})
     stage.append({'name':'В комплектации','faza':list(Faza.select(Faza,Order.color.alias('color')).join(Order).where(Order.status == 'В работе',Faza.set == 2).order_by(Faza.detail).dicts())})
+    # stage.append({'name':'Готов к сборке','faza':list(Faza.select(Faza,Order.color.alias('color'),Otc.fix).join(Order).join_from(Faza,Otc,JOIN.LEFT_OUTER).where(Order.status == 'В работе',Faza.assembly == 1).order_by(Faza.detail).dicts())})
     stage.append({'name':'Готов к сборке','faza':list(Faza.select(Faza,Order.color.alias('color')).join(Order).where(Order.status == 'В работе',Faza.assembly == 1).order_by(Faza.detail).dicts())})
+    # stage.append({'name':'В сборке','faza':list(Faza.select(Faza,Order.color.alias('color'),Otc.fix).join(Order).join_from(Faza,Otc,JOIN.LEFT_OUTER).where(Order.status == 'В работе',Faza.assembly == 2).order_by(Faza.detail).dicts())})
     stage.append({'name':'В сборке','faza':list(Faza.select(Faza,Order.color.alias('color')).join(Order).where(Order.status == 'В работе',Faza.assembly == 2).order_by(Faza.detail).dicts())})
+    # stage.append({'name':'Готов к сварке','faza':list(Faza.select(Faza,Order.color.alias('color'),Otc.fix).join(Order).join_from(Faza,Otc,JOIN.LEFT_OUTER).where(Order.status == 'В работе',Faza.weld == 1).order_by(Faza.detail).dicts())})
     stage.append({'name':'Готов к сварке','faza':list(Faza.select(Faza,Order.color.alias('color')).join(Order).where(Order.status == 'В работе',Faza.weld == 1).order_by(Faza.detail).dicts())})
-    stage.append({'name':'В сварке','faza':list(Faza.select(Faza,Order.color.alias('color')).join(Order).where(Order.status == 'В работе',Faza.weld == 2).order_by(Faza.detail).dicts())})
+    stage.append({'name':'В сварке','faza':list(Faza.select(Faza,Order.color.alias('color'),Otc.fix).join(Order).join_from(Faza,Otc,JOIN.LEFT_OUTER).where(Order.status == 'В работе',Faza.weld == 2).order_by(Faza.detail).dicts())})
+    # stage.append({'name':'Ожидает ОТК после сварки','faza':list(Faza.select(Faza,Order.color.alias('color'),Otc.fix).join(Order).join_from(Faza,Otc,JOIN.LEFT_OUTER).where(Order.status == 'В работе',Faza.weld == 3,Faza.paint == 0).order_by(Faza.detail).dicts())})
     stage.append({'name':'Ожидает ОТК после сварки','faza':list(Faza.select(Faza,Order.color.alias('color')).join(Order).where(Order.status == 'В работе',Faza.weld == 3,Faza.paint == 0).order_by(Faza.detail).dicts())})
+    # stage.append({'name':'Готов к покраске','faza':list(Faza.select(Faza,Order.color.alias('color'),Otc.fix).join(Order).join_from(Faza,Otc,JOIN.LEFT_OUTER).where(Order.status == 'В работе',Faza.paint == 1).order_by(Faza.detail).dicts())})
     stage.append({'name':'Готов к покраске','faza':list(Faza.select(Faza,Order.color.alias('color')).join(Order).where(Order.status == 'В работе',Faza.paint == 1).order_by(Faza.detail).dicts())})
-    stage.append({'name':'В покраске','faza':list(Faza.select(Faza,Order.color.alias('color')).join(Order).where(Order.status == 'В работе',Faza.paint == 2).order_by(Faza.detail).dicts())})
+    stage.append({'name':'В покраске','faza':list(Faza.select(Faza,Order.color.alias('color'),Otc.fix).join(Order).join_from(Faza,Otc,JOIN.LEFT_OUTER).where(Order.status == 'В работе',Faza.paint == 2).order_by(Faza.detail).dicts())})
+    # stage.append({'name':'Ожидает ОТК после покраски','faza':list(Faza.select(Faza,Order.color.alias('color'),Otc.fix).join(Order).join_from(Faza,Otc,JOIN.LEFT_OUTER).where(Order.status == 'В работе',Faza.paint == 3,Faza.packed == 0).order_by(Faza.detail).dicts())})
     stage.append({'name':'Ожидает ОТК после покраски','faza':list(Faza.select(Faza,Order.color.alias('color')).join(Order).where(Order.status == 'В работе',Faza.paint == 3,Faza.packed == 0).order_by(Faza.detail).dicts())})
+    # stage.append({'name':'Готов к упаковке','faza':list(Faza.select(Faza,Order.color.alias('color'),Otc.fix).join(Order).join_from(Faza,Otc,JOIN.LEFT_OUTER).where(Order.status == 'В работе',Faza.packed == 1).order_by(Faza.detail).dicts())})
     stage.append({'name':'Готов к упаковке','faza':list(Faza.select(Faza,Order.color.alias('color')).join(Order).where(Order.status == 'В работе',Faza.packed == 1).order_by(Faza.detail).dicts())})
+    # stage.append({'name':'Упакован','faza':list(Faza.select(Faza,Order.color.alias('color'),Otc.fix).join(Order).join_from(Faza,Otc,JOIN.LEFT_OUTER).where(Order.status == 'В работе',Faza.packed == 3,Faza.shipment == 0).order_by(Faza.detail).dicts())})
     stage.append({'name':'Упакован','faza':list(Faza.select(Faza,Order.color.alias('color')).join(Order).where(Order.status == 'В работе',Faza.packed == 3,Faza.shipment == 0).order_by(Faza.detail).dicts())})
+    # stage.append({'name':'Отгружен','faza':list(Faza.select(Faza,Order.color.alias('color'),Otc.fix).join(Order).join_from(Faza,Otc,JOIN.LEFT_OUTER).where(Order.status == 'В работе',Faza.shipment == 3).order_by(Faza.detail).dicts())})
     stage.append({'name':'Отгружен','faza':list(Faza.select(Faza,Order.color.alias('color')).join(Order).where(Order.status == 'В работе',Faza.shipment == 3).order_by(Faza.detail).dicts())})
   elif id.split(',')[1].isdigit():
     id = id.split(',')
-    stage = Faza.select(Faza).join(Order).where(Order.status == 'В работе',Order.cas == id[0],Faza.faza == id[1])
+    stage = Faza.select(Faza).join(Order).where(Order.status == 'В работе',Order.cas == id[0],Faza.faza == id[1]).dicts()
   else:
     id = id.split(',')
     if id[0] != '0':
@@ -300,19 +322,10 @@ def get_aaa():
   # ZZZ()
   # UUU()
   # USS()
-  # Time()
-  # Time2()
-  # Time3()
-  # LLL()
-  # QWE()
-  # ZAE()
-  # PP()
-  # FOOD()
-  # NNN()
-  # rrr()
-  # PL()
-  # ASS()
-  DELDEL()
+  # Time()result * 
+  ASS()
+  # CORRECT()
+  # DELDEL()
   # TEST()
   # PAINT()
   # Time()
@@ -327,6 +340,17 @@ def get_aaa():
   # NORMSAW()
   # SHIP()
   # KOZ()
+  # WELDCOF()
+  # HOLECOF()
+  # JKL()
+  # PIN()
+  # PAINTNONE()
+  # Time5()
+  # HOLEC()
+  # SAWCOF()
+  # TTT()
+  # JN()
+  # JJ()
   connection.close()
 
 #############################################  Молярка Не востребовано  ##########################################################
@@ -370,7 +394,7 @@ def get_aaa():
 #   return
 ######################################################################################################################################
 
-@app.get('/report/faza/{order}',response_model=List[FazaReport])
+@app.get('/report/faza/{order}')#,response_model=List[FazaReport])
 def get_report_faza(order):
   order = Order.get(Order.cas == order)
   faza = Faza.select(
@@ -386,9 +410,27 @@ def get_report_faza(order):
     fn.SUM(Case(None,[(Faza.shipment == 3,Faza.weight)],0)).alias('weight_shipment'),
     fn.SUM(Case(None,[(Faza.in_object == 3,Faza.weight)],0)).alias('weight_in_object'),
     fn.SUM(Case(None,[(Faza.mount == 3,Faza.weight)],0)).alias('weight_mount'),
-  ).where(Faza.case == order).group_by(Faza.faza)
+  ).where(Faza.case == order).group_by(Faza.faza).dicts()
+
+  case = Faza.select(
+    Faza.faza,
+    fn.SUM(Faza.weight).alias('weight_kmd'),
+    fn.SUM(Case(None,[(Faza.in_work == 3,Faza.weight)],0)).alias('weight_in_work'),
+    fn.SUM(Case(None,[(Faza.preparation == 3,Faza.weight)],0)).alias('weight_preparation'),
+    fn.SUM(Case(None,[(Faza.set == 3,Faza.weight)],0)).alias('weight_set'),
+    fn.SUM(Case(None,[(Faza.assembly == 3,Faza.weight)],0)).alias('weight_assembly'),
+    fn.SUM(Case(None,[(Faza.weld == 3,Faza.weight)],0)).alias('weight_weld'),
+    fn.SUM(Case(None,[(Faza.paint == 3,Faza.weight)],0)).alias('weight_paint'),
+    fn.SUM(Case(None,[(Faza.packed == 3,Faza.weight)],0)).alias('weight_packed'),
+    fn.SUM(Case(None,[(Faza.shipment == 3,Faza.weight)],0)).alias('weight_shipment'),
+    fn.SUM(Case(None,[(Faza.in_object == 3,Faza.weight)],0)).alias('weight_in_object'),
+    fn.SUM(Case(None,[(Faza.mount == 3,Faza.weight)],0)).alias('weight_mount'),
+  ).where(Faza.case == order).group_by(Faza.case).dicts().first()
+  case['faza'] = 'Итог'
+  faza = list(faza)
+  faza.append(case)
   connection.close()
-  return list(faza)
+  return {'faza':faza}
 
 @app.get('/report/all/{order}',response_model=AllReport)
 def get_report_all(order):
@@ -449,7 +491,7 @@ def get_report_weld_user(start,end):
     d = DetailUser.select(Detail.detail).join(Detail).where(DetailUser.worker == i.worker,Detail.end >= start,Detail.end < end).tuples()
     d2 = DetailUser.select(Detail.detail).join(Detail).where(DetailUser.worker == i.worker,Detail.end >= start,Detail.end < end,Detail.worker_2 != None).tuples()
     pp = PointPart.select(PointPart.point).where(PointPart.detail.in_(d)).group_by(PointPart.point).tuples()
-    pp3 = PointPart.select(PointPart.point).where(PointPart.detail.in_(d)).group_by(PointPart.point)
+    # pp3 = PointPart.select(PointPart.point).where(PointPart.detail.in_(d)).group_by(PointPart.point)
     pp1 = PointPart.select(PointPart.point).where(PointPart.detail.in_(d2)).group_by(PointPart.point).tuples()
     pp2 = []
     for pr in pp1:
@@ -520,6 +562,18 @@ def get_register(id):
   point = Point.select(Drawing.assembly,Drawing.weight,fn.COUNT(Drawing.assembly).alias('count'),fn.SUM(Drawing.weight).alias('weight_all')).join(Drawing).join(Order).where(Order.cas == id).group_by(Drawing.assembly).dicts()
   p = Point.select(fn.COUNT(Order.id).alias('count')).join(Drawing).join(Order).where(Order.cas == id).group_by(Order.cas == id).scalar()
   drawing = Drawing.select(fn.COUNT(Order.cas == id).alias('count')).join(Order).where(Order.cas == id).group_by(Order.cas == id).scalar()
+
+  # w = Point.select(fn.SUM(Drawing.weight)).join(Drawing).join(Order).where(Order.cas == id).scalar()
+  # ff = Faza.select(Faza,fn.COUNT(Faza.detail).alias('ccc')).join(Order).where(Order.cas == id).group_by(Faza.detail)
+  # pp = PointPart.select(PointPart).join(Point).join(Drawing).join(Order).where(Order.cas == id).group_by(PointPart.detail).order_by(Drawing.assembly)
+  # for x in pp:
+  #   f = Faza.get(Faza.detail == x.detail)
+  #   if x.point.assembly.weight != f.weight and x.point.assembly.assembly.find('Ш-') == -1:
+  #     f.weight = x.point.assembly.weight
+  #     f.save()
+  #     print(x.detail,x.point.assembly.assembly,x.point.assembly.weight,f.weight)
+
+
   connection.close()
   return {'all':{'drawing':drawing,'count':p},'point':list(point)}
 
@@ -595,25 +649,88 @@ def users():
 
 @app.get('/report/user/{id}/{start}/{end}')
 def report_user(id,start,end):
-  end = end.split('-')
-  end = datetime.datetime(int(end[0]),int(end[1]),int(end[2]),23,59,59)
-  user = Worker.select().where(Worker.user == id)
-  res = {}
-  for work in user:
-    details = Detail.select(Detail,Faza).join(Faza).where((Detail.worker_1 == work.id) | (Detail.worker_2 == work.id),Detail.end > start, Detail.end < end).dicts()
-    if len(details) != 0:
-      for detail in details:
-        pp = PointPart.select().where(PointPart.detail == detail['detail']).first()
-        detail['mark'] = pp.point.assembly.assembly
-        detail['draw'] = pp.point.draw
-        detail['name'] = pp.point.name
-      res[work.oper_rus] = list(details)
-  for work in user:
-    details = Task.select(Task,TaskPart,Part,fn.SUM(TaskPart.count).alias('count_all')).join(TaskPart).join(Part).where((Task.worker_1 == work.id) | (Task.worker_2 == work.id),Task.end > start, Task.end < end).group_by(Task).dicts()
-    if len(details) != 0:
-      # for detail in details:
-      #   detail.part = detail.taskparts[0].part
-      res[work.oper_rus] = list(details)
+  # end = end.split('-')
+  # end = datetime.datetime(int(end[0]),int(end[1]),int(end[2]),23,59,59)
+  # user = Worker.select().where(Worker.user == id)
+  # res = {}
+  # for work in user:
+  #   if work.oper != 'paint':
+  #     # details = Detail.select(Detail,Faza).join(Faza).where((Detail.worker_1 == work.id) | (Detail.worker_2 == work.id),Detail.end > start, Detail.end < end).dicts()
+  #     details = DetailUser.select(DetailUser.norm,DetailUser.weight,Detail,Faza).join(Detail).join(Faza).where(DetailUser.worker == work.id,Detail.end > start, Detail.end < end).dicts()
+  #     details = list(details)
+  #     # result = Detail.select(Detail,Faza,fn.SUM(Detail.norm).alias('sum_norm'),fn.SUM(Faza.weight).alias('sum_weight')).join(Faza).where((Detail.worker_1 == work.id) | (Detail.worker_2 == work.id),Detail.end > start, Detail.end < end).group_by().dicts().first()
+  #     result = DetailUser.select(Detail,Faza,fn.SUM(DetailUser.norm).alias('sum_norm'),fn.SUM(DetailUser.weight).alias('sum_weight')).join(Detail).join(Faza).where(DetailUser.worker == work.id,Detail.end > start, Detail.end < end).group_by().dicts().first()
+  #     if len(details) != 0:
+  #       for detail in details:
+  #         pp = PointPart.select().where(PointPart.detail == detail['detail']).first()
+  #         detail['mark'] = pp.point.assembly.assembly
+  #         detail['draw'] = pp.point.draw
+  #         detail['name'] = pp.point.name
+  #       result['norm'] = result['sum_norm']
+  #       result['weight'] = result['sum_weight']
+  #       result['detail'] = 'Итог'
+  #       details.append(result)
+  #       res[work.oper_rus] = details
+  # for work in user:
+  #   if work.oper == 'paint':
+  #     details = Detail.select(Detail,Faza).join(Faza).where((Detail.worker_1 == work.id) | (Detail.worker_2 == work.id),Detail.end > start, Detail.end < end).dicts()
+  #     details = list(details)
+  #     result = Detail.select(Detail,Faza,fn.SUM(Detail.norm).alias('sum_norm'),fn.SUM(Faza.weight).alias('sum_weight')).join(Faza).where((Detail.worker_1 == work.id) | (Detail.worker_2 == work.id),Detail.end > start, Detail.end < end).group_by().dicts().first()
+  #     if len(details) != 0:
+  #       for detail in details:
+  #         pp = PointPart.select().where(PointPart.detail == detail['detail']).first()
+  #         detail['mark'] = pp.point.assembly.assembly
+  #         detail['draw'] = pp.point.draw
+  #         detail['name'] = pp.point.name
+  #       result['norm'] = result['sum_norm']
+  #       result['weight'] = result['sum_weight']
+  #       result['detail'] = 'Итог'
+  #       details.append(result)
+  #     res[work.oper_rus] = details
+  # for work in user:
+  #   if work.oper != 'hole' and work.oper != 'saw' and work.oper != 'bevel':
+  #     details = Task.select(Task,TaskPart,Part,fn.SUM(TaskPart.count).alias('count_all')).join(TaskPart).join(Part).where((Task.worker_1 == work.id) | (Task.worker_2 == work.id),Task.end > start, Task.end < end).group_by(Task).dicts()
+  #     details = list(details)
+  #     if len(details) != 0:
+  #       # for detail in details:
+  #       #   detail.part = detail.taskparts[0].part
+  #       # result['norm'] = result['sum_norm']
+  #       # result['weight'] = result['sum_weight']
+  #       res[work.oper_rus] = details
+  #   if work.oper == 'saw':
+  #     details = Task.select(Task,TaskPart,Part,fn.SUM(TaskPart.count).alias('count_all')).join(TaskPart).join(Part).where((Task.worker_1 == work.id) | (Task.worker_2 == work.id),Task.end > start, Task.end < end).group_by(Task).dicts()
+  #     details = list(details)
+  #     norm_all = 0
+  #     if len(details) != 0:
+  #       for detail in details:
+  #         norm = SAWCOF(detail['profile'],detail['area'],detail['count_all'] + 2)
+  #         norm_all += norm
+  #         detail['norm'] = norm
+  #       details.append({'task':'Итог','norm':norm_all})
+  #       res[work.oper_rus] = details
+  #   if work.oper == 'bevel':
+  #     details = Task.select(Task,TaskPart,Part,fn.SUM(TaskPart.count).alias('count_all')).join(TaskPart).join(Part).where((Task.worker_1 == work.id) | (Task.worker_2 == work.id),Task.end > start, Task.end < end).group_by(Task).dicts()
+  #     details = list(details)
+  #     norm_all = 0
+  #     if len(details) != 0:
+  #       for detail in details:
+  #         norm = SAWCOF(detail['profile'],detail['area'],detail['count_all'] + 2,1.5)
+  #         norm_all += norm
+  #         detail['norm'] = norm
+  #       details.append({'task':'Итог','norm':norm_all})
+  #       res[work.oper_rus] = details
+  #   elif work.oper == 'hole':
+  #     # details = Task.select(Task,fn.SUM(Hole.count * TaskPart.count * HoleNorm.norm).alias('count')).join(TaskPart).join(Part).join(Hole).join(HoleNorm).where(Task.oper == 'hole',Task.id == t.id).group_by(Hole.diameter,Hole.depth)
+  #     details = Task.select(fn.SUM(Hole.count * TaskPart.count * HoleNorm.norm).alias('norm'),fn.SUM(Hole.count * TaskPart.count).alias('count'),Task,Part).join(TaskPart).join(Part).join(Hole).join(HoleNorm).where((Task.worker_1 == work.id) | (Task.worker_2 == work.id),Task.end > start, Task.end < end).group_by(Task).dicts()
+  #     result = Task.select(fn.SUM(Hole.count * TaskPart.count * HoleNorm.norm).alias('norm'),fn.SUM(Hole.count * TaskPart.count).alias('count'),Task).join(TaskPart).join(Part).join(Hole).join(HoleNorm).where((Task.worker_1 == work.id) | (Task.worker_2 == work.id),Task.end > start, Task.end < end).dicts().first()
+  #     details = list(details)
+  #     if len(details) != 0:
+  #       # for detail in details:
+  #       #   detail.part = detail.taskparts[0].part
+  #       result['task'] = 'Итог'
+  #       details.append(result)
+  #       res[work.oper_rus] = details
+  res = operations.Operation(id,start,end)
   connection.close()
   return res
 

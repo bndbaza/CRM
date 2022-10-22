@@ -11,7 +11,8 @@
         dense
       >
         <template v-slot:[`item.faza`]="{ item }">
-          <nuxt-link :to="'stage/'+$route.params.faza+','+item.faza">Фаза {{ item.faza }}</nuxt-link>
+          <nuxt-link :to="'stage/'+$route.params.faza+','+item.faza" v-if="item.faza != 'Итог'">Фаза {{ item.faza }}</nuxt-link>
+          <template v-if="item.faza == 'Итог'">{{ item.faza }}</template>
         </template>
         <template v-slot:[`item.weight_kmd`]="{ item }">
           {{ item.weight_kmd / 1000 | number }}
@@ -56,6 +57,7 @@ export default {
   data(){
     return {
       report:[],
+      cas:{},
       headers:[
         {text:'фаза',value:'faza'},
         {text:'Разработано КМД',value:'weight_kmd'},
@@ -78,6 +80,8 @@ export default {
   methods: {
     async getReport(){
       this.report = await this.$axios.$get(this.$store.state.db.host+'report/faza/'+this.$route.params.faza);
+      this.cas = this.report.case
+      this.report = this.report.faza
     }
   },
 }

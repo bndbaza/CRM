@@ -1,5 +1,5 @@
 from models import *
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 import glob
 from openpyxl import load_workbook, Workbook
@@ -1258,6 +1258,7 @@ def rrr():
       if sheet.cell(row=y,column=x).value != None:
         if sheet.cell(row=y,column=x).value in pp:
           sheet.cell(row=y,column=x).fill = ft(start_color='FF00FF', end_color='0000FF', fill_type='solid')
+          pp.remove(sheet.cell(row=y,column=x).value)
 
   details = DetailPack.select(Faza.detail).join(Packed).join_from(DetailPack,Faza).where(Packed.order == 15).tuples()
   ppp = PointPart.select(Drawing.assembly).join(Point).join(Drawing).where(PointPart.detail.in_(details)).group_by(PointPart.point).tuples()
@@ -1269,6 +1270,8 @@ def rrr():
       if sheet.cell(row=y,column=x).value != None:
         if sheet.cell(row=y,column=x).value in pp:
           sheet.cell(row=y,column=x).fill = ft(start_color='FFFF00', end_color='0000FF', fill_type='solid')
+          pp.remove(sheet.cell(row=y,column=x).value)
+
 
   details = DetailPack.select(Faza.detail).join(Packed).join_from(DetailPack,Faza).where(Packed.order == 15,Packed.shipment != None).tuples()
   ppp = PointPart.select(Drawing.assembly).join(Point).join(Drawing).where(PointPart.detail.in_(details)).group_by(PointPart.point).tuples()
@@ -1280,6 +1283,8 @@ def rrr():
       if sheet.cell(row=y,column=x).value != None:
         if sheet.cell(row=y,column=x).value in pp:
           sheet.cell(row=y,column=x).fill = ft(start_color='00FF00', end_color='0000FF', fill_type='solid')
+          pp.remove(sheet.cell(row=y,column=x).value)
+
 
   wb.save('Склад.xlsx')
 
@@ -1360,37 +1365,84 @@ def PL():
 
 
 def ASS():
-  norms = Detail.select().where(Detail.norm == 0,Detail.oper == 'assembly')
+  from decimal import Decimal
+  er = []
+
+  norms = Detail.select().where(Detail.norm != 0,Detail.oper == 'assembly')
+  # norms = Detail.select().where(Detail.oper == 'assembly',Detail.detail == 2665)
+  ind = len(norms)
   y = 2
-  book = Workbook()
-  sheet = book.active
-  sheet.cell(row=1,column=1).value = 'Наряд'
-  sheet.cell(row=1,column=2).value = 'Наименование конструкции'
-  sheet.cell(row=1,column=3).value = 'Наименование марки'
-  sheet.cell(row=1,column=4).value = 'Заказ'
+  # book = Workbook()
+  # sheet = book.active
+  # sheet.cell(row=1,column=1).value = 'Наряд'
+  # sheet.cell(row=1,column=2).value = 'Наименование конструкции'
+  # sheet.cell(row=1,column=3).value = 'Наименование марки'
+  # sheet.cell(row=1,column=4).value = 'Заказ'
+
+  # S_min,S_max,t_min,t_max = (2,54,3,198)
+
+
+
   for norm in norms:
-    pp = PointPart.select(PointPart,fn.SUM(Part.count).alias('count')).join(Part).where(PointPart.detail == norm.detail).first()
+    print(ind)
+    ind -= 1
+    pp = PointPart.select(PointPart,fn.SUM(Part.count).alias('count'),fn.SUM(PointPart.bevel).alias('sum_bevel')).join(Part).where(PointPart.detail == norm.detail).first()
+
+    # S = int(pp.count)
+
+    # result = t_min-(((t_min-t_max)/100)*((100/(S_max-S_min))*(S-S_min)))
+
+    # if pp.point.assembly.weight < 30:
+    #   result = result * 0.7
+    # elif pp.point.assembly.weight > 1000:
+    #   result = result * 1.3
+
+    result = 1
+
+    if pp.sum_bevel > 0 and pp.point.name != 'Ограждение':
+      result = float(1.3)
+
+    print(result)
+
     an = AssemblyNorm.select().where(AssemblyNorm.name == pp.point.name,
                                      AssemblyNorm.mass_of <= pp.point.assembly.weight,
-                                     AssemblyNorm.mass_to >= pp.point.assembly.weight,
+                                     AssemblyNorm.mass_to > pp.point.assembly.weight,
                                      AssemblyNorm.count_of <= pp.count,
-                                     AssemblyNorm.count_to >= pp.count).first()
+                                     AssemblyNorm.count_to > pp.count).first()
+
+
     if an != None:
-      print(pp.point.name,pp.point.assembly.weight,pp.count,an.norm,an.norm /1000 * pp.point.assembly.weight,norm.detail)
-      norm.norm = an.norm /1000 * pp.point.assembly.weight
+      # print(pp.point.name,pp.point.assembly.weight,pp.count,an.norm,an.norm /1000 * pp.point.assembly.weight,norm.detail)
+
+      nnn = pp.point.assembly.weight * Decimal(result)
+      norm.norm = an.norm / 1000 * nnn + 3
       norm.save()
       du = DetailUser.select().where(DetailUser.detail == norm)
       if len(du) != 0:
-        DetailUser.update({DetailUser.norm: (an.norm /1000 * pp.point.assembly.weight) / len(du)}).where(DetailUser.detail == norm).execute()
+        DetailUser.update({DetailUser.norm: norm.norm / len(du)}).where(DetailUser.detail == norm).execute()
+
+
     else:
-      print('НЕТ В БАЗЕ',pp.point.name,pp.point.assembly.weight,pp.count,norm.detail)
-      
-      sheet.cell(row=y,column=1).value = norm.detail
-      sheet.cell(row=y,column=2).value = pp.point.name
-      sheet.cell(row=y,column=3).value = pp.point.assembly.assembly
-      sheet.cell(row=y,column=4).value = pp.point.assembly.cas.cas
+      er.append(('НЕТ В БАЗЕ',pp.point.name,pp.point.assembly.weight,pp.count,norm.detail))
+      # sheet.cell(row=y,column=1).value = norm.detail
+      # sheet.cell(row=y,column=2).value = pp.point.name
+      # sheet.cell(row=y,column=3).value = pp.point.assembly.assembly
+      # sheet.cell(row=y,column=4).value = pp.point.assembly.cas.cas
       y += 1
-  book.save(f'Нет номенклатуры.xlsx')
+  for r in er:
+    print(r)
+  # book.save(f'Нет номенклатуры.xlsx')
+
+
+
+
+def CORRECT():
+  Point.update({Point.name: 'Связь вертикальная'}).where(Point.name == 'Связь верт.').execute()
+  Point.update({Point.name: 'Ограждение'}).where(Point.name == 'Ограждения').execute()
+  # AssemblyNorm.update({AssemblyNorm.norm:AssemblyNorm.norm * 1.2}).where(AssemblyNorm.name == 'Связь вертикальная').execute()
+  # AssemblyNorm.update({AssemblyNorm.norm:AssemblyNorm.norm * 1.2}).where(AssemblyNorm.name == 'Связь').execute()
+  # AssemblyNorm.update({AssemblyNorm.norm:AssemblyNorm.norm * 1.2}).where(AssemblyNorm.name == 'Связь горизонтальная').execute()
+  # AssemblyNorm.update({AssemblyNorm.norm:AssemblyNorm.norm * 1.4}).where(AssemblyNorm.name == 'Площадка').execute()
 
 
 
@@ -1406,9 +1458,11 @@ def DELDEL():
   #   print(faza.detail)
   #   faza.delete_instance(recursive=True)
   # return
-  order = Order.get(Order.id == 34)
+  order = Order.get(Order.id == 39)
   order.delete_instance(recursive=True)
-  Faza.delete().where(Faza.case == None).execute()
+  faza = Faza.select().where(Faza.case == None)
+  for f in faza:
+    f.delete_instance(recursive=True)
 
 
 
@@ -1499,34 +1553,49 @@ def DEDR():
   #   print(x.assembly.assembly)
   # Point.update({Point.name: 'Закладные'}).where(Point.id.in_(p)).execute()
 
-  an = AssemblyNorm.select().where(AssemblyNorm.name == 'Подвеска')
+  an = AssemblyNorm.select().where(AssemblyNorm.name == 'Колонна')
   for a in an:
-    AssemblyNorm.create(name='Пластина',mass_to=a.mass_to,mass_of=a.mass_of,count_to=a.count_to,count_of=a.count_of,norm=a.norm,complexity=1)
+    AssemblyNorm.create(name='Стойка',mass_to=a.mass_to,mass_of=a.mass_of,count_to=a.count_to,count_of=a.count_of,norm=a.norm,complexity=1)
 
 
-  return
-  d = Faza.select().where(Faza.detail == 4983).first()
-  d.delete_instance(recursive=True)
-  return
-  fazas = Faza.select()
-  for faza in fazas:
-    pp = PointPart.select().where(PointPart.detail == faza.detail).first()
-    print(pp.point.assembly.cas.cas)
+  # return
+  # d = Faza.select().where(Faza.detail == 4983).first()
+  # d.delete_instance(recursive=True)
+  # return
+  # fazas = Faza.select()
+  # for faza in fazas:
+  #   pp = PointPart.select().where(PointPart.detail == faza.detail).first()
+  #   print(pp.point.assembly.cas.cas)
 
 def WELDCOR():
-  pass
-  wb = load_workbook('Пересчет.xlsx',data_only=True)
-  sheet = wb.get_sheet_by_name('Лист1')
-  for i in range(2,46):
-    mark = sheet.cell(row=i,column=1).value
-    drawing = Drawing.get(Drawing.assembly == mark)
+  wb = load_workbook('Сварка заказ 23504.xlsx',data_only=True)
+  sheet = wb.get_sheet_by_name('Фаза3')
+  for i in range(2,228):
+    mark = (sheet.cell(row=i,column=1).value).replace(' ','')
+    drawing = Drawing.get(Drawing.assembly == mark,Drawing.cas == 36)
     weld = Weld.select().where(Weld.assembly == drawing)
-    print(len(weld))
+    print(len(weld),mark)
     Weld.delete().where(Weld.assembly == drawing).execute()
-    Weld.create(assembly=drawing,cathet=4,length=sheet.cell(row=i,column=2).value)
-    if sheet.cell(row=i,column=3).value != 0:
-      Weld.create(assembly=drawing,cathet=6,length=sheet.cell(row=i,column=3).value)
-
+    if sheet.cell(row=i,column=2).value != None:
+      Weld.create(assembly=drawing,cathet=4,length=sheet.cell(row=i,column=2).value)
+    if sheet.cell(row=i,column=3).value != None:
+      Weld.create(assembly=drawing,cathet=5,length=sheet.cell(row=i,column=3).value)
+    if sheet.cell(row=i,column=4).value != None:
+      Weld.create(assembly=drawing,cathet=6,length=sheet.cell(row=i,column=4).value)
+    if sheet.cell(row=i,column=5).value != None:
+      Weld.create(assembly=drawing,cathet=8,length=sheet.cell(row=i,column=5).value)
+    if sheet.cell(row=i,column=6).value != None:
+      Weld.create(assembly=drawing,cathet=9,length=sheet.cell(row=i,column=6).value)
+    if sheet.cell(row=i,column=7).value != None:
+      Weld.create(assembly=drawing,cathet=10,length=sheet.cell(row=i,column=7).value)
+    if sheet.cell(row=i,column=8).value != None:
+      Weld.create(assembly=drawing,cathet=12,length=sheet.cell(row=i,column=8).value)
+    if sheet.cell(row=i,column=9).value != None:
+      Weld.create(assembly=drawing,cathet=14,length=sheet.cell(row=i,column=9).value)
+    if sheet.cell(row=i,column=10).value != None:
+      Weld.create(assembly=drawing,cathet=16,length=sheet.cell(row=i,column=10).value)
+    if sheet.cell(row=i,column=11).value != None:
+      Weld.create(assembly=drawing,cathet=20,length=sheet.cell(row=i,column=11).value)
 
 def WELDNORM():
   details = Detail.select().join(Faza).where(Detail.oper == 'weld')
@@ -1534,7 +1603,7 @@ def WELDNORM():
     pp = PointPart.select().where(PointPart.detail == detail.detail).first()
     weld = Weld.select(fn.SUM(WeldNorm.norm * (Weld.length / 1000))).join(WeldNorm).where(Weld.assembly == pp.point.assembly).scalar()
     try:
-      if round(float(detail.norm),3) != round(float(weld),3):
+      # if round(float(detail.norm),3) != round(float(weld),3):
         print(detail.detail)
         detail.norm = round(float(weld),3)
         detail.save()
@@ -1544,6 +1613,8 @@ def WELDNORM():
     except:
         print(detail.detail,detail.norm,weld)
   print('YES!!!!!')
+
+
 
 def METALL():
   case = 2325
@@ -1589,7 +1660,7 @@ def SHIP():
     index += 1
   book.save('MARK.xlsx')
       
-def KOZ():
+def KOZ(): # Отчет для Козликина
   book = Workbook()
   sheet = book.active
   index = 1
@@ -1607,3 +1678,242 @@ def KOZ():
   book.save('REPORT.xlsx')
 
     
+def WELDCOF():
+  book = Workbook()
+  sheet = book.active
+  index = 1
+  sheet.cell(row=index,column=1).value = 'Наряд'
+  sheet.cell(row=index,column=2).value = 'Марка'
+  sheet.cell(row=index,column=3).value = 'Чертеж'
+  sheet.cell(row=index,column=4).value = 'Наименование'
+  sheet.cell(row=index,column=5).value = 'Взял'
+  sheet.cell(row=index,column=6).value = 'Сдал'
+  sheet.cell(row=index,column=7).value = 'Дельта'
+  sheet.cell(row=index,column=8).value = 'Дельта раб'
+  sheet.cell(row=index,column=9).value = 'Норма'
+
+  start = datetime(2022,9,1)
+  end = datetime(2022,9,30,23,59,59)
+  details = Detail.select(Detail,Faza).join(Faza).where((Detail.worker_1 == 2) | (Detail.worker_2 == 2),Detail.end > start, Detail.end < end).dicts()
+  if len(details) != 0:
+    for detail in details:
+      pp = PointPart.select().where(PointPart.detail == detail['detail']).first()
+      detail['mark'] = pp.point.assembly.assembly
+      detail['draw'] = pp.point.draw
+      detail['name'] = pp.point.name
+      print(detail)
+      index += 1
+      sheet.cell(row=index,column=1).value = detail['detail']
+      sheet.cell(row=index,column=2).value = pp.point.assembly.assembly
+      sheet.cell(row=index,column=3).value = pp.point.draw
+      sheet.cell(row=index,column=4).value = pp.point.name
+      sheet.cell(row=index,column=5).value = detail['start']
+      sheet.cell(row=index,column=6).value = detail['end']
+      sheet.cell(row=index,column=7).value = detail['end'] - detail['start']
+      if (detail['end'] - detail['start'] - timedelta(hours=16)) < timedelta(seconds=1):
+        sheet.cell(row=index,column=8).value = detail['end'] - detail['start']
+      else:
+        sheet.cell(row=index,column=8).value = detail['end'] - detail['start'] - timedelta(hours=16)
+      sheet.cell(row=index,column=9).value = f"{detail['norm'] // 60}:{int(detail['norm'] % 60)}"
+
+  connection.close()
+  book.save('WELD.xlsx')
+
+def HOLECOF():
+  tas = Task.select().where(Task.oper == 'hole',Task.task == 2983)
+  # for task in tasks:
+  #   tps = TaskPart.select().where(TaskPart.task == task)
+  #   for tp in tps:
+  #     hole = Hole.select().where(Hole.part == tp.part)
+  #     if len(hole) > 2:
+  #       for h in hole:
+  #         print(h.part)
+  for t in tas:
+    # tasks = Task.select(Task,fn.SUM(Hole.count * TaskPart.count * HoleNorm.norm).alias('count')).join(TaskPart).join(Part).join(Hole).join(HoleNorm).where(Task.oper == 'hole',Task.id == t.id).group_by(Hole.diameter,Hole.depth)
+    tasks = Task.select(Task,fn.SUM(HoleNorm.norm).alias('count')).join(TaskPart).join(Part).join(Hole).join(HoleNorm).where(Task.oper == 'hole',Task.id == t.id).group_by(Hole.diameter,Hole.depth)
+    print(tasks[0],tasks[0].count)
+    break
+
+  # holes = Hole.select()
+  # for hole in holes:
+  #   if hole.part.profile == 'Лист':
+  #     norm = HoleNorm.select().where(HoleNorm.depth_of <= hole.depth,
+  #                                   HoleNorm.depth_to >= hole.depth,
+  #                                   HoleNorm.diameter > hole.diameter,
+  #                                   HoleNorm.count <= hole.count,
+  #                                   HoleNorm.count_to > hole.count,
+  #                                   HoleNorm.metal == 'Лист').first()
+  #   else:
+  #     norm = HoleNorm.select().where(HoleNorm.depth_of <= hole.depth,
+  #                                   HoleNorm.depth_to >= hole.depth,
+  #                                   HoleNorm.diameter > hole.diameter,
+  #                                   HoleNorm.count <= hole.count,
+  #                                   HoleNorm.count_to > hole.count,
+  #                                   HoleNorm.lenght_of <= hole.part.length,
+  #                                   HoleNorm.lenght_to > hole.part.length).first()
+  #   hole.norm = norm
+  #   print(hole.id)
+  # with connection.atomic():
+  #   Hole.bulk_update(holes,fields=[Hole.norm])
+    
+
+
+
+
+def JKL():
+  book = Workbook()
+  sheet = book.active
+  index = 1
+  otc = Otc.select().where(Otc.fix == 1,Otc.oper == 'weld')
+  for o in otc:
+    sheet.cell(row=index,column=1).value = o.detail.detail
+    sheet.cell(row=index,column=2).value = o.detail.case.cas
+    sheet.cell(row=index,column=3).value = o.detail.packed
+    print(o.detail.detail,o.detail.case.cas,o.detail.packed)
+    index += 1
+  print(len(otc))
+  connection.close()
+  book.save('Сварка.xlsx')
+
+def PIN():
+  pin = ('СПл-1','СПл-2','СПл-3','СПл-4','СПл-5','СПл-6','СПл-7')
+  pp = PointPart.select(PointPart.detail).join(Part).join(Drawing).where(Drawing.assembly.in_(pin)).group_by(PointPart.detail).tuples()
+  faza = Faza.select(Faza.id).where(Faza.detail.in_(pp)).tuples()
+  # details = Detail.select().join(Faza).where(Detail.detail.in_(pp),Detail.oper == 'set',Detail.start == None)
+  # for detail in details:
+  #   detail.start = datetime.today()
+  #   detail.end = datetime.today()
+  #   detail.worker_1 = 85
+  #   faza = detail.faza
+  #   faza.set = 3
+  #   faza.assembly = 3
+  #   faza.weld = 3
+  #   faza.paint = 3
+  #   faza.packed = 1
+  Detail.update({Detail.start:datetime.today(),Detail.end:datetime.today(),Detail.worker_1:92}).where(Detail.detail.in_(pp),Detail.start == None,Detail.oper == 'paint').execute()
+  Detail.update({Detail.start:datetime.today(),Detail.end:datetime.today(),Detail.worker_1:85}).where(Detail.detail.in_(pp),Detail.start == None,Detail.oper == 'set').execute()
+  Faza.update({Faza.set:3,Faza.assembly:3,Faza.weld:3,Faza.paint:3,Faza.packed:1}).where(Faza.detail.in_(pp)).execute()
+  Otc.update({Otc.end:datetime.today(),Otc.worker:131}).where(Otc.detail.in_(faza),Otc.end == None).execute()
+
+def HOLEC():
+  HoleNorm.update({HoleNorm.norm:HoleNorm.norm * 4}).execute()
+  HoleNorm.update({HoleNorm.norm:HoleNorm.norm * 1.3}).execute()
+  # HoleNorm.update({HoleNorm.count:10,HoleNorm.count_to:30}).where(HoleNorm.count == 25,HoleNorm.count_to == 30).execute()
+  # HoleNorm.update({HoleNorm.count:25,HoleNorm.count_to:30}).where(HoleNorm.count == 30,HoleNorm.count_to == 35).execute()
+  # HoleNorm.update({HoleNorm.count:30,HoleNorm.count_to:1000}).where(HoleNorm.count == 35,HoleNorm.count_to == 1000).execute()
+  # TaskPart.delete().where(TaskPart.part == None).execute()
+
+def SAWCOF(profile,S,count,bevel=1):
+  if profile == 'Двутавр':
+    S_min,S_max,t_min,t_max = (10.32,187,2,25)
+  if profile == 'Уголок':
+    S_min,S_max,t_min,t_max = (1.47,78,0.7,15)
+  if profile == 'Швеллер':
+    S_min,S_max,t_min,t_max = (7.51,61,1.8,11)
+  if profile == 'Труба круглая':
+    S_min,S_max,t_min,t_max = (1.42,163,0.7,20)
+  if profile == 'Труба профильная':
+    S_min,S_max,t_min,t_max = (0.34,113,0.5,17)
+  if profile == 'Круг':
+    S_min,S_max,t_min,t_max = (0.79,707,0.8,40)
+
+  S = float(S)
+  result = t_min-(((t_min-t_max)/100)*((100/(S_max-S_min))*(S-S_min)))
+  return result * int(count) * bevel
+
+def TTT():
+  book = Workbook()
+  sheet = book.active
+  index = 1
+  # detail = Detail.select().where(Detail.oper == 'paint')
+
+
+  ff = (15,23,25,27,29)
+  faza = Faza.select().where(Faza.paint == 1,Faza.case.in_(ff))
+  sheet.cell(row=index,column=1).value = 'Готов к покраске'
+  for f in faza:
+    print(f.detail)
+    pp = list(PointPart.select(Drawing.assembly,Point.draw).join(Point).join(Drawing).where(PointPart.detail == f.detail).group_by(PointPart.point).tuples())
+    index += 1
+    sheet.cell(row=index,column=1).value = f'{f.detail} ({pp})'
+
+
+  index = 1
+  sheet.cell(row=index,column=2).value = 'В покраске'
+
+  faza = Faza.select().where(Faza.paint == 2,Faza.case.in_(ff))
+  for f in faza:
+    index += 1
+    pp = list(PointPart.select(Drawing.assembly,Point.draw).join(Point).join(Drawing).where(PointPart.detail == f.detail).group_by(PointPart.point).tuples())
+
+    sheet.cell(row=index,column=2).value = f'{f.detail} ({pp})'
+  book.save('reports/В малярке.xlsx')
+
+  # Faza.update({Faza.packed:3}).where(Faza.shipment == 3).execute()
+  # faza = Faza.select().where(Faza.shipment == 1,Faza.paint == 2).execute()
+  # for f in faza:
+    # f.packed = 3
+    # f.save()
+  #   print(f.detail)
+  # print(len(faza))
+
+  # dp = DetailPack.select(DetailPack.detail).tuples()
+  # faza = Faza.select().where(Faza.paint == 1,Faza.id.in_(dp))
+  # for f in faza:
+  #   detail = Detail.select().where(Detail.detail == f.detail,Detail.oper == 'paint').first()
+  #   detail.start = datetime.today()
+  #   detail.end = datetime.today()
+  #   detail.worker_1 = 92
+  #   detail.save()
+  #   f.paint = 3
+  #   f.save()
+  #   print(detail.detail)
+  #   print(f.detail)
+
+def JN():
+  # wb = load_workbook('joint.xlsx',data_only=True)
+  # sheet = wb.get_sheet_by_name('Лист1')
+  # for y in range(1,32):
+  #   JointNorm.create(
+  #     profile=sheet.cell(row=y,column=1).value,
+  #     size_of=sheet.cell(row=y,column=2).value,
+  #     size_to=sheet.cell(row=y,column=3).value,
+  #     norm=sheet.cell(row=y,column=4).value
+  #   )
+  
+  lis = (8422,8423,8421,8420,8416,8411,8412,8408,8417,8415,8413,8410,8414,8418,8407,8424,8425,8426,8427,8429,8438,8461,8436,8440,8434,8439,8431,8428,8433,8430,8435,8462,8405,8468,8467,8441,8432,8409,8437,8472,8471)
+  # print(len(lis))
+  for i in range(8442,8461):
+    # faza = Faza.select().where(Faza.detail == i)
+    # DetailPack.create(detail=faza)
+    print(i)
+    detail = Detail.select().where(Detail.detail == i,Detail.oper == 'paint').first()
+    faza = detail.faza
+    detail.start = datetime.today()
+    detail.end = datetime.today()
+    detail.worker_1 = 92
+    faza.paint = 3
+    faza.packed = 1
+    detail.save()
+    faza.save()
+
+def JJ():
+  # wb = load_workbook('VVL3.xlsx',data_only=True)
+  # sheet = wb.get_sheet_by_name('Сборка (ЕНиР)')
+  # for i in range(18,63):
+  #   assembly = AssemblyNorm.get(
+  #     AssemblyNorm.name == 'Колонна',
+  #     AssemblyNorm.mass_of == sheet.cell(row=i,column=11).value,
+  #     AssemblyNorm.mass_to == sheet.cell(row=i,column=12).value,
+  #     AssemblyNorm.count_of == sheet.cell(row=i,column=13).value,
+  #     AssemblyNorm.count_to == sheet.cell(row=i,column=14).value,
+  #   )
+  #   assembly.norm = sheet.cell(row=i,column=16).value
+  #   assembly.save()
+  # AssemblyNorm.delete().where(AssemblyNorm.name == 'Стойка').execute()
+  points = Point.select().join(Drawing).where(Drawing.cas == 34,Point.name == 'Стойка фахверка')
+  for point in points:
+    print(point)
+    point.name = 'Стойка'
+    point.save()
+

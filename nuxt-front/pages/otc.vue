@@ -70,7 +70,7 @@ export default {
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', '1' +'.'+ (oper).split('.').pop());
+        link.setAttribute('download', (oper).replace('z',' ')+'.pdf');
         document.body.appendChild(link);
         link.click();
       });

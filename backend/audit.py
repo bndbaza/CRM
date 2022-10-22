@@ -1,6 +1,6 @@
 import csv
 from tekla import Size, Test
-from models import Bolt, Drawing, Nut, Order, Washer, Weld, WeldNorm
+from models import Bolt, Drawing, Nut, Order, Washer, Weld, WeldNorm, Part as Parts
 from datetime import datetime
 from db import connection
 from operator import itemgetter
@@ -172,7 +172,12 @@ def Tekla(xls):
           'draw':draw
         })
       if row[0].replace(' ','') == 'PART' and row[1].replace(' ','') in tekla.keys():
-        profile = Size(row[4].replace(' ',''))
+        if row[9].find('резина') != -1:
+          profile_size = row[4].replace(' ','').replace('-','Резина')
+        else:
+          profile_size = row[4].replace(' ','')
+
+        profile = Size(profile_size)
         if profile == None:
           return f"Новая номенклатура {row[4].replace(' ','')}"
         tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))] = {
@@ -187,6 +192,7 @@ def Tekla(xls):
           'width':profile[3],
           'perimeter':int(Test(row[11].replace(' ',''))),
           'depth':float(Test(row[12].replace(' ',''),profile[1])),
+          'area':float(row[13].replace(' ','')),
           'hole':[],
           'chamfer':{},
         }
@@ -249,16 +255,46 @@ def Tekla(xls):
           'weight':float(row[5].replace(' ',''))
         })
       if row[0].replace(' ','') == 'HOLE' and row[1].replace(' ','') in tekla.keys():
-        if tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ','').replace('а-',''))]['profile'] == 'Лист' and int(tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ','').replace('а-',''))]['size']) < 15 and row[6].replace(' ','') != '32484.3':
+        if row[6].replace(' ','') == '32484.3' or row[6].replace(' ','') == '52644':
+          tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))]['hole'].append({
+            'diameter':int(row[3].replace(' ','')),
+            'count':(int(row[4].replace(' ','')))/tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))]['count'],
+            'depth':int(row[5].replace(' ','')) / 2
+          })
+
+        
+        elif tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))]['profile'] == 'Лист' and int(tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))]['size']) <= 8 and int(row[3].replace(' ','')) >= 14:
+          pass
+        elif tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))]['profile'] == 'Лист' and int(tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))]['size']) == 10 and int(row[3].replace(' ','')) >= 19:
+          pass
+        elif tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))]['profile'] == 'Лист' and int(tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))]['size']) == 12 and int(row[3].replace(' ','')) >= 23:
+          pass
+        elif tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))]['profile'] == 'Лист' and int(tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))]['size']) == 14 and int(row[3].replace(' ','')) >= 23:
+          pass
+        elif tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))]['profile'] == 'Лист' and int(tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))]['size']) == 16 and int(row[3].replace(' ','')) >= 23:
+          pass
+        elif tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))]['profile'] == 'Лист' and int(tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))]['size']) == 18 and int(row[3].replace(' ','')) >= 30:
+          pass
+        elif tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))]['profile'] == 'Лист' and int(tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))]['size']) == 20 and int(row[3].replace(' ','')) >= 35:
+          pass
+        elif tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))]['profile'] == 'Лист' and int(tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))]['size']) == 22 and int(row[3].replace(' ','')) >= 35:
+          pass
+        elif tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))]['profile'] == 'Лист' and int(tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))]['size']) == 25 and int(row[3].replace(' ','')) >= 40:
+          pass
+        elif tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))]['profile'] == 'Лист' and int(tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))]['size']) >= 30 and int(tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))]['size']) <= 50 and int(row[3].replace(' ','')) >= 45:
+          pass
+        elif tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))]['profile'] == 'Лист' and int(tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))]['size']) == 60 and int(row[3].replace(' ','')) >= 50:
+          pass
+        elif tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))]['profile'] == 'Лист' and int(tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))]['size']) == 80 and int(row[3].replace(' ','')) >= 100:
           pass
         else:
-          tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ','').replace('а-',''))]['hole'].append({
+          tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))]['hole'].append({
             'diameter':int(row[3].replace(' ','')),
-            'count':(int(row[4].replace(' ','')))/tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ','').replace('а-',''))]['count'],
+            'count':(int(row[4].replace(' ','')))/tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))]['count'],
             'depth':int(row[5].replace(' ','')) / 2
           })
       if row[0].replace(' ','') == 'CHAMFER' and row[1].replace(' ','') in tekla.keys():
-        tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ','').replace('а-',''))]['chamfer'] = {
+        tekla[row[1].replace(' ','')]['part'][int(row[2].replace(' ',''))]['chamfer'] = {
           'length':float(row[3].replace(' ',''))
         }
 
@@ -332,6 +368,7 @@ def Sql(case):
           'width':part.width,
           'perimeter':int(part.perimeter),
           'depth':float(part.depth),
+          'area':float(part.area),
           'hole':[],
           'chamfer':{},
         }
@@ -348,6 +385,7 @@ def Sql(case):
           'width':part.width,
           'perimeter':int(part.perimeter),
           'depth':float(part.depth),
+          'area':float(part.area),
           'hole':[],
           'chamfer':{},
         }
@@ -378,6 +416,7 @@ def Part(tekla,sql):
     ('manipulation','Операции'),
     ('work','В работе'),
     ('width','Ширина'),
+    ('area','Площадь'),
     ('perimeter','Периметер'),
     ('depth','Глубина'),
     ('chamfer','Фаска'),
@@ -434,6 +473,9 @@ def Part(tekla,sql):
     for d in delta:
       if i[2][d[0]] != i[3][d[0]]:
         part.append(f'Марка {i[0]} деталь {i[1]} {d[1]} В базе: {i[2][d[0]]}, В файле: {i[3][d[0]]}')
+        # if d[1] == 'Площадь' and i[2][d[0]] == 0:
+        #   drawing = Drawing.get(Drawing.assembly == i[0])
+        #   Parts.update({Parts.area:i[3][d[0]]}).where(Parts.assembly == drawing,Parts.number == i[1]).execute()
   for i in corr['create']:
     for y in i[1]:
       part.append(f'Добавлена новая деталь № {y} к марке {i[0]}')

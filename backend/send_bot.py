@@ -1,5 +1,5 @@
 from aiogram import Bot
-from db import connection,bot_id
+from db import connection,bot_id, telega
 from models import *
 import asyncio
 
@@ -21,7 +21,7 @@ async def Viktor(text):
 async def Tech(text):
   bot = Bot(bot_id)
   file = open(text,"rb")
-  await bot.send_document(762167162,file) # 762167162 Вера
+  await bot.send_document(telega,file) # 762167162 Вера
   bot.close()
 
 async def ViktorDocs(text):

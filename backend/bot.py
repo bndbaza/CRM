@@ -67,6 +67,7 @@ async def start(message):
   if Worker.select().join(User).where(User.telegram == message.chat.id,Worker.oper.in_(['otc','admin','director'])).first() != None:
     oper = {'paint': 'Покраска','weld':'Сварка'}
     text = ''
+    count = 0
     otc_weld = Otc.select(Otc.detail).where(Otc.end == None,Otc.oper == 'weld',Otc.fix == 0).tuples()
     detail_weld = Detail.select().where(Detail.faza.in_(otc_weld),Detail.oper.in_(['weld']))
     otc_paint = Otc.select(Otc.detail).where(Otc.end == None,Otc.oper == 'paint',Otc.fix == 0).tuples()
@@ -75,9 +76,19 @@ async def start(message):
     # if len(detail) != 0:
     for d in detail_weld:
       text += f'{d.detail} {oper[d.oper]} {d.worker_1.user.surname}\n'
+      count += 1
+      if count == 150:
+        await bot.send_message(message.from_user.id,text)
+        count = 0
+        text = ''
     for p in detail_paint:
       text += f'{p.detail} {oper[p.oper]} {p.worker_1.user.surname}\n'
-    if text == '':
+      count += 1
+      if count == 150:
+        await bot.send_message(message.from_user.id,text)
+        count = 0
+        text = ''
+    if count == 0:
       text = 'Нет нарядов для проверки'
   else:
     text = 'Команда не доступна'
@@ -111,8 +122,17 @@ async def otc_callback(callback: types.CallbackQuery):
   elif text['oper'] == 'weld':
     if text['usc'] == 1:
       otc.usc = True
+    elif text['usc'] == 2:
+      otc.usc = True
+      detail = Detail.select().where(Detail.oper == 'weld',Detail.detail == otc.detail.detail).first()
+      pp = PointPart.select().join(Part).where(PointPart.detail == otc.detail.detail,Part.profile != 'Лист').order_by(Part.weight.desc()).first()
+      Joint.create(detail=detail,part=pp.part)
     Detail.update({Detail.to_work: 1}).where(Detail.oper == 'paint',Detail.detail == otc.detail.detail).execute()
     faza.paint = 1
+
+
+
+
   otc.save()
   faza.save()
   await bot.send_message(callback.from_user.id,f'Наряд {faza.detail} прошел проверку')
@@ -175,12 +195,15 @@ async def otc_test(message):
     else:
       btn.add(InlineKeyboardButton('Провести без УЗК',callback_data=f'otc ok {result.id} {result.oper} {worker.id} 0'),
       InlineKeyboardButton('Провести с УЗК',callback_data=f'otc ok {result.id} {result.oper} {worker.id} 1'),
+      # InlineKeyboardButton('Провести! СТЫКОВАНАЯ ДЕТАЛЬ',callback_data=f'otc ok {result.id} {result.oper} {worker.id} 2'),
       InlineKeyboardButton('Вернуть на доработку',callback_data=f'otc cancel {result.id} {result.oper}'),
       # InlineKeyboardButton('Показать чертеж',callback_data=f'123')
       )
     await message.answer('Действия с нарядом',reply_markup=btn)
   await message.delete()
   connection.close()
+
+
 
 # Отправка Файла для бирок
 @dp.message_handler(content_types=['document'])
@@ -207,7 +230,7 @@ async def handle_docs_photo(message):
 
 
 
-
+# Общие запросы
 @dp.message_handler()
 async def start(message: types.Message):
   text = (message.text).split(' ')

@@ -10,6 +10,7 @@ def NormExcel():
   # WeldNormExcel()
   # User_worker()
 
+
 def HoleNormExcel():
   wb = load_workbook('VVL.xlsx',data_only=True)
   sheet = wb.get_sheet_by_name('Сверление')
@@ -62,14 +63,16 @@ def AssemblyNormExcel():
   wb = load_workbook('VVL.xlsx',data_only=True)
   sheet = wb.get_sheet_by_name('Сборка (ЕНиР)')
   post = []
-  for y in range(866,885):
-    d = []
-    for i in range(1,9):
-      if sheet.cell(row=y,column=i).value == None:
-        d.append('')
-      else:
-        d.append(sheet.cell(row=y,column=i).value)
-    post.append(d)
+  for y in range(331,344):
+    if sheet.cell(row=y,column=1).value == 'Ограждение':
+      print('#')
+      d = []
+      for i in range(1,9):
+        if sheet.cell(row=y,column=i).value == None:
+          d.append('')
+        else:
+          d.append(sheet.cell(row=y,column=i).value)
+      post.append(d)
   AssemblyNorm.insert_many(post, fields=[AssemblyNorm.name,AssemblyNorm.mass_of,AssemblyNorm.mass_to,AssemblyNorm.count_of,AssemblyNorm.count_to,AssemblyNorm.complexity,AssemblyNorm.norm,AssemblyNorm.choice]).execute()
 
 

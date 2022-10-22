@@ -18,19 +18,34 @@ p_style = ParagraphStyle(name='Normal',fontName='rus',fontSize=10,)
 
 def PackList(pack):
   print(pack)
+  page = 1
   pdf = canvas.Canvas(f'media/Пакет {pack.id}.pdf', pagesize=A4)
   pdf.setTitle('')
-  Pdf(pdf,pack)
+  tab = []
+  index = 1
+  details = DetailPack.select().where(DetailPack.pack == pack.id)
+  for detail in details:
+    names = PointPart.select(PointPart,fn.COUNT(fn.DISTINCT(PointPart.point)).alias('count')).join(Point).join(Drawing).where(PointPart.detail == detail.detail.detail).group_by(PointPart.point,Drawing.id)
+    for name in names:
+      tab.append([index,name.point.name,name.point.assembly.assembly,detail.detail.detail,'шт.',name.count,float(name.point.assembly.weight),''])
+      index += 1
+      if index == 37:
+        page = 2
+        Pdf(pdf,pack,tab,page)
+        pdf.showPage()
+        tab = []
+        page = 3
+  Pdf(pdf,pack,tab,page)
   pdf.save()
   return f'media/Пакет {pack.id}.pdf'
 
-def Pdf(pdf,pack):
+def Pdf(pdf,pack,tab,page):
   width, height = A4
   widthList = [width*0.02,width*0.96,width*0.02]
   heightList = [height*0.015,height*0.96,height*0.025]
   mainTable = Table([
     ['','',''],
-    ['',Header(pdf,pack,widthList[1],heightList[1]),''],
+    ['',Header(pdf,pack,widthList[1],heightList[1],tab,page),''],
     ['','',''],
   ],colWidths=widthList,
     rowHeights=heightList)
@@ -52,28 +67,55 @@ def Pdf(pdf,pack):
   mainTable.wrapOn(pdf,0,0)
   mainTable.drawOn(pdf,0,0)
 
-def Header(pdf,pack,width,height):
-  tab = []
-  index = 1
-  details = DetailPack.select().where(DetailPack.pack == pack.id)
-  for detail in details:
-    names = PointPart.select(PointPart,fn.COUNT(fn.DISTINCT(PointPart.point)).alias('count')).join(Point).join(Drawing).where(PointPart.detail == detail.detail.detail).group_by(PointPart.point,Drawing.id)
-    for name in names:
-      tab.append([index,name.point.name,name.point.assembly.assembly,detail.detail.detail,'шт.',name.count,float(name.point.assembly.weight),''])
-      index += 1
-  heightList = [70,20,160,30,len(tab) * 15,60,30,15,height - 385 - (len(tab) * 15)]
-  table = Table([
-    [Header1(pdf,pack,width,heightList[0])],
-    [f'Упаковочный лист № {pack.number}  от  {pack.date}'],
-    [Header2(pdf,pack,width,heightList[2])],
-    [Body1(width,30)],
-    [Body2(tab,pack,width,heightList[4])],
-    [Footer1(pack,width,75)],
-    [''],
-    ['м.п   Упаковал:___________________ Гнебедюк Д.С'],
-    ['']
-  ],colWidths=width,
-    rowHeights=heightList)
+def Header(pdf,pack,width,height,tab,page):
+
+
+  if page == 1:
+    heightList = [70,20,185,30,len(tab) * 12,60,30,15,height - 410 - (len(tab) * 12)]
+    table = Table([
+      [Header1(pdf,pack,width,heightList[0])],
+      [f'Упаковочный лист № {pack.number}  от  {pack.date}'],
+      [Header2(pdf,pack,width,heightList[2])],
+      [Body1(width,30)],
+      [Body2(tab,pack,width,heightList[4])],
+      [Footer1(pack,width,75)],
+      [''],
+      ['м.п   Упаковал:___________________ Гнебедюк С.Ю'],
+      ['']
+    ],colWidths=width,
+      rowHeights=heightList)
+  elif page == 2:
+    heightList = [70,20,185,30,len(tab) * 12,60,30,15,height - 410 - (len(tab) * 12)]
+    table = Table([
+      [Header1(pdf,pack,width,heightList[0])],
+      [f'Упаковочный лист № {pack.number}  от  {pack.date}'],
+      [Header2(pdf,pack,width,heightList[2])],
+      [Body1(width,30)],
+      [Body2(tab,pack,width,heightList[4])],
+      [''],
+      [''],
+      [''],
+      ['']
+    ],colWidths=width,
+      rowHeights=heightList)
+  elif page == 3:
+    heightList = [0,0,0,30,len(tab) * 12,60,30,15,height - 135 - (len(tab) * 12)]
+    table = Table([
+      [''],
+      [''],
+      [''],
+      [Body1(width,30)],
+      [Body2(tab,pack,width,heightList[4])],
+      [Footer1(pack,width,75)],
+      [''],
+      ['м.п   Упаковал:___________________ Гнебедюк С.Ю'],
+      ['']
+    ],colWidths=width,
+      rowHeights=heightList)
+
+
+
+
   table.setStyle([
     ('GRID',(0,1),(0,1),1,'black'),
     ('LEFTPADDING',(0,0),(-1,-1),0),
@@ -111,12 +153,13 @@ def Header1(pdf,pack,width,height):
 
 def Header2(pdf,pack,width,height):
   widthList = [width*0.4,width*0.6]
-  heightList = [25,45,45,45]
+  heightList = [25,40,40,40,40]
   table = Table([
     ['Номер договора, спецификации',Paragraph(pack.order.contract,p_style)],
     ['Поставщик (наименование, адрес, ИНН):',Paragraph('ООО «Байкалстальстрой», 666037, Иркутская область, город Шелехов, улица Известковая, дом 2, ИНН 3810061670',p_style)],
     ['Покупатель (наименование, адрес):',Paragraph(pack.order.customer,p_style)],
     ['Грузополучатель (наименование, адрес):',Paragraph(pack.order.consignee,p_style)],
+    [Paragraph('Номенклатурное наименование комплектного Оборудования, ТМЦ:',p_style),Paragraph(pack.order.name,p_style)],
   ],colWidths=widthList,
     rowHeights=heightList)
   table.setStyle([

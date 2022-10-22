@@ -1,4 +1,5 @@
 import datetime
+from email.policy import default
 from peewee import Model, IntegerField, DateTimeField, CharField, ForeignKeyField, DecimalField, PrimaryKeyField, BooleanField, BigIntegerField
 # from peewee import *
 from db import connection
@@ -21,7 +22,6 @@ class Order(ModelBase):
   consignee = CharField(max_length=500,null=True)
   weight = DecimalField(max_digits=12,decimal_places=3,null=True)
 
-  
   
 class Drawing(ModelBase):
   class Meta:
@@ -103,6 +103,7 @@ class Part(ModelBase):
   depth = DecimalField(max_digits=12,decimal_places=3,default=0)
   perimeter = IntegerField(default=0)
   sn = CharField(max_length=50,null=True)
+  area = DecimalField(max_digits=12,decimal_places=3,default=0)
 
 class WeldNorm(ModelBase):
   class Meta:
@@ -154,6 +155,20 @@ class Washer(ModelBase):
   gost = CharField(max_length=50)
   weight = DecimalField(max_digits=12,decimal_places=3)
 
+class HoleNorm(ModelBase):
+  class Meta:
+    table_name='holenorms'
+  id = PrimaryKeyField(null=False)
+  depth_of = IntegerField()
+  depth_to = IntegerField()
+  diameter = IntegerField()
+  lenght_of = IntegerField()
+  lenght_to = IntegerField()
+  count = IntegerField()
+  count_to = IntegerField()
+  norm = DecimalField(max_digits=12,decimal_places=3)
+  metal = CharField(max_length=15)
+
 class Hole(ModelBase):
   class Meta:
     table_name='holes'
@@ -163,6 +178,7 @@ class Hole(ModelBase):
   diameter = IntegerField()
   count = IntegerField()
   depth = IntegerField()
+  norm = ForeignKeyField(HoleNorm,backref='holes',null=True)
 
 class Chamfer(ModelBase):
   class Meta:
@@ -190,18 +206,6 @@ class PointPart(ModelBase):
   turning = IntegerField(default=0)
   joint = IntegerField(default=0)
 
-class HoleNorm(ModelBase):
-  class Meta:
-    table_name='holenorms'
-  id = PrimaryKeyField(null=False)
-  depth_of = IntegerField()
-  depth_to = IntegerField()
-  diameter = IntegerField()
-  lenght_of = IntegerField()
-  lenght_to = IntegerField()
-  count = IntegerField()
-  norm = DecimalField(max_digits=12,decimal_places=3)
-  metal = CharField(max_length=15)
 
 class SawNorm(ModelBase):
   class Meta:
@@ -406,3 +410,20 @@ class PointPaint(ModelBase):
   coat = ForeignKeyField(Coating,backref='pointpaints')
   point = ForeignKeyField(Point,backref='pointpaints')
   number = CharField(max_length=150)
+
+class Joint(ModelBase):
+  class Meta:
+    table_name='joints'
+  id = PrimaryKeyField(null=False)
+  paint = ForeignKeyField(Part,backref='joints')
+  detail = ForeignKeyField(Detail,backref='joints')
+  norm = DecimalField(max_digits=12,decimal_places=3,default=0)
+
+class JointNorm(ModelBase):
+  class Meta:
+    table_name='jointnorms'
+  id = PrimaryKeyField(null=False)
+  profile = CharField(max_length=150)
+  size_of = IntegerField()
+  size_to = IntegerField()
+  norm = DecimalField(max_digits=12,decimal_places=3,default=0)

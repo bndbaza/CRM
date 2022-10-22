@@ -206,6 +206,16 @@ def Size(str):
     else:
       i = ('Швеллер гнутый',str.replace('Гн.[',''),'saw_s','')
     return (i)
+
+  elif str.startswith('Резина'):  
+    a = str.replace('Резина','').split('х')
+    if int(a[0]) > int(a[1]):
+      i = ('Резина',a[1],'no_metal',a[0])
+    else:
+      i = ('Резина',a[0],'no_metal',a[1])
+    return (i)
+
+
   elif str.startswith('Гн.'):  
     if int(str.replace('Гн.','').split('х')[0]) >= 160: 
       i = ('Труба профильная',str.replace('Гн.',''),'saw_b','')
@@ -258,6 +268,7 @@ def Size(str):
   elif str.startswith('I'):  
     i = ('Двутавр',str.replace('I',''),'saw_b','')
     return (i)
+
   elif str.startswith('—'):
     a = str.replace('—','').split('х')
     if int(a[0]) > int(a[1]):
@@ -265,6 +276,15 @@ def Size(str):
     else:
       i = ('Лист',a[0],'cgm',a[1])
     return (i)
+
+  elif str.startswith('BL'):
+    a = str.replace('BL','').split('х')
+    if int(a[0]) > int(a[1]):
+      i = ('Лист',a[1],'cgm',a[0])
+    else:
+      i = ('Лист',a[0],'cgm',a[1])
+    return (i)
+
   elif str.startswith('-'):  
     a = str.replace('-','').split('х')
     if int(a[0]) > int(a[1]):

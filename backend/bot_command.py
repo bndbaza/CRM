@@ -160,15 +160,15 @@ async def Workers(message,text):
           otc = Otc.select().where(Otc.detail == faza,Otc.oper == 'weld').first()
           if otc == None:
             otc = Otc.create(detail=faza,start=datetime.today(),oper='weld')
+            faza.weld = 3
+            faza.save()
+            otc = Worker.select(User.telegram).join(User).where(Worker.oper.in_(['otc'])).tuples()
+            await AllReport(otc,f'{faza.detail} {detail.worker_1.user.surname} Наряд на проверку сварки')
+            DetailUserAdd(detail)
           else:
             otc.fix = 0
             otc.error += 1
             otc.save()
-          faza.weld = 3
-          faza.save()
-          otc = Worker.select(User.telegram).join(User).where(Worker.oper.in_(['otc'])).tuples()
-          await AllReport(otc,f'{faza.detail} {detail.worker_1.user.surname} Наряд на проверку сварки')
-          DetailUserAdd(detail)
           return 'Сварка завершина'
 
         elif detail.oper == 'paint':
@@ -283,7 +283,25 @@ async def OtcUser(message,text,worker):
     return detail
 
   elif detail and detail.fix == True:
-    return f'Наряд отправлен на доработку'
+    if message.chat.id == 2037378584 or message.chat.id == 262285696:
+      paint = Detail.select().where(Detail.detail == text[1],Detail.oper == 'paint',Detail.start != None,Detail.end == None).first()
+      if paint:
+        faza = paint.faza
+        paint.end = datetime.today()
+        paint.save()
+        detail.end = datetime.today()
+        detail.worker = 131
+        detail.fix = 0
+        detail.error += 1
+        detail.save()
+        faza.paint = 3
+        faza.packed = 1
+        faza.save()
+        return f'Покраска сдана. Наряд проверен!'
+      else:
+        return f'Наряд отправлен на доработку'
+
+
 
   else:
     if message.chat.id == 2037378584 or message.chat.id == 262285696:

@@ -111,16 +111,37 @@ def Time3():
   book.save(f'paint2.xlsx')
 
 def NormPaint():
-  details = Detail.select().join(Faza).where(Faza.case.in_((26,)),Detail.oper == 'paint')
+  # details = Detail.select().join(Faza).where(Faza.case.in_((20,21,26,31,32,33,34)),Detail.oper == 'paint')
+  details = Detail.select().join(Faza).where(Faza.case.in_((30,)),Detail.oper == 'paint',Detail.norm == 0)
+  if len(details) == 0:
+    print('NO')
+    return
+  # details = Detail.select().where(Detail.oper == 'paint',Detail.detail == 11922)
+  # details = Detail.select().where(Detail.oper == 'paint')
+  bolt = Bolt.select(Drawing.id).join(Drawing).where(Bolt.gost.in_(('52644','32484.3'))).tuples()
   for detail in details:
     paint = 0
     pp = PointPart.select().where(PointPart.detail == detail.detail).group_by(PointPart.point)
     for p in pp:
-      popa = PointPaint.select(fn.SUM(Coating.price * Drawing.area)).join(Point).join(Drawing).join_from(PointPaint,Coating).where(Point.id == p.point.id).scalar()
-      paint += popa
+      try:
+        popa = PointPaint.select(fn.SUM(Coating.price * Drawing.area)).join(Point).join(Drawing).join_from(PointPaint,Coating).where(Point.id == p.point.id).scalar()
+        if p.point.name == 'Ограждение':
+          popa = float(popa) * 6
+        elif p.point.assembly.area < 0.5:
+          popa = float(popa) * 2
+        elif p.point.assembly.area < 1.5:
+          popa = float(popa) * 1.3
+        elif p.point.assembly.id in bolt:
+          popa = float(popa) * 1.1
+        paint += float(popa)
+      except:
+        print(f'NO {detail.detail}')
     detail.norm = paint
-    detail.save()
-    print(detail.detail)
+    # detail.save()
+    print(f'{detail.detail}')
+
+  with connection.atomic():
+    Detail.bulk_update(details,fields=[Detail.norm])
 
 
 def UserNorm():
@@ -135,10 +156,11 @@ def UserNorm():
 def Time4():
   lis = []
   # pp = Point.select().join(Drawing).where(Drawing.cas.in_((19,20,21,23,24,25,27,29)))
+  # print(len(pp))
   # for p in pp:
-  #   lis.append((p,1,'0'))
-  #   lis.append((p,2,'0'))
-  #   lis.append((p,2,'0'))
+  #   lis.append((p,11,'0'))
+    # lis.append((p,2,'0'))
+    # lis.append((p,2,'0'))
   # pp = Point.select().join(Drawing).where(Drawing.cas == 30)
   # for p in pp:
   #   lis.append((p,9,'0'))
@@ -146,13 +168,27 @@ def Time4():
   # for p in pp:
   #   lis.append((p,10,'0'))
   ppaint = PointPaint.select(Point.id).join(Point).tuples()
-  pp = Point.select().join(Drawing).where(Drawing.cas == 26,Point.id.not_in(ppaint))
+  pp = Point.select().join(Drawing).where(Drawing.cas == 30,Point.id.not_in(ppaint))
   for p in pp:
     print(p)
-    lis.append((p,8,'0'))
+    lis.append((p,9,'0'))
   
   with connection.atomic():
     PointPaint.insert_many(lis, fields=[PointPaint.point,PointPaint.coat,PointPaint.number]).execute()
+
+def PAINTNONE():
+  detail = Detail.select(Detail.detail).where(Detail.oper == 'paint',Detail.norm == 0).tuples()
+  point = PointPaint.select(PointPaint.point).tuples()
+  pp = PointPart.select(Order.id).join(Point).join(Drawing).join(Order).where(PointPart.detail.in_(detail),PointPart.point.not_in(point)).group_by(Order.id).tuples()
+  # pp = PointPart.select(Order.id).join(Point).join(Drawing).join(Order).where(PointPart.detail.in_(detail)).group_by(Order.id).tuples()
+  for p in pp:
+    print(p)
+
+def Time5():
+  # pp = PointPaint.select(PointPaint.id).join(Point).join(Drawing).where(Drawing.cas.in_((19,20,21,23,24,25,27,29)),PointPaint.coat == 2).tuples()
+  pp = PointPaint.select(PointPaint.id).join(Point).join(Drawing).where(Drawing.cas.in_((33,)),PointPaint.coat == 1).tuples()
+  print(len(pp))
+  PointPaint.delete().where(PointPaint.id.in_(pp)).execute()
 
   
   

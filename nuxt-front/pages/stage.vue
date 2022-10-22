@@ -18,7 +18,14 @@
                   :key="faza"
                 >
                   <!-- <td><p>{{faza.detail}}</p></td> -->
-                  <td v-if="(faza.detail == $store.state.db.search | $store.state.db.search == '')"><nuxt-link :to="'detail/'+faza.detail" large><h2 class="text-center"><font :color="faza.color">{{ faza.detail }}</font></h2></nuxt-link></td>
+                  <td v-if="(faza.detail == $store.state.db.search | $store.state.db.search == '')">
+                    <nuxt-link :to="'detail/'+faza.detail" large>
+                      <h2 class="text-center">
+                        <font v-if="faza.fix != true" :color="faza.color">{{ faza.detail }}</font>
+                        <v-chip v-else :color="faza.color"><font color="white">{{ faza.detail }}</font></v-chip>
+                      </h2>
+                    </nuxt-link>
+                  </td>
                   <!-- <td v-if="Variant(header.text,stage) & (stage.detail == $store.state.db.search | $store.state.db.search == '')"><nuxt-link :to="'detail/'+stage.detail" large><h2 class="text-center"><font :color="stage.case.color">{{ stage.detail }}</font></h2></nuxt-link></td> -->
                 </tr>
               </tbody>

@@ -51,6 +51,7 @@ export default {
         {text:'Ожидает ОТК после покраски',value: 11},
         {text:'Готов к упаковке',value: 8},
         {text:'Упакован',value: 13},
+        {text:'Отгружен',value: 14},
       ],
       trans:{
         assembly:'Сборка',
@@ -150,7 +151,14 @@ export default {
         }
       }
       if (x == 'Упакован') {
-        if (stage.packed == 3){
+        if (stage.packed == 3 && stage.shipment == 0){
+          return true
+        }else{
+          return false
+        }
+      }
+      if (x == 'Отгружен') {
+        if (stage.packed == 3 && stage.shipment == 3){
           return true
         }else{
           return false

@@ -32,6 +32,8 @@
     "models.Reg",
     "models.Otc",
     "models.Coating",
-    "models.PointPaint"
+    "models.PointPaint",
+    "models.Joint",
+    "models.JointNorm"
   ]
 }

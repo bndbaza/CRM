@@ -41,6 +41,7 @@ def TeklaAdd(add,tekla,case):
         width=tekla[i]['part'][p]['width'],
         perimeter=tekla[i]['part'][p]['perimeter'],
         depth=tekla[i]['part'][p]['depth'],
+        area=tekla[i]['part'][p]['area'],
         create_date=date
       )
       for hole in tekla[i]['part'][p]['hole']:

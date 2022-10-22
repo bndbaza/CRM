@@ -19,28 +19,31 @@ async def Get(msgs):
     if detail.packed == 0:
       await Bots(f'{msg[1]} Наряд не сдан в отгрузку')
       if detail.paint == 1:
-        Detail.update({
-          Detail.start: datetime.datetime.today(),
-          Detail.end: datetime.datetime.today(),
-          Detail.worker_1: 92,
-        }).where(Detail.detail == msg[1],Detail.oper == 'paint').execute()
-        detail.paint = 3
-        detail.packed = 1
-        detail.save()
-        await Bots(f'{msg[1]} Наряд перенесен без покраски')
+        # Detail.update({
+        #   Detail.start: datetime.datetime.today(),
+        #   Detail.end: datetime.datetime.today(),
+        #   Detail.worker_1: 92,
+        # }).where(Detail.detail == msg[1],Detail.oper == 'paint').execute()
+        # detail.paint = 3
+        # detail.packed = 1
+        # detail.save()
+        await Bots(f'{msg[1]} Наряд не окрашивался!!!')
+        return
       elif detail.paint == 3:
-        Otc.update({Otc.worker: 139,Otc.end: datetime.datetime.today()}).where(Otc.detail == detail).execute()
-        detail.packed = 1
-        detail.save()
-        await Bots(f'{msg[1]} Наряд перенесен без ОТК')
+        # Otc.update({Otc.worker: 139,Otc.end: datetime.datetime.today()}).where(Otc.detail == detail).execute()
+        # detail.packed = 1
+        # detail.save()
+        await Bots(f'{msg[1]} Наряд не принят ОТК!!!')
+        return
       elif detail.paint == 2:
-        Detail.update({
-          Detail.end: datetime.datetime.today(),
-        }).where(Detail.detail == msg[1],Detail.oper == 'paint').execute()
-        detail.paint = 3
-        detail.packed = 1
-        detail.save()
-        await Bots(f'{msg[1]} Наряд перенесен из покраски')
+        # Detail.update({
+        #   Detail.end: datetime.datetime.today(),
+        # }).where(Detail.detail == msg[1],Detail.oper == 'paint').execute()
+        # detail.paint = 3
+        # detail.packed = 1
+        # detail.save()
+        await Bots(f'{msg[1]} Окрашивание не закончено!!!')
+        return
       else:
         await Bots(f'{msg[1]} ПОТЕРЯЛСЯ')
         return
