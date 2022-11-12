@@ -96,9 +96,7 @@ async def RegMan(text):
   else:
     return 'Нет такого запроса'
 
-
-async def Photo(message):
-  
+async def Photo(message):  
   if message.photo:
     file_name = f'media/scaner/{message.chat.id}.jpg'
     await message.photo[-1].download(file_name)
@@ -115,10 +113,8 @@ async def Workers(message,text):
   date = datetime.today()
   if text[0] == 'Run' or text[0] == 'A':
     detail = Detail.select().where(Detail.detail == text[1],Detail.to_work == 1,Detail.start == None).first()
-
     if detail == None:
       detail = Detail.select().where(Detail.detail == text[1],Detail.to_work == 1,Detail.start != None,Detail.end == None).first()
-
       if detail == None:
         return 'Все операции по данному наряду закончены'
       elif detail.worker_1.user.telegram != message.chat.id and detail.worker_2 == None and (date - detail.start > timedelta(minutes=10)):
@@ -137,7 +133,7 @@ async def Workers(message,text):
           faza.assembly = 1
           faza.save()
           DetailUserAdd(detail)
-          return 'Комплектовка завершина'
+          return 'Комплектовка завершена'
         elif detail.oper == 'set' and Detail.select().where(Detail.oper == 'assembly',Detail.detail == detail.detail).first() == None:
           Detail.update({Detail.to_work: 1}).where(Detail.oper == 'paint',Detail.detail == detail.detail).execute()
           faza.set = 3
@@ -146,31 +142,29 @@ async def Workers(message,text):
           faza.paint = 1
           faza.save()
           DetailUserAdd(detail)
-          return 'Комплектовка завершина'
+          return 'Комплектовка завершена'
         elif detail.oper == 'assembly':
           Detail.update({Detail.to_work: 1}).where(Detail.oper == 'weld',Detail.detail == detail.detail).execute()
           faza.assembly = 3
           faza.weld = 1
           faza.save()
           DetailUserAdd(detail)
-          return 'Сборка завершина'
-
+          return 'Сборка завершена'
         elif detail.oper == 'weld':
           # Detail.update({Detail.to_work: 1}).where(Detail.oper == 'paint',Detail.detail == detail.detail).execute()
           otc = Otc.select().where(Otc.detail == faza,Otc.oper == 'weld').first()
+          faza.weld = 3
           if otc == None:
             otc = Otc.create(detail=faza,start=datetime.today(),oper='weld')
-            faza.weld = 3
-            faza.save()
-            otc = Worker.select(User.telegram).join(User).where(Worker.oper.in_(['otc'])).tuples()
-            await AllReport(otc,f'{faza.detail} {detail.worker_1.user.surname} Наряд на проверку сварки')
             DetailUserAdd(detail)
           else:
             otc.fix = 0
             otc.error += 1
             otc.save()
-          return 'Сварка завершина'
-
+          faza.save()
+          otc = Worker.select(User.telegram).join(User).where(Worker.oper.in_(['otc'])).tuples()
+          await AllReport(otc,f'{faza.detail} {detail.worker_1.user.surname} Наряд на проверку сварки')
+          return 'Сварка завершена'
         elif detail.oper == 'paint':
           faza.paint = 3
           otc = Otc.select().where(Otc.detail == faza,Otc.oper == 'paint').first()
@@ -183,7 +177,7 @@ async def Workers(message,text):
           faza.save()
           otc = Worker.select(User.telegram).join(User).where(Worker.oper.in_(['otc'])).tuples()
           await AllReport(otc,f'{faza.detail} {detail.worker_1.user.surname} Наряд на проверку покраски')
-          return 'Покраска завершина'
+          return 'Покраска завершена'
       else:
         user = Worker.select().join(User).where(User.telegram == str(message.chat.id),Worker.oper == detail.oper).first()
         if user == None:
@@ -298,8 +292,8 @@ async def OtcUser(message,text,worker):
         faza.packed = 1
         faza.save()
         return f'Покраска сдана. Наряд проверен!'
-      else:
-        return f'Наряд отправлен на доработку'
+    else:
+      return f'Наряд отправлен на доработку'
 
 
 
@@ -389,7 +383,7 @@ def AdminUser(message,text,worker):
       faza.set = 3
       faza.assembly = 1
       faza.save()
-      return 'Комплектовка завершина'
+      return 'Комплектовка завершена'
     elif detail.oper == 'set' and Detail.select().where(Detail.oper == 'assembly',Detail.detail == detail.detail).first() == None:
       Detail.update({Detail.to_work: 1}).where(Detail.oper == 'paint',Detail.detail == detail.detail).execute()
       faza.set = 3
@@ -397,36 +391,37 @@ def AdminUser(message,text,worker):
       faza.weld = 3
       faza.paint = 1
       faza.save()
-      return 'Комплектовка завершина'
+      return 'Комплектовка завершена'
     elif detail.oper == 'assembly':
       Detail.update({Detail.to_work: 1}).where(Detail.oper == 'weld',Detail.detail == detail.detail).execute()
       faza.assembly = 3
       faza.weld = 1
       faza.save()
-      return 'Сборка завершина'
+      return 'Сборка завершена'
     elif detail.oper == 'weld':
       Detail.update({Detail.to_work: 1}).where(Detail.oper == 'paint',Detail.detail == detail.detail).execute()
       faza.weld = 3
       faza.paint = 1
       faza.save()
-      return 'Сварка завершина'
+      return 'Сварка завершена'
     elif detail.oper == 'paint':
       faza.paint = 3
       # faza.packed = 1
       Otc.create(detail=faza,start=datetime.today(),oper='paint')
       faza.save()
-      return 'Покраска завершина'
+      return 'Покраска завершена'
   else:
     return f'Не нашел наряд {text[1]}'
 
 async def InfoDetail(text):
   str = text
-  detail = PointPart.select(PointPart,fn.MAX(Part.length).alias('length')).join(Part).join_from(PointPart,Point).where(PointPart.detail == str[1]).group_by(PointPart.detail)
+  detail = PointPart.select(PointPart,fn.COUNT(fn.DISTINCT(PointPart.point)).alias('count_point'),fn.MAX(Part.length).alias('length')).join(Part).join_from(PointPart,Point).where(PointPart.detail == str[1]).group_by(PointPart.detail)
   text = ''
   if len(detail) == 1:
     d = detail.first()
     text += f'Наряд {d.detail}\n'
     text += f'Длина {d.length}\n'
+    text += f'Количество {d.count_point}\n'
     text += f'Вес {d.part.assembly.weight}\n'
     text += f'Заказ {d.part.assembly.cas.cas}\n'
     text += f'Фаза {d.point.faza}\n'

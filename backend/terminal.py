@@ -133,11 +133,9 @@ def Task_end(task):
 def Detail_end(task):
   opers = {'set':'assembly','assembly':'weld','weld':'paint'}
   try:
-
     detail = Detail.get(Detail.detail == task.detail,Detail.oper == opers[task.oper])
     if task.oper != 'weld':
       detail.to_work = True
-
     detail.save()
     faza = task.faza
     if task.oper == 'set':
@@ -160,19 +158,34 @@ def Detail_end(task):
       # faza.paint = 1
     faza.save()
   except:
-    print('11111111111111111')
     # Otc.get_or_create(detail=faza,start=datetime.datetime.today(),oper='weld')
     # otc = Worker.select(User.telegram).join(User).where(Worker.oper.in_(['admin'])).tuples()
     # AllReport(otc,f'{faza.detail} {detail.worker_1.user.surname} Наряд на проверку сварки')
-    detail = Detail.get(Detail.detail == task.detail,Detail.oper == 'paint')
-    detail.to_work = True
-    detail.save()
-    faza = task.faza
-    faza.paint = 1
-    faza.set = 3
-    faza.assembly = 3
-    faza.weld = 3
-    faza.save()
+    detail = Detail.select().where(Detail.detail == task.detail,Detail.oper == 'paint').first()
+    if detail != None:
+      detail.to_work = True
+      detail.save()
+      faza = task.faza
+      faza.paint = 1
+      faza.set = 3
+      faza.assembly = 3
+      faza.weld = 3
+      faza.save()
+    else:
+      faza = task.faza
+      otc = Otc.create(detail=faza,start=datetime.datetime.today(),oper='paint')
+      faza.paint = 3
+      faza.set = 3
+      faza.assembly = 3
+      faza.weld = 3
+      faza.save()
+
+    
+
+
+
+
+
 
 def Detail_open(task,dates,faza,users,stad):
   task.start = dates
@@ -211,15 +224,16 @@ def Detail_close(task,dates,stad):
     task.end = dates
     task.save()
     if stad == 'detail':
-      data = []
-      if task.worker_2 != None:
-        data.append((task.id,task.worker_1,task.faza.weight / 2,task.norm / 2))
-        data.append((task.id,task.worker_2,task.faza.weight / 2,task.norm / 2))
-      else:
-        data.append((task.id,task.worker_1,task.faza.weight,task.norm))
-      print(data)
-      with connection.atomic():
-        DetailUser.insert_many(data,fields=[DetailUser.detail,DetailUser.worker,DetailUser.weight,DetailUser.norm]).execute()
+      if DetailUser.select().join(Detail).where(Detail.id == task.id).first() == None:
+        data = []
+        if task.worker_2 != None:
+          data.append((task.id,task.worker_1,task.faza.weight / 2,task.norm / 2))
+          data.append((task.id,task.worker_2,task.faza.weight / 2,task.norm / 2))
+        else:
+          data.append((task.id,task.worker_1,task.faza.weight,task.norm))
+        print(data)
+        with connection.atomic():
+          DetailUser.insert_many(data,fields=[DetailUser.detail,DetailUser.worker,DetailUser.weight,DetailUser.norm]).execute()
       Detail_end(task)
     elif stad == 'task':
       Task_end(task)

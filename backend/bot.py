@@ -172,7 +172,7 @@ async def otc_callback(callback: types.CallbackQuery):
 
 
 # Проверка ОТК
-@dp.message_handler(lambda message: Group(message,['admin','otc']), content_types=['photo','video'])
+@dp.message_handler(lambda message: Group(message,['adm','otc']), content_types=['photo','video'])
 async def otc_test(message):
   worker = Worker.select().join(User).where(Worker.oper.in_(['admin','otc']),User.telegram == message.chat.id).first()
   file_name = f'media/scaner/{message.chat.id}.jpg'

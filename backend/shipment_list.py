@@ -53,7 +53,7 @@ def ShipmentList(id):
         if float(detail.detail.weight) != name.count * float(name.point.assembly.weight):
           print(detail.detail.detail,detail.detail.weight,name.count * float(name.point.assembly.weight))
         index += 1
-      if len(dic['detail']) >= 40 and end['page'] == 1:
+      if len(dic['detail']) > 40 and end['page'] == 1:
         tab['count'] += len(dic['detail'])
         tab['tab'].append(dic)
         Pdf(pdf,ship,tab)
@@ -62,7 +62,7 @@ def ShipmentList(id):
         tab['count'] = 0
         tab['tab'] = []
         end['page'] += 1
-      elif len(dic['detail']) >= 50:
+      elif len(dic['detail']) > 50:
         tab['count'] += len(dic['detail'])
         tab['tab'].append(dic)
         Pdf(pdf,ship,tab)
@@ -134,6 +134,7 @@ def Header(tab,pdf,ship,width,height):
       [''],
       [''],
       [''],
+      [''],
       ['']
     ],colWidths=width,
       rowHeights=heightList)
@@ -146,7 +147,7 @@ def Header(tab,pdf,ship,width,height):
       [''],
       [Body1(width,25)],
       [Body2(tab,width,heightList[4])],
-      [],
+      [''],
       [Footer1(tab,width,75)],
       [''],
       [''],
@@ -249,13 +250,13 @@ def Body1(width,height):
 def fake(height=15):
   widthList = [25,95,79,57,47,31.5,50,57,75,55]
   table = Table([
-    ['41',
+    ['132',
     'Метизы',
     '',
     '',
     'кг.',
     '',
-    '1514.48',
+    '331.98',
     '',
     '',
     'Ящик'],
@@ -269,12 +270,6 @@ def fake(height=15):
     ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
   ])
   return table
-
-
-
-
-
-
 
 
 

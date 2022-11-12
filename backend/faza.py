@@ -100,9 +100,10 @@ def PartPoint(faza,cas):
   Test(max2,faza,cas)
   
 def Test(max2,faza,case):
+  name = ('Монтажная пластина','Шайба','Шпилька','Рельс','Струбцина')
   zi = PointPart.select(PointPart,fn.COUNT(PointPart.detail).alias('aaa')).join(Point).join(Drawing).where(Point.faza == faza,Drawing.cas == case).group_by(PointPart.detail).having(fn.COUNT(PointPart.detail) != 1)
-  yi = PointPart.select(PointPart,fn.COUNT(PointPart.detail).alias('aaa')).join(Point).join(Drawing).where(Point.faza == faza,Drawing.cas == case,Point.name != 'Монтажная пластина').group_by(PointPart.detail).having(fn.COUNT(PointPart.detail) == 1)
-  ti = PointPart.select(PointPart,fn.COUNT(PointPart.detail).alias('aaa')).join(Point).join(Drawing).where(Point.faza == faza,Drawing.cas == case,((Drawing.assembly.contains('Ш-')) | (Point.name == 'Монтажная пластина') | (Point.name == 'Шайба'))).group_by(PointPart.detail).having(fn.COUNT(PointPart.detail) == 1)
+  yi = PointPart.select(PointPart,fn.COUNT(PointPart.detail).alias('aaa')).join(Point).join(Drawing).where(Point.faza == faza,Drawing.cas == case,Point.name.not_in(name)).group_by(PointPart.detail).having(fn.COUNT(PointPart.detail) == 1)
+  ti = PointPart.select(PointPart,fn.COUNT(PointPart.detail).alias('aaa')).join(Point).join(Drawing).where(Point.faza == faza,Drawing.cas == case,((Drawing.assembly.contains('Ш-')) | (Point.name.in_(name)))).group_by(PointPart.detail).having(fn.COUNT(PointPart.detail) == 1)
   xi = PointPart.select().join(Point).join(Drawing).where(Point.faza == faza,Drawing.cas == case)
   index = max2
   all = []
@@ -116,10 +117,10 @@ def Test(max2,faza,case):
 
   dec = {}
   for i in ti:
-    if i.part.profile+i.part.size in dec.keys():
-      i.detail = dec[i.part.profile+i.part.size]
+    if i.part.profile+i.part.size+i.part.assembly.assembly in dec.keys():
+      i.detail = dec[i.part.profile+i.part.size+i.part.assembly.assembly]
     else:
-      dec[i.part.profile+i.part.size] = index
+      dec[i.part.profile+i.part.size+i.part.assembly.assembly] = index
       i.detail = index
       index += 1
 
@@ -158,8 +159,6 @@ def Detail_create(faza,case):
     data.append((i.detail,i.point.faza,i.point.assembly.cas,i.weight / x,i.area / x))
   with connection.atomic():
     Faza.insert_many(data, fields=[Faza.detail,Faza.faza,Faza.case,Faza.weight,Faza.area]).execute()
-
-
   pointpart_weld = PointPart.select(PointPart,fn.SUM(Part.count).alias('count')).join(Point).join(Drawing).join_from(PointPart,Part).where(PointPart.weld == 1,Drawing.cas == case,Point.faza == faza).group_by(PointPart.detail)
   for i in pointpart_weld:
     faza_tab = Faza.get(Faza.detail == i.detail)
@@ -178,14 +177,14 @@ def Detail_create(faza,case):
     weld = Weld.select().where(Weld.assembly == i.point.assembly)
     norm_weld = 0
     for w in weld:
-      # welds = WeldNorm.select((WeldNorm.norm * w.length / 1000 / i.point.assembly.count).alias('aaa')).where(WeldNorm.cathet == w.cathet.cathet).first()
       welds = WeldNorm.select((WeldNorm.norm * (w.length / 1000)).alias('aaa')).where(WeldNorm.cathet == w.cathet.cathet).first()
       norm_weld += welds.aaa
     d.append((i.detail,'weld','weld',norm_weld,faza_tab))
-
   for i in pointpart_paint:
     faza_tab = Faza.get(Faza.detail == i.detail)
-    d.append((i.detail,'paint','paint',0,faza_tab))
+    if i.point.assembly.paint != '0': 
+      d.append((i.detail,'paint','paint',0,faza_tab))
+    
     d.append((i.detail,'set','set',0,faza_tab))
   with connection.atomic():
     Detail.insert_many(d, fields=[Detail.detail,Detail.basic,Detail.oper,Detail.norm,Detail.faza]).execute()

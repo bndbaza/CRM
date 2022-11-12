@@ -12,7 +12,7 @@
       >
         <template v-slot:[`item.faza`]="{ item }">
           <nuxt-link :to="'stage/'+$route.params.faza+','+item.faza" v-if="item.faza != 'Итог'">Фаза {{ item.faza }}</nuxt-link>
-          <template v-if="item.faza == 'Итог'">{{ item.faza }}</template>
+          <nuxt-link :to="'stage/'+$route.params.faza+',0'" v-else >Итог</nuxt-link>
         </template>
         <template v-slot:[`item.weight_kmd`]="{ item }">
           {{ item.weight_kmd / 1000 | number }}

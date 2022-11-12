@@ -44,5 +44,17 @@ async def Report(id,text):
 async def AllReport(users,text):
   bot = Bot(bot_id)
   for user in users:
-    await bot.send_message(user[0],text)
+    try:
+      await bot.send_message(user[0],text)
+    except:
+      print(user[0])
+  await bot.close()
+
+async def AllReport2(users,text):
+  bot = Bot(bot_id)
+  for user in users:
+    try:
+      await bot.send_message(user[0],text)
+    except:
+      print(user[0])
   bot.close()

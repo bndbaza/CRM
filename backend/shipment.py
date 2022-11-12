@@ -68,6 +68,9 @@ async def Get(msgs):
       pack = Packed.create(number=number + 1,order=order)
       for detail in details:
         detail.pack = pack
+        faza = detail.detail
+        faza.packed = 3
+        faza.save()
       with connection.atomic():
         DetailPack.bulk_update(details,fields=[DetailPack.pack])
       package = DetailPack.select(fn.SUM(Faza.weight).alias('weight')).join(Faza).where(DetailPack.pack == pack).group_by(DetailPack.pack).scalar()

@@ -284,6 +284,7 @@ class OneDetailBase(BaseModel):
   details: List[BasicDetailBase]
   tasks: List[TaskPartBase]
   pack: PackedBase | None = None
+  count: int
   # ship: ShipmentBase | None = None
 
   class Config:

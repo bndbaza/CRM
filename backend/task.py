@@ -15,7 +15,7 @@ general = {}
 
 stroka = 12
 
-vid = 'Закладные'
+vid = 'Бункер круглый'
 
 def BaseInfo(details,case):
   info = PointPart.select(PointPart,fn.MAX(Part.length).alias('length')).join(Part).where(PointPart.detail.in_(details),PointPart.weld == 1).group_by(PointPart.detail)

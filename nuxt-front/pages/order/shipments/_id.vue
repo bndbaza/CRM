@@ -408,9 +408,9 @@ export default {
       this.packed = await this.$axios.$post(this.$store.state.db.host+'package_post',{pack: this.pack})
     },
     async postCar() {
+      this.dialog4 = false
       this.car.case = this.$route.params.id
       this.cars = await this.$axios.$post(this.$store.state.db.host+'post_car',{car: this.car});
-      this.dialog4 = false
     },
     async getCars() {
       this.cars = await this.$axios.$get(this.$store.state.db.host+'get_cars/'+this.$route.params.id)

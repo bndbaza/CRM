@@ -10,7 +10,6 @@ def Operation(id,start,end):
   for work in user:
     if work.oper != 'paint':
       details = DetailUser.select(DetailUser.id,DetailUser.norm,DetailUser.weight,Detail,Faza).join(Detail).join(Faza).where(DetailUser.worker == work.id,Detail.end > start, Detail.end < end).order_by(Detail.end).dicts()
-      print(len(details))
       details = list(details)
       result = DetailUser.select(Detail,Faza,fn.SUM(DetailUser.norm).alias('sum_norm'),fn.SUM(DetailUser.weight).alias('sum_weight')).join(Detail).join(Faza).where(DetailUser.worker == work.id,Detail.end > start, Detail.end < end).group_by().dicts().first()
       if len(details) != 0:
@@ -53,7 +52,7 @@ def Operation(id,start,end):
       norm_all = 0
       if len(details) != 0:
         for detail in details:
-          norm = SAWCOF(detail['profile'],detail['area'],detail['count_all'] + 2)
+          norm = SAWCOF(detail['profile'],detail['area'],detail['count_all'] * 2)
           norm_all += norm
           detail['norm'] = norm
         details.append({'task':'Итог','norm':norm_all})
@@ -65,14 +64,19 @@ def Operation(id,start,end):
       if len(details) != 0:
         for detail in details:
           print(detail)
-          norm = SAWCOF(detail['profile'],detail['area'],detail['count_all'] + 2,1.5)
+          norm = SAWCOF(detail['profile'],detail['area'],detail['count_all'] * 2,1.5)
           norm_all += norm
           detail['norm'] = norm
         details.append({'task':'Итог','norm':norm_all})
         res[work.oper_rus] = details
     elif work.oper == 'hole':
+      print(work.oper)
       # details_1 = Task.select(fn.SUM(Hole.count * TaskPart.count * HoleNorm.norm).alias('norm'),fn.SUM(Hole.count * TaskPart.count).alias('count'),Task,Part).join(TaskPart).join(Part).join(Hole).join(HoleNorm).where((Task.worker_1 == work.id) | (Task.worker_2 == work.id),Task.end > start, Task.end < end,Part.profile != 'Лист').group_by(Task).dicts()
       details_1 = Task.select(fn.SUM(Hole.count * TaskPart.count * Case(None,[(Part.profile == 'Лист',HoleNorm.norm * 2.5 * 0.4)],HoleNorm.norm * 2.5)).alias('norm'),fn.SUM(Hole.count * TaskPart.count).alias('count'),Task,Part).join(TaskPart).join(Part).join(Hole).join(HoleNorm).where((Task.worker_1 == work.id) | (Task.worker_2 == work.id),Task.end > start, Task.end < end).group_by(Task).order_by(Task.end).dicts()
+      details_5 = Task.select().join(TaskPart).join(Part).join(Hole).join(HoleNorm).where((Task.worker_1 == work.id) | (Task.worker_2 == work.id),Task.end > start, Task.end < end).group_by(Task).order_by(Task.end).dicts()
+
+      
+      print(len(details_5),start,end)
       # details_2 = Task.select(fn.SUM(Hole.count * TaskPart.count * HoleNorm.norm).alias('norm'),fn.SUM(Hole.count * TaskPart.count).alias('count'),Task,Part).join(TaskPart).join(Part).join(Hole).join(HoleNorm).where((Task.worker_1 == work.id) | (Task.worker_2 == work.id),Task.end > start, Task.end < end,Part.profile == 'Лист').group_by(Task).dicts()
       # details_2 = Task.select(fn.SUM(Hole.count * HoleNorm.norm).alias('norm_part'),fn.SUM(TaskPart.count).alias('norm_task_part'),fn.SUM(Hole.count * TaskPart.count).alias('count'),Task,Part).join(TaskPart).join(Part).join(Hole).join(HoleNorm).where((Task.worker_1 == work.id) | (Task.worker_2 == work.id),Task.end > start, Task.end < end,Part.profile == 'Лист').group_by(Task).dicts()
       # details_2 = HoleSheet(details_2)
@@ -92,6 +96,8 @@ def SAWCOF(profile,S,count,bevel=1):
   if profile == 'Уголок':
     S_min,S_max,t_min,t_max = (1.47,78,0.7,15)
   if profile == 'Швеллер':
+    S_min,S_max,t_min,t_max = (7.51,61,1.8,11)
+  if profile == 'Швеллер гнутый':
     S_min,S_max,t_min,t_max = (7.51,61,1.8,11)
   if profile == 'Труба круглая':
     S_min,S_max,t_min,t_max = (1.42,163,0.7,20)
@@ -123,9 +129,4 @@ def HoleSheet(details):
     print(norm)
     detail['norm'] = norm
     print('-------------------------------------------------')
-
-
-
-
-
   return details

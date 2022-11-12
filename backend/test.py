@@ -1448,7 +1448,7 @@ def CORRECT():
 
 
 
-def DELDEL():
+def DELDEL(id):
   # drawings = Drawing.select().where(Drawing.cas == 30,Drawing.assembly.startswith('ФК3-1'))
   # for drawing in drawings:
   #   print(drawing.assembly)
@@ -1458,7 +1458,7 @@ def DELDEL():
   #   print(faza.detail)
   #   faza.delete_instance(recursive=True)
   # return
-  order = Order.get(Order.id == 39)
+  order = Order.get(Order.cas == id)
   order.delete_instance(recursive=True)
   faza = Faza.select().where(Faza.case == None)
   for f in faza:
@@ -1720,7 +1720,7 @@ def WELDCOF():
   book.save('WELD.xlsx')
 
 def HOLECOF():
-  tas = Task.select().where(Task.oper == 'hole',Task.task == 2983)
+  # tas = Task.select().where(Task.oper == 'hole',Task.task == 2983)
   # for task in tasks:
   #   tps = TaskPart.select().where(TaskPart.task == task)
   #   for tp in tps:
@@ -1728,33 +1728,33 @@ def HOLECOF():
   #     if len(hole) > 2:
   #       for h in hole:
   #         print(h.part)
-  for t in tas:
+  # for t in tas:
     # tasks = Task.select(Task,fn.SUM(Hole.count * TaskPart.count * HoleNorm.norm).alias('count')).join(TaskPart).join(Part).join(Hole).join(HoleNorm).where(Task.oper == 'hole',Task.id == t.id).group_by(Hole.diameter,Hole.depth)
-    tasks = Task.select(Task,fn.SUM(HoleNorm.norm).alias('count')).join(TaskPart).join(Part).join(Hole).join(HoleNorm).where(Task.oper == 'hole',Task.id == t.id).group_by(Hole.diameter,Hole.depth)
-    print(tasks[0],tasks[0].count)
-    break
+    # tasks = Task.select(Task,fn.SUM(HoleNorm.norm).alias('count')).join(TaskPart).join(Part).join(Hole).join(HoleNorm).where(Task.oper == 'hole',Task.id == t.id).group_by(Hole.diameter,Hole.depth)
+    # print(tasks[0],tasks[0].count)
+    # break
 
-  # holes = Hole.select()
-  # for hole in holes:
-  #   if hole.part.profile == 'Лист':
-  #     norm = HoleNorm.select().where(HoleNorm.depth_of <= hole.depth,
-  #                                   HoleNorm.depth_to >= hole.depth,
-  #                                   HoleNorm.diameter > hole.diameter,
-  #                                   HoleNorm.count <= hole.count,
-  #                                   HoleNorm.count_to > hole.count,
-  #                                   HoleNorm.metal == 'Лист').first()
-  #   else:
-  #     norm = HoleNorm.select().where(HoleNorm.depth_of <= hole.depth,
-  #                                   HoleNorm.depth_to >= hole.depth,
-  #                                   HoleNorm.diameter > hole.diameter,
-  #                                   HoleNorm.count <= hole.count,
-  #                                   HoleNorm.count_to > hole.count,
-  #                                   HoleNorm.lenght_of <= hole.part.length,
-  #                                   HoleNorm.lenght_to > hole.part.length).first()
-  #   hole.norm = norm
-  #   print(hole.id)
-  # with connection.atomic():
-  #   Hole.bulk_update(holes,fields=[Hole.norm])
+  holes = Hole.select().where(Hole.norm == None)
+  for hole in holes:
+    if hole.part.profile == 'Лист':
+      norm = HoleNorm.select().where(HoleNorm.depth_of <= hole.depth,
+                                    HoleNorm.depth_to >= hole.depth,
+                                    HoleNorm.diameter > hole.diameter,
+                                    HoleNorm.count <= hole.count,
+                                    HoleNorm.count_to > hole.count,
+                                    HoleNorm.metal == 'Лист').first()
+    else:
+      norm = HoleNorm.select().where(HoleNorm.depth_of <= hole.depth,
+                                    HoleNorm.depth_to >= hole.depth,
+                                    HoleNorm.diameter > hole.diameter,
+                                    HoleNorm.count <= hole.count,
+                                    HoleNorm.count_to > hole.count,
+                                    HoleNorm.lenght_of <= hole.part.length,
+                                    HoleNorm.lenght_to > hole.part.length).first()
+    hole.norm = norm
+    print(hole.id)
+  with connection.atomic():
+    Hole.bulk_update(holes,fields=[Hole.norm])
     
 
 
@@ -1897,6 +1897,13 @@ def JN():
     detail.save()
     faza.save()
 
+def KK():
+  du = DetailUser.select(DetailUser,fn.COUNT(DetailUser.detail).alias('count')).group_by(DetailUser.detail,DetailUser.worker)
+  for d in du:
+    if d.count > 1:
+      DetailUser.delete().where(DetailUser.id == d.id).execute()
+      print(d.detail,d.norm,d.detail.norm)
+
 def JJ():
   # wb = load_workbook('VVL3.xlsx',data_only=True)
   # sheet = wb.get_sheet_by_name('Сборка (ЕНиР)')
@@ -1911,9 +1918,96 @@ def JJ():
   #   assembly.norm = sheet.cell(row=i,column=16).value
   #   assembly.save()
   # AssemblyNorm.delete().where(AssemblyNorm.name == 'Стойка').execute()
-  points = Point.select().join(Drawing).where(Drawing.cas == 34,Point.name == 'Стойка фахверка')
-  for point in points:
-    print(point)
-    point.name = 'Стойка'
-    point.save()
+  # points = Point.select().join(Drawing).where(Drawing.cas == 34,Point.name == 'Стойка фахверка')
+  # for point in points:
+  #   print(point)
+  #   point.name = 'Стойка'
+  #   point.save()
+  wb = load_workbook('Очередность 2345.xlsx',data_only=True)
+  sheet = wb.get_sheet_by_name('Упаковка')
+  lis = []
+  for x in range(1,12):
+    for y in range(4,99):
+      p = sheet.cell(row=y,column=x).value
+      if p != None:
+        pp = PointPart.select(PointPart.detail).join(Point).join(Drawing).where(Drawing.assembly == p,PointPart.detail.not_in(lis)).group_by(PointPart.detail).tuples()
+        if len(pp) != 0:
+          faza = Faza.select().where(Faza.detail.in_(pp),Faza.paint == 1).first()
+          if faza != None:
+            lis.append(faza.detail)
+            print(faza.detail)
+            sheet.cell(row=y,column=x).fill = ft(start_color='00FF00', end_color='0000FF', fill_type='solid')
+            sheet.cell(row=y,column=x).value = f'{p}({faza.detail})'
+          else:
+            faza = Faza.select().where(Faza.detail.in_(pp),Faza.weld == 2).first()
+            if faza != None:
+              lis.append(faza.detail)
+              print(faza.detail)
+              sheet.cell(row=y,column=x).fill = ft(start_color='0000FF', end_color='0000FF', fill_type='solid')
+              sheet.cell(row=y,column=x).value = f'{p}({faza.detail})'
+            else:
+              faza = Faza.select().where(Faza.detail.in_(pp),Faza.weld == 1).first()
+              if faza != None:
+                lis.append(faza.detail)
+                print(faza.detail)
+                sheet.cell(row=y,column=x).fill = ft(start_color='FF0000', end_color='0000FF', fill_type='solid')
+                sheet.cell(row=y,column=x).value = f'{p}({faza.detail})'
+              else:
+                faza = Faza.select().where(Faza.detail.in_(pp),Faza.assembly == 2).first()
+                if faza != None:
+                  lis.append(faza.detail)
+                  print(faza.detail)
+                  sheet.cell(row=y,column=x).fill = ft(start_color='FFFF00', end_color='0000FF', fill_type='solid')
+                  sheet.cell(row=y,column=x).value = f'{p}({faza.detail})'
+                else:
+                  faza = Faza.select().where(Faza.detail.in_(pp),Faza.assembly == 1).first()
+                  if faza != None:
+                    lis.append(faza.detail)
+                    print(faza.detail)
+                    sheet.cell(row=y,column=x).fill = ft(start_color='FF00FF', end_color='0000FF', fill_type='solid')
+                    sheet.cell(row=y,column=x).value = f'{p}({faza.detail})'
+                  else:
+                    faza = Faza.select().where(Faza.detail.in_(pp),Faza.set == 2).first()
+                    if faza != None:
+                      lis.append(faza.detail)
+                      print(faza.detail)
+                      sheet.cell(row=y,column=x).fill = ft(start_color='00FFFF', end_color='0000FF', fill_type='solid')
+                      sheet.cell(row=y,column=x).value = f'{p}({faza.detail})'
+                    else:
+                      faza = Faza.select().where(Faza.detail.in_(pp),Faza.set == 1).first()
+                      if faza != None:
+                        lis.append(faza.detail)
+                        print(faza.detail)
+                        sheet.cell(row=y,column=x).fill = ft(start_color='004444', end_color='0000FF', fill_type='solid')
+                        sheet.cell(row=y,column=x).value = f'{p}({faza.detail})'
+                      else:
+                        faza = Faza.select().where(Faza.detail.in_(pp),Faza.preparation == 2).first()
+                        if faza != None:
+                          lis.append(faza.detail)
+                          print(faza.detail)
+                          sheet.cell(row=y,column=x).fill = ft(start_color='FFFFFF', end_color='0000FF', fill_type='solid')
+                          sheet.cell(row=y,column=x).value = f'{p}({faza.detail})'
+  wb.save('Очередность.xlsx')
 
+
+def VVV():
+  # fazas = Faza.select().where(Faza.shipment != 0,Faza.packed != 3)
+  # for faza in fazas:
+    # print(faza.detail)
+  # print(len(fazas))
+  # Faza.update({Faza.packed:3}).where(Faza.shipment != 0,Faza.packed != 3).execute()
+  # bolts = Nut.select(Nut.profile,fn.SUM(Nut.count * Drawing.count).alias('count_all')).join(Drawing).join(Order).where(Order.cas == '23504').group_by(Nut.profile)
+  # all = 0
+  # for bolt in bolts:
+    # all += bolt.count_all
+    # print(bolt.profile,bolt.count_all)
+  # print(all)
+  # Drawing.update({Drawing.paint:'1'}).execute()
+  fazas = Faza.select(Faza.case,fn.MIN(Faza.shipment).alias('end')).group_by(Faza.case)
+  for faza in fazas:
+    if faza.end == 3:
+      order = faza.case
+      order.status = 'Готов'
+      order.color = 'white'
+      order.save()
+      print(faza.case.cas,faza.end)

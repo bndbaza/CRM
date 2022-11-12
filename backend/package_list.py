@@ -23,18 +23,29 @@ def PackList(pack):
   pdf.setTitle('')
   tab = []
   index = 1
-  details = DetailPack.select().where(DetailPack.pack == pack.id)
-  for detail in details:
-    names = PointPart.select(PointPart,fn.COUNT(fn.DISTINCT(PointPart.point)).alias('count')).join(Point).join(Drawing).where(PointPart.detail == detail.detail.detail).group_by(PointPart.point,Drawing.id)
-    for name in names:
-      tab.append([index,name.point.name,name.point.assembly.assembly,detail.detail.detail,'шт.',name.count,float(name.point.assembly.weight),''])
+  # details = DetailPack.select().where(DetailPack.pack == pack.id)
+  # for detail in details:
+    # names = PointPart.select(PointPart,fn.COUNT(fn.DISTINCT(PointPart.point)).alias('count')).join(Point).join(Drawing).where(PointPart.detail == detail.detail.detail).group_by(Drawing.id)
+    # for name in names:
+      # tab.append([index,name.point.name,name.point.assembly.assembly,detail.detail.detail,'шт.',name.count,float(name.point.assembly.weight),''])
+  details = DetailPack.select(Faza.detail).join(Faza).where(DetailPack.pack == pack.id).tuples()
+  names = PointPart.select(PointPart,fn.COUNT(fn.DISTINCT(PointPart.point)).alias('count')).join(Point).join(Drawing).where(PointPart.detail.in_(details)).group_by(Drawing.id)
+  for name in names:
+      tab.append([index,name.point.name,name.point.assembly.assembly,'шт.',name.count,float(name.point.assembly.weight),float(name.point.assembly.weight)*name.count,''])
       index += 1
-      if index == 37:
+      if index == 42: 
         page = 2
         Pdf(pdf,pack,tab,page)
         pdf.showPage()
         tab = []
         page = 3
+      elif index > 42:
+        if ((index - 42) % 65) == 0:
+          page = 4
+          Pdf(pdf,pack,tab,page)
+          pdf.showPage()
+          tab = []
+          page = 3
   Pdf(pdf,pack,tab,page)
   pdf.save()
   return f'media/Пакет {pack.id}.pdf'
@@ -68,13 +79,12 @@ def Pdf(pdf,pack,tab,page):
   mainTable.drawOn(pdf,0,0)
 
 def Header(pdf,pack,width,height,tab,page):
-
-
   if page == 1:
     heightList = [70,20,185,30,len(tab) * 12,60,30,15,height - 410 - (len(tab) * 12)]
     table = Table([
       [Header1(pdf,pack,width,heightList[0])],
-      [f'Упаковочный лист № {pack.number}  от  {pack.date}'],
+      # [f'Упаковочный лист № {pack.number}  от  {pack.date}'],
+      [Header3(pdf,pack,width,heightList[1])],
       [Header2(pdf,pack,width,heightList[2])],
       [Body1(width,30)],
       [Body2(tab,pack,width,heightList[4])],
@@ -112,18 +122,28 @@ def Header(pdf,pack,width,height,tab,page):
       ['']
     ],colWidths=width,
       rowHeights=heightList)
-
-
-
-
+  elif page == 4:
+    heightList = [0,0,0,30,len(tab) * 12,60,30,15,height - 135 - (len(tab) * 12)]
+    table = Table([
+      [''],
+      [''],
+      [''],
+      [Body1(width,30)],
+      [Body2(tab,pack,width,heightList[4])],
+      [''],
+      [''],
+      [''],
+      ['']
+    ],colWidths=width,
+      rowHeights=heightList)
   table.setStyle([
-    ('GRID',(0,1),(0,1),1,'black'),
+    # ('GRID',(0,1),(0,1),1,'black'),
     ('LEFTPADDING',(0,0),(-1,-1),0),
     # ('BOTTOMPADDING',(0,0),(-1,-1),0),
     ('FONTSIZE',(0,0),(-1,-1),10),
     ('FONTNAME',(0,0),(-1,-1),'rus'),
-    ('ALIGN',(0,1),(0,1),'CENTER'),
-    ('ALIGN',(0,-2),(0,-2),'RIGHT'),
+    # ('ALIGN',(0,1),(0,1),'RIGHT'),
+    # ('ALIGN',(0,-2),(0,-2),'RIGHT'),
     ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
     ('TOPPADDING',(0,0),(0,0),0),
     ('VALIGN',(0,0),(0,0),'TOP'),
@@ -173,16 +193,32 @@ def Header2(pdf,pack,width,height):
   ])
   return table
 
+def Header3(pdf,pack,width,height):
+  widthList = [width*0.15,width*0.7,width*0.15]
+  table = Table([
+      [f'Заказ № {pack.order.cas}',f'Упаковочный лист № {pack.number}  от  {pack.date}',''],
+    ],colWidths=widthList,
+      rowHeights=height)
+  table.setStyle([
+    ('GRID',(0,0),(0,0),1,'black'),
+    # ('LEFTPADDING',(0,0),(-1,-1),0),
+    ('FONTSIZE',(0,0),(-1,-1),10),
+    ('FONTNAME',(0,0),(-1,-1),'rus'),
+    ('ALIGN',(0,0),(-1,-1),'CENTER'),
+    ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+  ])
+  return table
+
 def Body1(width,height):
   widthList = [25,115,90,90,60,60,60,width-500]
   table = Table([
     ['№',
     Paragraph('Наименование изделия',p_style),
     Paragraph('Марка изделия',p_style),
-    Paragraph('Номер наряда',p_style),
     'Ед.изм.',
     'Кол-во',
     'Вес ед.',
+    'Вес общий',
     'Примечание'],
   ],colWidths=widthList,
     rowHeights=height)
@@ -200,7 +236,6 @@ def Body1(width,height):
 def Body2(tab,pack,width,height):
   widthList = [25,115,90,90,60,60,60,width-500]
   heightList = height/len(tab)
-  
   table = Table(tab
   ,colWidths=widthList,
     rowHeights=heightList)

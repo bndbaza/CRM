@@ -1,7 +1,8 @@
 <template>
   <div>
     <v-container fluid>
-      <h1 class="text-center">Заказ {{($route.params.id).split(',')[0]}} Фаза {{($route.params.id).split(',')[1]}}</h1>
+      <h1 v-if="$route.params.id.split(',')[1] != '0'" class="text-center">Заказ {{($route.params.id).split(',')[0]}} Фаза {{($route.params.id).split(',')[1]}}</h1>
+      <h1 v-else class="text-center">Заказ {{($route.params.id).split(',')[0]}}</h1>
       <v-row>
         <v-col v-for="header in headers" :key="header">
           <v-simple-table>
@@ -51,6 +52,7 @@ export default {
         {text:'Ожидает ОТК после покраски',value: 11},
         {text:'Готов к упаковке',value: 8},
         {text:'Упакован',value: 13},
+        {text:'Отгружен',value: 14},
       ],
       trans:{
         assembly:'Сборка',
@@ -150,7 +152,14 @@ export default {
         }
       }
       if (x == 'Упакован') {
-        if (stage.packed == 3){
+        if (stage.packed == 3 && stage.shipment != 3){
+          return true
+        }else{
+          return false
+        }
+      }
+      if (x == 'Отгружен') {
+        if (stage.shipment == 3){
           return true
         }else{
           return false
@@ -160,3 +169,9 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+  nuxt-link{
+  text-decoration:none;
+  }  
+</style>

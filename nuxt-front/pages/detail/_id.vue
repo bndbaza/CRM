@@ -7,6 +7,7 @@
           <v-col cols="3">
             <p v-if="detail.pointparts">Заказ</p>
             <p v-if="detail.pointparts">Марка</p>
+            <p v-if="detail.pointparts">Количество</p>
             <p v-if="detail.pointparts">Вес</p>
             <p v-if="detail.pointparts">Фаза</p>
             <p v-if="detail.pointparts">Чертёж</p>
@@ -21,6 +22,7 @@
           <v-col cols="4">
             <p v-if="detail.pointparts">{{detail.pointparts[0].point.assembly.cas.cas}}</p>
             <p v-if="detail.pointparts">{{detail.pointparts[0].point.assembly.assembly}}</p>
+            <p v-if="detail.pointparts">{{detail.count}}</p>
             <p v-if="detail.pointparts">{{detail.pointparts[0].point.assembly.weight}} кг.</p>
             <p v-if="detail.pointparts">{{detail.pointparts[0].point.faza}}</p>
             <p v-if="detail.pointparts">{{detail.pointparts[0].point.draw}}</p>
@@ -33,6 +35,7 @@
             </template>
           </v-col>
           <v-col>
+            <p v-if="detail.pointparts">-</p>
             <p v-if="detail.pointparts">-</p>
             <p v-if="detail.pointparts">-</p>
             <p v-if="detail.pointparts">-</p>

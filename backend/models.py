@@ -34,6 +34,7 @@ class Drawing(ModelBase):
   count = IntegerField()
   weight = DecimalField(max_digits=12,decimal_places=3,null=True)
   more = DecimalField(max_digits=12,decimal_places=3,null=True)
+  paint = CharField(max_length=40,default='0')
 
 class Point(ModelBase):
   class Meta:
