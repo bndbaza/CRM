@@ -8,7 +8,7 @@ from pdf_act_otc import ActEveryDay
 from send_bot import AllReport2
 from shipment_list import ShipmentList
 from tekla3 import PdfGenerate, PointPartInsert
-from test import VVV, DELDEL, HOLECOF
+from test import Fask, MMM, VVV, DELDEL, HOLECOF, PP, ZXC, CXZ, Catalog, DelMark, JKL, LKJ, exl
 from db import connection
 from models import *
 from tekla import Tekla
@@ -24,6 +24,7 @@ from qr_list import QR_pdf
 from sawing_list import Sawing
 from correction import Correction, Replace
 from d_list import Dlist
+from d_list2 import ManualUpload
 from shipment import Start
 import asyncio
 from fastapi.responses import FileResponse
@@ -67,12 +68,12 @@ app.add_middleware(
 
 @app.get('/test')  # Создание нарядов
 def get_test():
-  fazas = [1]
-  order = Order.get(Order.cas == '1502')
+  fazas = [2]
+  order = Order.get(Order.cas == '23253')
   for faza in fazas:
     if Faza.select().where(Faza.case == order,Faza.faza == faza).first() != None:
       print('УЖЕ ЕСТЬ')
-      return
+      # return
     PartPoint(faza,order)
     Detail_create(faza,order)
     Task_create(faza,order)
@@ -82,9 +83,9 @@ def get_test():
 
 @app.get('/pdf') # Формирование нарядов PDF
 def get_pdf():
-  z = [1]
+  z = [2]
   for y in z:
-    case = '1502'
+    case = '23251'
     detail = []
     if len(detail) == 0:
       faza = PointPart.select(PointPart.detail).join(Point).join(Drawing).join(Order).where(Point.faza == y,Order.cas == case).group_by(PointPart.detail)
@@ -134,7 +135,17 @@ def get_aaa():
   # JN()
   # JJ()
   # KK()
+  # PP()
   VVV()
+  # ZXC()
+  # CXZ()
+  # Catalog()
+  # DelMark()
+  # JKL()
+  # LKJ()
+  # exl()
+  # MMM()
+  # Fask()
   connection.close()
 
 @app.get('/dlist/{id}') # Загрузка диспетчерского листа
@@ -268,11 +279,15 @@ def get_error():
 
 @app.get('/correction')
 def get_correction():
-  mark = ['ЛОг-31','ЛОг-32','ЛОг-36','ЛОг-38','ЛОг-38','ЛБ-6','ЛН-1','ЛБ-7']
-  order = '23501'
+  # mark = ['КБ-3','КБ-4']
+  order = '23253'
   order = Order.get(Order.cas == order)
+  # mark = Drawing.select(Drawing.assembly).where(Drawing.assembly.startswith('ДСф'),Drawing.cas == order).tuples()
+  # mark = Drawing.select(Drawing.assembly).where(Drawing.assembly.startswith('ДРф'),Drawing.cas == order).tuples()
+  # mark = Drawing.select(Drawing.assembly).where(Drawing.assembly.startswith('ДРР'),Drawing.cas == order).tuples()
+  mark = Drawing.select(Drawing.assembly).where(Drawing.assembly.startswith('Т'),Drawing.cas == order).tuples()
   for m in mark:
-    Correction(m,order)
+    Correction(m[0],order)
   # Replace()
   connection.close()
   return
@@ -661,3 +676,36 @@ def ip(request:Request):
   user = User.select().where(User.ip == host).dicts().first()
   connection.close()
   return user
+
+@app.get('/store')
+def store():
+  catalog = list(CatalogSteel.select().dicts())
+  connection.close()
+  return catalog
+
+@app.post('/manual_write')
+def manual_write(marks:ManualMarks):
+  import os
+  ManualUpload(marks)
+  os.remove(f'/home/viktor/CRM/backend/{marks.case}.pkl')
+  return
+
+@app.post('/manual_save')
+def manual_write(marks:ManualMarks):
+  import pickle
+  output = open(f'{marks.case}.pkl','wb')
+  pickle.dump(marks,output)
+  output.close()
+  return
+
+@app.get('/manual_read/{case}',response_model=ManualMarks)
+def manual_read(case):
+  import pickle
+  try:
+    file = open(f'{case}.pkl','rb')
+    data = pickle.load(file)
+    print(data)
+    return data
+  except:
+    return {'marks':[],'case':''}
+

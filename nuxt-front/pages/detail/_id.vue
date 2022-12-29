@@ -121,7 +121,8 @@ export default {
         chamfer:'Фаска',
         milling:'Фрезеровка',
         joint:'Стыковка',
-        bend:'Гибка'
+        bend:'Гибка',
+        turning: 'Токарка'
       }
     }
   },

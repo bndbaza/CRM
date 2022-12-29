@@ -13,9 +13,9 @@ pdfmetrics.registerFont(TTFont('rus','arial.ttf'))
 
 general = {}
 
-stroka = 12
+stroka = 10
 
-vid = 'Бункер круглый'
+vid = 'Сито'
 
 def BaseInfo(details,case):
   info = PointPart.select(PointPart,fn.MAX(Part.length).alias('length')).join(Part).where(PointPart.detail.in_(details),PointPart.weld == 1).group_by(PointPart.detail)

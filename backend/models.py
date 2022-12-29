@@ -428,3 +428,15 @@ class JointNorm(ModelBase):
   size_of = IntegerField()
   size_to = IntegerField()
   norm = DecimalField(max_digits=12,decimal_places=3,default=0)
+
+class CatalogSteel(ModelBase):
+  class Meta:
+    table_name='catalogsteels'
+  id = PrimaryKeyField(null=False)
+  name = CharField(max_length=100)
+  full_name = CharField(max_length=200)
+  size = CharField(max_length=100)
+  mark = CharField(max_length=100)
+  gost = CharField(max_length=100)
+  width = BooleanField()
+  weight = DecimalField(max_digits=12,decimal_places=3,default=0)

@@ -420,3 +420,49 @@ class CarPostBase(BaseModel):
   class Config:
     orm_mode = True
     getter_dict = PeeweeGetterDict
+
+class ManualSteel(BaseModel):
+    id: int
+    name: str
+    full_name: str
+    size: str
+    mark: str
+    gost: str
+    width: bool
+    weight: float
+
+    class Config:
+        orm_made = True
+
+class ManualDetail(BaseModel):
+    number: str
+    id: int
+    count: int
+    lenght: int
+    width: int | None = None
+    hole: str | None = None
+    manipulation: list
+    steel: ManualSteel
+
+    class Config:
+        orm_mode = True
+
+
+class ManualMark(BaseModel):
+    mark: str
+    draw: str
+    name: str
+    weld: str | None = None
+    count: int
+    paint: bool | None = False
+    details: List[ManualDetail]
+
+    class Config:
+        orm_mode = True
+
+class ManualMarks(BaseModel):
+    marks: List[ManualMark]
+    case: str
+
+    class Config:
+        orm_mode = True

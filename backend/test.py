@@ -1321,7 +1321,7 @@ def rrr():
   #     print(e)
 
 def PP():
-  packs = Packed.select().where(Packed.ready == None,Packed.order == 33)
+  packs = Packed.select().where(Packed.ready == None,Packed.order == 15)
   for pac in packs:
     ready = PackList(pac)
     pac.size = '0x0x0'
@@ -2005,9 +2005,212 @@ def VVV():
   # Drawing.update({Drawing.paint:'1'}).execute()
   fazas = Faza.select(Faza.case,fn.MIN(Faza.shipment).alias('end')).group_by(Faza.case)
   for faza in fazas:
-    if faza.end == 3:
+    if faza.end == 3 and faza.case.status != 'Готов':
       order = faza.case
       order.status = 'Готов'
       order.color = 'white'
       order.save()
       print(faza.case.cas,faza.end)
+
+def ZXC():
+  # marks = ('СПл-1','СПл-2','СПл-3','СПл-4','СПл-5','СПл-6','СПл-7')
+  # pp = PointPart.select(PointPart.detail).join(Point).join(Drawing).where(Drawing.assembly.in_(marks)).group_by(PointPart.detail).tuples()
+  # pack = Packed.select().join(DetailPack).join(Faza).where(Faza.detail.in_(pp)).group_by(Packed.id)
+  # for p in pack:
+    # p.ready = None
+    # p.save()
+    # print(p.number)
+  # drawing = PointPart.select(PointPart.detail).join(Point).join(Drawing).where(Drawing.assembly.startswith('МОг-'),Drawing.cas == 15).group_by(PointPart.detail).tuples()
+  # fazas = Faza.select(Faza.id).where(Faza.detail.in_(drawing)).tuples()
+  # print(len(fazas))
+  # Faza.update({Faza.packed: 1}).where(Faza.detail.in_(drawing)).execute()
+  # dps = DetailPack.select(DetailPack.pack).join(Faza).where(Faza.detail.in_(drawing)).group_by(DetailPack.pack).tuples()
+  # print(len(dps))
+  # packs = Packed.select().where(Packed.id.in_(dps))
+  # for pack in packs:
+  pack = Drawing.get(Drawing.id == 6200)
+  print(pack)
+  pack.delete_instance(recursive=True)
+
+def CXZ():
+  wb = load_workbook('металл.xlsx',data_only=True)
+  sheet = wb.get_sheet_by_name('Лист1')
+  for y in range(1,1934):
+    sheet.cell(row=y,column=2).value = (sheet.cell(row=y,column=2).value).strip()
+    if sheet.cell(row=y,column=2).value == 'Труба квдратная':
+      sheet.cell(row=y,column=2).value = 'Труба квадратная'
+      text = sheet.cell(row=y,column=3).value 
+      sheet.cell(row=y,column=3).value = text[text.find('*')+1:]
+    if sheet.cell(row=y,column=2).value == 'Уголок равнополочный':
+      text = sheet.cell(row=y,column=3).value 
+      sheet.cell(row=y,column=3).value = text[text.find('*')+1:]
+    sheet.cell(row=y,column=3).value = str(sheet.cell(row=y,column=3).value).replace('*','x')
+    if sheet.cell(row=y,column=4).value == 'ст0-ст5':
+      sheet.cell(row=y,column=4).value = 'ст0,ст1,ст2,ст3,ст4,ст5'
+    if (sheet.cell(row=y,column=2).value).find('Арматура') != -1:
+      sheet.cell(row=y,column=8).value = 'Арматура'
+    elif (sheet.cell(row=y,column=2).value).find('двутавр') != -1:
+      sheet.cell(row=y,column=8).value = 'Двутавр'
+    elif (sheet.cell(row=y,column=2).value).find('Круг') != -1:
+      sheet.cell(row=y,column=8).value = 'Круг'
+    elif (sheet.cell(row=y,column=2).value).find('Уголок') != -1:
+      sheet.cell(row=y,column=8).value = 'Уголок'
+    elif (sheet.cell(row=y,column=2).value).find('Труба квадратная') != -1:
+      sheet.cell(row=y,column=8).value = 'Труба профильная'
+    elif (sheet.cell(row=y,column=2).value).find('Труба прямоугольная') != -1:
+      sheet.cell(row=y,column=8).value = 'Труба профильная'
+    elif (sheet.cell(row=y,column=2).value).find('Труба') != -1:
+      sheet.cell(row=y,column=8).value = 'Труба круглая'
+    elif (sheet.cell(row=y,column=2).value).find('Лист просечно-вытяжной') != -1:
+      sheet.cell(row=y,column=8).value = 'Лист ПВ'
+    elif (sheet.cell(row=y,column=2).value).find('рифление') != -1:
+      sheet.cell(row=y,column=8).value = 'Лист РИФ'
+    elif (sheet.cell(row=y,column=2).value).find('Швеллер гнутый') != -1:
+      sheet.cell(row=y,column=8).value = 'Швеллер гнутый'
+    elif (sheet.cell(row=y,column=2).value).find('Швеллер') != -1:
+      sheet.cell(row=y,column=8).value = 'Швеллер'
+    elif (sheet.cell(row=y,column=2).value).find('Лист') != -1:
+      sheet.cell(row=y,column=8).value = 'Лист'
+    elif (sheet.cell(row=y,column=2).value).find('Шестигранник') != -1:
+      sheet.cell(row=y,column=8).value = 'Шестигранник'
+    elif (sheet.cell(row=y,column=2).value).find('Квадрат') != -1:
+      sheet.cell(row=y,column=8).value = 'Квадрат'
+    elif (sheet.cell(row=y,column=2).value).find('Сетка') != -1:
+      sheet.cell(row=y,column=8).value = 'Сетка'
+      sheet.cell(row=y,column=7).value = 0
+  wb.save('steel.xlsx')
+
+
+def Catalog():
+  wb = load_workbook('steel.xlsx',data_only=True)
+  sheet = wb.get_sheet_by_name('Лист1')
+  list = []
+  for y in range(1,1934):
+    width = False
+    if sheet.cell(row=y,column=6).value == 'м2':
+      width = True
+    list.append((
+      sheet.cell(row=y,column=8).value,
+      sheet.cell(row=y,column=2).value,
+      sheet.cell(row=y,column=3).value,
+      sheet.cell(row=y,column=4).value,
+      sheet.cell(row=y,column=5).value,
+      width,
+      float(sheet.cell(row=y,column=7).value),
+      ))
+  with connection.atomic():
+    CatalogSteel.insert_many(list, fields=[CatalogSteel.name,CatalogSteel.full_name,CatalogSteel.size,CatalogSteel.mark,CatalogSteel.gost,CatalogSteel.width,CatalogSteel.weight]).execute()
+
+def DelMark():
+  details = (13773,13850,13909,13859,13861,13858,13860,13882,13887,13814,13813,13815,13816,13817,13811,13820,13818,13819,13812,13954,13953,13951,13821,13881,13810,13880,13882,13883,13884,13885,13955)
+  for d in details:
+    try:
+      pp = PointPart.select().where(PointPart.detail == d).group_by(PointPart.point)
+      faza = Faza.get(Faza.detail == d)
+      for p in pp:
+        point = p.point
+        point.delete_instance(recursive=True)
+      faza.delete_instance(recursive=True)
+    except:
+      print(d,'NO')
+  drawing = Drawing.select().where(Drawing.assembly == 'ДСф-22').first()
+  if drawing != None:
+    drawing.delete_instance(recursive=True)
+
+def JKL():
+  # fazas = Faza.select().where(Faza.case == 35)
+  # for faza in fazas:
+    # c = 0 
+    # pp = PointPart.select().join(Point).join(Drawing).where(PointPart.detail == faza.detail).group_by(PointPart.point)
+    # for p in pp:
+      # c += p.point.assembly.weight
+    # faza.weight = c
+  # with connection.atomic():
+    # Faza.bulk_update(fazas, fields=[Faza.weight])
+
+  # return
+  for order in Order.select():
+    weight_all = Point.select(Point.faza,fn.SUM(Drawing.weight).alias('weight')).join(Drawing).join(Order).where(Order.id == order.id).first()
+    order.weight = weight_all.weight
+    order.save()
+    print(order.cas,weight_all.weight)
+
+def LKJ():
+  details = Detail.select(Detail.detail).join(Faza).where(Faza.case == 51,Detail.oper == 'paint').tuples()
+  details = Detail.select(Detail.detail,Faza.id).join(Faza).where(Faza.case == 51,Detail.oper == 'set',Detail.detail.not_in(details)).tuples()
+  for i in details:
+    print(i)
+    Detail.create(detail=i[0],basic='paint',oper='paint',to_work=0,norm=0,faza=i[1])
+
+def exl():
+  book = Workbook()
+  sheet = book.active
+  points = Point.select(Point).join(Drawing).where(Drawing.cas == 15).group_by(Drawing.assembly)
+  r = 1
+  for i in points:
+    print(i.assembly.assembly,i.draw)
+    sheet.cell(row=r,column=1).value = r
+    sheet.cell(row=r,column=2).value = i.assembly.assembly
+    sheet.cell(row=r,column=3).value = i.name
+    sheet.cell(row=r,column=4).value = i.draw
+    sheet.cell(row=r,column=5).value = i.assembly.count
+    sheet.cell(row=r,column=6).value = i.assembly.weight
+    sheet.cell(row=r,column=7).value = i.assembly.weight * i.assembly.count
+    r += 1
+  book.save('list.xlsx')
+
+
+def MMM():
+  book = Workbook()
+  sheet = book.active
+  case = '2325'
+  pp = PointPart.select(Part.profile,Part.size,Part.mark,fn.SUM(Part.weight * Part.count).alias('weight')).join(Part).join(Drawing).join(Order).join_from(PointPart,Point).where(Order.cas.startswith(case)).group_by(Part.profile,Part.size,Part.mark).dicts()
+  r = 1
+  for i in pp:
+    sheet.cell(row=r,column=1).value = i['profile']
+    sheet.cell(row=r,column=2).value = i['size']
+    sheet.cell(row=r,column=3).value = i['mark']
+    sheet.cell(row=r,column=4).value = i['weight']
+    r += 1
+  book.save('555.xlsx')
+  # t = (2051,2093,2096,2107)
+  return
+  # Packed.update(ready=None).where(Packed.number.in_(t)).execute()
+
+  # return
+  # detail = PointPart.select(PointPart.detail).join(Point).join(Drawing).where(Drawing.assembly == 'СПл-9').group_by(PointPart.detail).limit(72).tuples()
+  detail = PointPart.select(PointPart.detail).join(Point).join(Drawing).where(Drawing.assembly == 'СШ-1').group_by(PointPart.detail).tuples()
+  t = list(detail)
+
+
+  details = DetailPack.select(DetailPack,fn.COUNT(DetailPack.id).alias('count')).join(Faza).where(Faza.detail.in_(t)).group_by(DetailPack.pack)
+  # details = DetailPack.select().join(Faza).where(Faza.detail.in_(t))#.group_by(DetailPack.pack)
+  for i in details:
+    # i.pack = 2220
+    # i.save()
+    print(i.pack.number,i.count)
+    Packed.update(ready=None).where(Packed.number == i.pack.number).execute()
+    # print(i.pack.number)
+
+def Fask():
+  # pp = PointPart.select(PointPart.detail).join(Point).join(Drawing).where(Drawing.assembly == 'МС-2').group_by(PointPart.detail).tuples()
+  # for i in pp:
+    # print(i)
+    # i.delete_instance(recursive=True)
+  faza = Faza.select(Faza.detail).join(Order).where(Order.cas == '23256',Faza.set == 1).tuples()
+  pp = PointPart.select(Point).join(Point).join(Drawing).where(PointPart.detail.in_(faza)).group_by(PointPart.point)
+  for i in pp:
+    print(i.point)
+    point = i.point
+    point.delete_instance(recursive=True)
+  faza = Faza.select().join(Order).where(Order.cas == '23256',Faza.set == 1)
+  for i in faza:
+    i.delete_instance(recursive=True)
+
+
+  return
+  pp = PointPart.select().join(Part).join(Drawing).join(Order).where(Order.cas == '1359',Part.sn.in_(('18','19','20','21','22')),Drawing.assembly == 'БП2')
+  for p in pp:
+    print(p.detail)
+    p.joint = 1
+    p.save()

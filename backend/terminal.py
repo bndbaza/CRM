@@ -181,12 +181,6 @@ def Detail_end(task):
       faza.save()
 
     
-
-
-
-
-
-
 def Detail_open(task,dates,faza,users,stad):
   task.start = dates
   task.worker_1 = users[0].id

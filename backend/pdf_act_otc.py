@@ -42,10 +42,13 @@ def ActEveryDay(today,work):
       elif oper == 'paint':
         pp = PointPart.select().where(PointPart.detail == i.detail.detail).first()
         weld = Detail.select().where(Detail.detail == i.detail.detail,Detail.oper == 'paint').first()
-        if weld.worker_2 == None:
-          weld = f'{weld.worker_1.user.surname}'
-        else:
-          weld = f'{weld.worker_1.user.surname}, {weld.worker_2.user.surname}'
+        try:
+          if weld.worker_2 == None:
+            weld = f'{weld.worker_1.user.surname}'
+          else:
+            weld = f'{weld.worker_1.user.surname}, {weld.worker_2.user.surname}'
+        except:
+          weld = 'Без покраски'
         assembly = ''
 
       text = ''

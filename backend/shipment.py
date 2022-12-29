@@ -7,6 +7,7 @@ from peewee import fn, JOIN, Case
 
 async def Get(msgs):
   connection.close()
+  print(msgs)
   msg = msgs.split(' ')
   if msg[0] == 'Run':
     if Shipment.select().where(Shipment.date == None).first() != None:
@@ -101,10 +102,11 @@ async def handle_client(reader, writer):
   print(f'Connect')
   request = None
   while request != '':
-    request = (await reader.read(255)).decode('utf8')
-    msg = request.replace('\r','').replace('\n','')
+    request = (await reader.read(255)).decode('utf-8')
+    msg = request.replace('\r','').replace('\n','').replace("b'","").replace("'","")
     if request != '':
       await Get(msg)
+      print(msg)
     else:
       print('Disconnect')
   writer.close()

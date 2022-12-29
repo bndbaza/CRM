@@ -1,10 +1,11 @@
 import csv
 from tekla import Size, Test
-from models import Bolt, Drawing, Nut, Order, Washer, Weld, WeldNorm, Part as Parts
+from models import Bolt, Drawing, Nut, Order, Washer, Weld, WeldNorm, Part as Parts, Point
 from datetime import datetime
 from db import connection
 from operator import itemgetter
 from tekla2 import TeklaAdd
+from correction import PointCorrect
 
 
 def Audit(xls,case,correct):
@@ -79,7 +80,7 @@ def Audit(xls,case,correct):
       error['weight'].append('++++++++++++++++++++++++++')
 
     if sorted(sql[i]['point'],key=itemgetter('point_z')) != sorted(tekla[i]['point'],key=itemgetter('point_z')):
-      assembly = Assembly(i,tekla[i]['point'],sql[i]['point'],tekla[i]['count'],add)
+      assembly = Assembly(i,tekla[i]['point'],sql[i]['point'],tekla[i]['count'],add,correct)
       if len(assembly) != 0:
         error['ASSEMBLY'].append(assembly)
         error['error'] += 1
@@ -109,7 +110,7 @@ def PrintError(error,add,tekla,case):
             
 
       
-def Assembly(mark,tekla,sql,count,add):
+def Assembly(mark,tekla,sql,count,add,correct):
   assembly = []
   s = sql.copy()
   t = tekla.copy()
@@ -124,6 +125,10 @@ def Assembly(mark,tekla,sql,count,add):
     pass
   elif len(s) != 0 and len(t) != 0:
     assembly.append(f'{mark} сборка изменилась')
+    assembly.append(f'{s} сборка изменилась')
+    assembly.append(f'{t} сборка изменилась')
+    if correct:
+      PointCorrect(mark,t,s)
   elif len(s) != 0:
     assembly.append(f'В файле отсутствуют сборки {mark} {s}')
   elif len(t) != 0:

@@ -1,7 +1,6 @@
 <template>
   <v-app-bar
       app
-      color="white"
       flat
     >
       <v-container class="py-0 fill-height" fluid>
@@ -59,6 +58,10 @@
         {
           title:'ОТК',
           link:'/otc'
+        },
+        {
+          title:'Склад',
+          link:'/store'
         },
       ],
     }),

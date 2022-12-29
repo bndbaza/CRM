@@ -112,10 +112,11 @@ def Header(tab,pdf,ship,width,height):
     table = Table([
       [Header1(pdf,ship,width,heightList[0])],
       [f'Комплектовочная ведомость № {ship.number}  от  {ship.date}'],
+      # [f'Комплектовочная ведомость № {ship.number}  от  2022-11-09 15:07:00'],
       [Header2(pdf,ship,width,heightList[2])],
       [Body1(width,25)],
       [Body2(tab,width,heightList[4])],
-      [],
+      [''],
       [Footer1(tab,width,75)],
       [''],
       [''],
@@ -127,7 +128,8 @@ def Header(tab,pdf,ship,width,height):
   elif end['finish'] == False and end['page'] == 1:
     table = Table([
       [Header1(pdf,ship,width,heightList[0])],
-      [f'Комплектовочная ведомость № {ship.number}  от  {ship.date}'],
+      # [f'Комплектовочная ведомость № {ship.number}  от  {ship.date}'],
+      [f'Комплектовочная ведомость № {ship.number}  от  2022-11-09 15:07:00'],
       [Header2(pdf,ship,width,heightList[2])],
       [Body1(width,25)],
       [Body2(tab,width,heightList[4])],
@@ -147,7 +149,7 @@ def Header(tab,pdf,ship,width,height):
       [''],
       [Body1(width,25)],
       [Body2(tab,width,heightList[4])],
-      [''],
+      [fake()],
       [Footer1(tab,width,75)],
       [''],
       [''],
@@ -207,7 +209,8 @@ def Header2(pdf,pack,width,height):
   heightList = [25,25,15,35,25,20]
   table = Table([
     ['Номер договора, спецификации',Paragraph(pack.order.contract,p_style)],
-    ['Поставщик (наименование, адрес, ИНН):',Paragraph('ООО «Байкалстальстрой», 666037, Иркутская область, город Шелехов, улица Известковая, дом 2, ИНН 3810061670',p_style)],
+    # ['Поставщик (наименование, адрес, ИНН):',Paragraph('ООО «Байкалстальстрой», 666037, Иркутская область, город Шелехов, улица Известковая, дом 2, ИНН 3810061670',p_style)],
+    ['Поставщик (наименование, адрес, ИНН):',Paragraph('ООО «Байкальский завод металлоконструкций», 666037, Иркутская область, город Шелехов, улица Известковая, дом 2, ИНН 3821013573',p_style)],
     ['Покупатель (наименование, адрес):',Paragraph(pack.order.customer,p_style)],
     ['Грузополучатель (наименование, адрес):',Paragraph(pack.order.consignee,p_style)],
     ['Номенклатурное наименование:',Paragraph(pack.order.name,p_style)],

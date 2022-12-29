@@ -34,6 +34,7 @@
     "models.Coating",
     "models.PointPaint",
     "models.Joint",
-    "models.JointNorm"
+    "models.JointNorm",
+    "models.CatalogSteel"
   ]
 }

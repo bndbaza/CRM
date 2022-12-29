@@ -6,14 +6,17 @@ from openpyxl import load_workbook
 def Faza_update(order):
   post = []
   points = Point.select().where(Order.cas == order,Point.line == None).join(Drawing).join(Order).order_by(Point.point_z,Point.point_y,Point.point_x)
-
-  
-
   line1 = Point.select(fn.MAX(Point.line).alias('line'),fn.MAX(Point.faza).alias('faza')).where(Order.cas == order).join(Drawing).join(Order).order_by(Point.point_z,Point.point_y,Point.point_x).first()
   if line1.line != None:
-    weight = Point.select(fn.SUM(Drawing.weight).alias('weight')).where(Order.cas == order,Point.faza == line1.faza).join(Drawing).join(Order).order_by(Point.point_z,Point.point_y,Point.point_x).first()
+    faza_max = Faza.select(fn.MAX(Faza.faza)).join(Order).where(Order.cas == order).scalar()
+    point_max = Point.select(fn.MAX(Point.faza)).join(Drawing).join(Order).where(Order.cas == order).scalar()
+    if point_max - faza_max != 0:
+      weight = Point.select(fn.SUM(Drawing.weight).alias('weight')).where(Order.cas == order,Point.faza == line1.faza).join(Drawing).join(Order).order_by(Point.point_z,Point.point_y,Point.point_x).first()
+      faza=line1.faza
+    else:
+      weight = 0
+      faza=line1.faza + 1
     line = int(line1.line) + 1 
-    faza=line1.faza + 1
   else:
     line = 1
     faza = 1
@@ -100,7 +103,7 @@ def PartPoint(faza,cas):
   Test(max2,faza,cas)
   
 def Test(max2,faza,case):
-  name = ('Монтажная пластина','Шайба','Шпилька','Рельс','Струбцина')
+  name = ('Монтажная пластина','Шайба','Шпилька','Рельс','Струбцина','Упор','Уголок','Монтажная деталь','Сито')
   zi = PointPart.select(PointPart,fn.COUNT(PointPart.detail).alias('aaa')).join(Point).join(Drawing).where(Point.faza == faza,Drawing.cas == case).group_by(PointPart.detail).having(fn.COUNT(PointPart.detail) != 1)
   yi = PointPart.select(PointPart,fn.COUNT(PointPart.detail).alias('aaa')).join(Point).join(Drawing).where(Point.faza == faza,Drawing.cas == case,Point.name.not_in(name)).group_by(PointPart.detail).having(fn.COUNT(PointPart.detail) == 1)
   ti = PointPart.select(PointPart,fn.COUNT(PointPart.detail).alias('aaa')).join(Point).join(Drawing).where(Point.faza == faza,Drawing.cas == case,((Drawing.assembly.contains('Ш-')) | (Point.name.in_(name)))).group_by(PointPart.detail).having(fn.COUNT(PointPart.detail) == 1)
@@ -194,6 +197,7 @@ def Task_create(faza,case):
   if index == None: index = 0
   d = []
   tasks = PointPart.select(PointPart,Point,Part).join(Part).join(Drawing).join(Order).join_from(PointPart,Point).where(Order.id == case.id,Point.faza == faza).group_by(Part.profile,Part.size,Part.mark)
+  # tasks = PointPart.select(PointPart,Point,Part).join(Part).join(Drawing).join(Order).join_from(PointPart,Point).where(Order.id == case.id,Point.faza == faza,PointPart.joint == 1).group_by(Part.profile,Part.size,Part.mark)
   for i in tasks:
     index += 1
     task = Task(task = index,oper = i.part.work,faza = faza, order = case)
@@ -202,6 +206,7 @@ def Task_create(faza,case):
     for taskpart in taskparts:
       d.append((task,taskpart.part,taskpart.count_task))
   aaa = ((PointPart.hole,'hole'),(PointPart.bevel,'bevel'),(PointPart.notch,'notch'),(PointPart.chamfer,'chamfer'),(PointPart.milling,'milling'),(PointPart.bend,'bend'),(PointPart.turning,'turning'),(PointPart.joint,'joint'))
+  # aaa = ((PointPart.joint,'joint'),)
   for a in aaa:
     tasks_hole = PointPart.select(PointPart,Part,fn.SUM(Part.count).alias('count_task')).join(Part).join(Drawing).join(Order).join_from(PointPart,Point).where(Order.id == case.id,Point.faza == faza,a[0] == 1).group_by(Part.number)
     for hole in tasks_hole:
