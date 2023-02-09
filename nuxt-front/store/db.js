@@ -1,13 +1,16 @@
 export const state = () => ({
   host: 'http://192.168.0.75:8000/',
   search: '',
-  user: '1',
+  user: null,
 })
 
 
 export const mutations = {
   mark(state,text){
     state.search = text
+  },
+  user_get(state,text) {
+    state.user = text
   }
 }
 

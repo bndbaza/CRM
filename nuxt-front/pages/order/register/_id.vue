@@ -26,7 +26,7 @@
             v-for="mark in marks.point"
             :key="mark"
           >
-            <td v-if="mark.assembly == $store.state.db.search | $store.state.db.search == ''"><nuxt-link :to="'stage/'+$route.params.id+','+mark.assembly">{{ mark.assembly }}</nuxt-link></td>
+            <td v-if="mark.assembly == $store.state.db.search | $store.state.db.search == ''"><nuxt-link class="orange--text" :to="'stage/'+$route.params.id+','+mark.assembly">{{ mark.assembly }}</nuxt-link></td>
             <td v-if="mark.assembly == $store.state.db.search | $store.state.db.search == ''">{{ mark.count }}</td>
             <td v-if="mark.assembly == $store.state.db.search | $store.state.db.search == ''">{{ mark.weight }}</td>
             <td v-if="mark.assembly == $store.state.db.search | $store.state.db.search == ''">{{ mark.weight_all }}</td>

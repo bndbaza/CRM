@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <div v-if="!show_user">
-      <v-btn v-if="user[0] && start && end" color="info" block @click="ReportUser()">Открыть</v-btn>
+      <v-btn v-if="user[0] && start && end" color="orange" light block @click="ReportUser()">Открыть</v-btn>
       <v-row>
         <v-col>
           <v-data-table

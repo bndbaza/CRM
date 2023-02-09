@@ -23,16 +23,19 @@ class Base(BaseModel):
 
 
 class OrderBase(Base):
-  id: int
+  id: int | None = None
   cas: str
-  create_date: datetime.datetime
+  create_date: datetime.datetime | None = None
   color: str | None = None
   status: str | None = None
   name: str | None = None
   contract: str | None = None
   customer: str | None = None
   consignee: str | None = None
-
+  upload: str | None = None
+  finish: int | None = None
+  inside: bool | None = False
+  weight: float | None = None
 
 class DrawingBase(Base):
   id: int
@@ -342,6 +345,7 @@ class AllReport(BaseModel):
   weight_shipment: float
   weight_mount: float
   weight_order: float
+  status: str
   
   class Config:
     orm_mode = True
@@ -466,3 +470,36 @@ class ManualMarks(BaseModel):
 
     class Config:
         orm_mode = True
+
+class StoreAddRun(BaseModel):
+    id: int
+    width: str
+    name_steel: str
+    lenght: int
+    count: int
+    price: float
+    weight: float
+
+    class Config:
+        orm_mode = True
+
+class StoreAdd(BaseModel):
+    vendor: str
+    run: List[StoreAddRun]
+    date: str
+
+    class Config:
+        orm_mode = True
+
+class NeedForMetalBase1(BaseModel):
+    metal: int
+    weight: float
+    name_steel: str | None = None
+    id: int
+
+    class Config:
+        orm_mode = True
+
+class NeedForMetalBase(BaseModel):
+    run: List[NeedForMetalBase1]
+    case: str

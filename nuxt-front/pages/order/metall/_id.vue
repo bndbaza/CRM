@@ -2,7 +2,7 @@
   <v-container>
     <v-row>
       <v-col cols="1">
-        <v-btn block class="ma-1" small color="info" v-for="faza in fazas" :key="faza" @click="Metall(faza[0])">Фаза {{faza[0]}}</v-btn>
+        <v-btn block class="ma-1" small light color="orange" v-for="faza in fazas" :key="faza" @click="Metall(faza[0])">Фаза {{faza[0]}}</v-btn>
       </v-col>
       <v-col>
         <h2 v-if="fz != 0">Заказ {{$route.params.id}} Фаза {{fz}}</h2>

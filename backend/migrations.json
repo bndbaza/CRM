@@ -35,6 +35,10 @@
     "models.PointPaint",
     "models.Joint",
     "models.JointNorm",
-    "models.CatalogSteel"
+    "models.CatalogSteel",
+    "models.StoreSteel",
+    "models.NeedForMetal",
+    "models.CallList",
+    "models.PhoneBook"
   ]
 }

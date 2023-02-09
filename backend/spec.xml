@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PhoneBook>
+	<DirectoryEntry>
+		<Name>2 кабинет</Name>
+		<Telephone>137</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>7 кабинет</Name>
+		<Telephone>112</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Корень И.Ю</Name>
+		<Telephone>166</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Оповещение</Name>
+		<Telephone>181</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>ОТК1</Name>
+		<Telephone>160</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Сотовый Вишневский В.Л</Name>
+		<Telephone>175</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Терминал</Name>
+		<Telephone>154</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>ТЕСТ</Name>
+		<Telephone>199</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Янкина В.П</Name>
+		<Telephone>143</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+</PhoneBook>

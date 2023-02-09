@@ -155,7 +155,12 @@ async def Workers(message,text):
           otc = Otc.select().where(Otc.detail == faza,Otc.oper == 'weld').first()
           faza.weld = 3
           if otc == None:
-            otc = Otc.create(detail=faza,start=datetime.today(),oper='weld')
+            det = Detail.select().where(Detail.detail == faza.detail,Detail.oper == 'paint').first()
+            if det != None:
+              otc = Otc.create(detail=faza,start=datetime.today(),oper='weld')
+            else:
+              faza.paint = 3
+              otc = Otc.create(detail=faza,start=datetime.today(),oper='paint')
             DetailUserAdd(detail)
           else:
             otc.fix = 0

@@ -327,3 +327,32 @@ def PointCorrect(mark,t,s):
       point.save()
   except:
     print(mark,t,s)
+
+
+
+def correct_number(number): # Коректировка номера
+    if len(number) == 12:
+        number = '+'+number[1:]
+    elif len(number) == 11:
+        number = '+7'+number[1:]
+    elif len(number) == 6:
+        number = '+73952'+number
+    elif len(number) == 5:
+        number = '+739550'+number
+    elif number == '1':
+        number = '147'
+    elif number == '2':
+        number = '117'
+    elif number == '3':
+        number = '135'
+    elif number == '4':
+        number = '126'
+    elif number == '5':
+        number = '148'
+    elif number == '6':
+        number = '144'
+    elif number == '7':
+        number = '177'
+    elif number == 't':
+        number = '117'
+    return number

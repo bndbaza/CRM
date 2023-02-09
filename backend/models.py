@@ -21,6 +21,8 @@ class Order(ModelBase):
   customer = CharField(max_length=500,null=True)
   consignee = CharField(max_length=500,null=True)
   weight = DecimalField(max_digits=12,decimal_places=3,null=True)
+  upload = CharField(max_length=10,null=True)
+  inside = BooleanField(default=False)
 
   
 class Drawing(ModelBase):
@@ -34,7 +36,7 @@ class Drawing(ModelBase):
   count = IntegerField()
   weight = DecimalField(max_digits=12,decimal_places=3,null=True)
   more = DecimalField(max_digits=12,decimal_places=3,null=True)
-  paint = CharField(max_length=40,default='0')
+  paint = CharField(max_length=40,default='1')
 
 class Point(ModelBase):
   class Meta:
@@ -61,7 +63,8 @@ class User(ModelBase):
   patronymic = CharField(max_length=100)
   telegram = BigIntegerField(null=True)
   username = CharField(max_length=100,null=True)
-  ip = CharField(max_length=16,null=True)
+  ip = CharField(max_length=250,null=True)
+  phone = IntegerField(null=True)
 
 class Worker(ModelBase):
   class Meta:
@@ -440,3 +443,48 @@ class CatalogSteel(ModelBase):
   gost = CharField(max_length=100)
   width = BooleanField()
   weight = DecimalField(max_digits=12,decimal_places=3,default=0)
+
+class StoreSteel(ModelBase):
+  class Meta:
+    table_name='storesteels'
+  id = PrimaryKeyField(null=False)
+  catalog_steel = ForeignKeyField(CatalogSteel,backref='storesteels')
+  width = IntegerField()
+  length = IntegerField()
+  name_steel = CharField(max_length=100)
+  price = DecimalField(max_digits=12,decimal_places=3,default=0)
+  receipt_date = DateTimeField(default=datetime.datetime.now)
+  vendor = CharField(max_length=200)
+  shop = BooleanField(default=False)
+
+class NeedForMetal(ModelBase):
+  class Meta:
+    table_name='needformetals'
+  id = PrimaryKeyField(null=False)
+  catalog_steel = ForeignKeyField(CatalogSteel,backref='needformetals')
+  name_steel = CharField(max_length=100,null=True)
+  receipt_date = DateTimeField(default=datetime.datetime.now)
+  case = ForeignKeyField(Order,backref='needformetals')
+  buy = BooleanField(default=False)
+  weight = DecimalField(max_digits=12,decimal_places=3,default=0)
+
+class CallList(ModelBase):
+  class Meta:
+    table_name='calllists'
+  id = PrimaryKeyField(null=False)
+  inbound = CharField(max_length=100)
+  date_in = DateTimeField()
+  outgoing = CharField(max_length=100)
+  date_out = DateTimeField(null=True)
+  record = CharField(max_length=150,null=True)
+
+class PhoneBook(ModelBase):
+  class Meta:
+    table_name='phonebooks'
+  id = PrimaryKeyField(null=False)
+  company = CharField(max_length=100,null=True)
+  surname = CharField(max_length=100,null=True)
+  name = CharField(max_length=100,null=True)
+  patronymic = CharField(max_length=100,null=True)
+  phone = CharField(max_length=50)
+  direction = CharField(max_length=50)

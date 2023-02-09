@@ -4,39 +4,40 @@
       <v-row>
         <v-col>
           <h2 v-if="str_date != ''" class="text-center mb-5">{{str_date | date('date')}}</h2>
-          <v-btn color="success" block class="pa-5" v-if="report.weld != ''" @click="Download(report.weld)">Скачать Акт на Сварку</v-btn>
-          <v-btn color="success" block class="mt-5 pa-5" v-if="report.paint != ''" @click="Download(report.paint)">Скачать Акт на Малярку</v-btn>
+          <v-btn color="orange" light block class="pa-5" v-if="report.weld != ''" @click="Download(report.weld)">Скачать Акт на Сварку</v-btn>
+          <v-btn color="orange" light block class="mt-5 pa-5" v-if="report.paint != ''" @click="Download(report.paint)">Скачать Акт на Малярку</v-btn>
         </v-col>
         <v-col cols="2">
+          <v-row>
+          <v-col>
           <v-date-picker
             v-model="date"
             :first-day-of-week="1"
             locale="ru-ru"
+            color="teal"
             no-title
           ></v-date-picker>
-          <v-btn color="info" @click="getReport()" v-if="date != ''" block>Запросить</v-btn>
+          </v-col>
+          </v-row>
+          <v-row>
+          <v-col>
+          <v-btn color="teal" class="mx-2" light @click="getReport()" v-if="date != ''" block>Запросить</v-btn>
+          </v-col>
+          </v-row>
         </v-col>
       </v-row>
     </v-container>
     <v-dialog
       v-model="loader"
-      hide-overlay
-      persistent
-      width="300"
+      scrollable
+      persistent :overlay="false"
+      max-width="150px"
+      transition="dialog-transition"
     >
-      <v-card
-        color="primary"
-        dark
-      >
-        <v-card-text>
-          Идет загрузка
-          <v-progress-linear 
-            indeterminate
-            color="white"
-            class="mb-0"
-          ></v-progress-linear>
-        </v-card-text>
-      </v-card>
+      <v-progress-linear
+        indeterminate
+        color="orange"
+      ></v-progress-linear>
     </v-dialog>
   </div>
 </template>

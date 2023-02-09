@@ -1,20 +1,22 @@
 <template>
   <div>
   <v-container>
-    <v-row>
-      <v-col>
-        <v-btn color="orange" @click.stop="tekla=false,dlist=true,file=''">Диспетчерский лист</v-btn>
-        <v-btn color="blue" @click="tekla=true,dlist=false">Tekla</v-btn>
+    <v-row v-if="upl==''">
+      <v-col cols="2">
+        <v-btn light block color="orange" :disabled="upl=='tekla' || upl=='none'" @click.stop="tekla=false,dlist=true,file=''">Диспетчерский лист</v-btn>
+      </v-col>
+      <v-col cols="2">
+        <v-btn light block color="teal" :disabled="upl=='manual' || upl=='none'" @click="tekla=true,dlist=false">Tekla</v-btn>
       </v-col>
     </v-row>
     <v-row v-if="tekla">
-      <v-col>
+      <v-col cols="2">
         <v-file-input
           label="Загрузите файл"
           v-model="file"
         ></v-file-input>
-        <v-btn color="info" @click="Upload(), load = true" :loading="load" :disabled='load' v-if="file != ''">Загрузить</v-btn>
-        <v-checkbox label="Исправление ошибок" v-model="correct" v-if="result != ''"></v-checkbox>
+        <v-btn light block color="teal" @click="Upload(), load = true" :loading="load" :disabled='load' v-if="file != ''">Загрузить</v-btn>
+        <v-checkbox color="teal" label="Исправление ошибок" v-model="correct" v-if="result != ''"></v-checkbox>
       </v-col>
       <v-col>
         <p>Количество ошибок: {{result['error']}}</p>
@@ -31,7 +33,7 @@
     </v-row>
     <v-row v-if="dlist">
       <v-col>
-        <v-card color="grey" class="mb-2" v-for="m in marks" :key="m">
+        <v-card color="indigo" class="mb-2" v-for="m in marks" :key="m">
           <v-card-title>
             <v-spacer></v-spacer>
             <p>Марка: {{m.mark}}</p>
@@ -45,8 +47,8 @@
             <p>Сварка: {{m.weld}}</p>
             <!-- <p>Марка: {{m.mark}} | Чертеж: {{m.draw}} | Наименование: {{m.name}} | Количество: {{m.count}} | Сварка: {{m.weld}}</p> -->
             <v-spacer></v-spacer>
-            <v-btn color="green" @click="edit(m)" icon><v-icon>mdi-pencil</v-icon></v-btn>
-            <v-btn color="red" @click="remove(m)" icon><v-icon>mdi-close</v-icon></v-btn>
+            <v-btn light color="green" @click="edit(m)" icon><v-icon>mdi-pencil</v-icon></v-btn>
+            <v-btn light color="red" @click="remove(m)" icon><v-icon>mdi-close</v-icon></v-btn>
           </v-card-title>
           <v-card-text>
             <v-simple-table dense>
@@ -108,11 +110,12 @@
         </v-card>
       </v-col>
     </v-row>
-    <v-btn v-if="dlist" :disabled="marks.length == 0" color="green" @click="Manual()">Загрузить</v-btn>
-    <v-btn v-if="dlist" color="orange" @click.stop="dialog=true">Создать марку</v-btn>
+    <v-btn light v-if="dlist & marks.length != 0" color="teal" @click="Manual()">Загрузить</v-btn>
+    <v-btn light v-if="dlist" color="orange" @click.stop="dialog=true">Создать марку</v-btn>
   </v-container>
   <v-dialog
     v-model="dialog"
+    dark
     scrollable
     persistent :overlay="false"
     max-width="500px"
@@ -132,10 +135,11 @@
                 v-model=mark.draw
                 label="Чертеж"
               ></v-text-field>
-              <v-text-field
+              <v-select
                 v-model=mark.name
+                :items="assembly"
                 label="Наименование конструкции"
-              ></v-text-field>
+              ></v-select>
               <v-text-field
                 v-model=mark.weld
                 label="Сварка"
@@ -155,13 +159,14 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="blue" :disabled="!mark.mark || !mark.draw || !mark.name || !mark.count || mark.details.length == 0" @click="addMark()">OK</v-btn>
-        <v-btn :disabled="!mark.mark || !mark.draw || !mark.name || !mark.count" color="green" @click="dialog2=true,dialog=false">Добавить детали</v-btn>
-        <v-btn color="red" @click="dialog=false,mark={details:[]}">Отмена</v-btn>
+        <v-btn light color="blue" :disabled="!mark.mark || !mark.draw || !mark.name || !mark.count || mark.details.length == 0" @click="addMark()">OK</v-btn>
+        <v-btn light :disabled="!mark.mark || !mark.draw || !mark.name || !mark.count" color="green" @click="dialog2=true,dialog=false">Добавить детали</v-btn>
+        <v-btn light color="red" @click="dialog=false,mark={details:[]}">Отмена</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
   <v-dialog
+    dark
     v-model="dialog2"
     scrollable
     persistent :overlay="false"
@@ -277,12 +282,13 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn :disabled="!detail.number || !steel.id || !detail.lenght || !detail.count" color="green" @click="addDetail()">Добавить</v-btn>
-        <v-btn color="red" @click="dialog2=false,dialog=true,steel={},detail={manipulation:[]}">Назад</v-btn>
+        <v-btn light :disabled="!detail.number || !steel.id || !detail.lenght || !detail.count" color="green" @click="addDetail()">Добавить</v-btn>
+        <v-btn light color="red" @click="dialog2=false,dialog=true,steel={},detail={manipulation:[]}">Назад</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
   <v-dialog
+    dark
     v-model="dialog3"
     scrollable
     persistent :overlay="false"
@@ -294,13 +300,26 @@
         Файл загружен
       </v-card-title>
       <v-card-text>
-        Text
+        <h3 v-for="res,key in result.control">Фаза: {{key}} Остаток: {{res}}</h3>
+        <h2>Закрыть Фазу?</h2>
       </v-card-text>
       <v-card-actions>
-        <v-btn disabled color="blue">OK</v-btn>
-        <v-btn color="red" @click="dialog3=false">Назад</v-btn>
+        <v-btn light color="blue" @click="CloseFaza()">Да</v-btn>
+        <v-btn light color="red" @click="dialog3=false">Нет</v-btn>
       </v-card-actions>
     </v-card>
+  </v-dialog>
+  <v-dialog
+    v-model="loading"
+    scrollable
+    persistent :overlay="false"
+    max-width="150px"
+    transition="dialog-transition"
+  >
+    <v-progress-linear
+      indeterminate
+      color="orange"
+    ></v-progress-linear>
   </v-dialog>
   </div>
 </template>
@@ -315,6 +334,7 @@ export default {
       marks: [],
       detail: {manipulation:[]},
       result:'',
+      loading: false,
       load: false,
       correct: false,
       tekla: false,
@@ -327,14 +347,27 @@ export default {
       back:'',
       test: '',
       editIndex: [-1,-1],
-      editItem: {}
+      editItem: {},
+      upl: 'none',
+      assembly: [],
     }
   },
   async mounted(){
     let marks = {}
+    let upload = ''
     this.catalog = await this.$axios.$get(this.$store.state.db.host+'store')
+    this.assembly = this.catalog.assembly
+    this.catalog = this.catalog.catalog
     marks = await this.$axios.$get(this.$store.state.db.host+'manual_read/'+this.$route.params.id)
     this.marks = marks.marks
+    upload = await this.$axios.$get(this.$store.state.db.host+'upload_app/'+this.$route.params.id)
+    this.upl = upload.upload
+    if (this.upl == 'tekla') {
+      this.tekla = true
+    }else if (this.upl == 'manual') {
+      this.dlist = true
+    }
+
   },
   methods: {
     async Upload() {
@@ -347,10 +380,20 @@ export default {
         this.result = response.data
         this.file=''
         this.load = false
-        if (this.result.error == 0) {
+        if (this.result.error == 0 && this.result.control != {}) {
           this.dialog3 = true
+          this.SetApp('tekla')
+          this.upl = 'tekla'
         }
       })
+    },
+    async SetApp(upload) {
+      this.upload = await this.$axios.$get(this.$store.state.db.host+'set_app/'+this.$route.params.id+'/'+upload)
+    },
+    async CloseFaza(faza) {
+      let ret
+      this.dialog3 = false
+      ret = await this.$axios.$get(this.$store.state.db.host+'close_faza/'+this.$route.params.id)
     },
     Test(full_name,size='',mark='') {
       let catalog = []
@@ -367,8 +410,12 @@ export default {
       this.steel = this.catalog.filter(cat => cat.id == this.detail.id)[0]
     },
     async Manual() {
+      this.loading = true
       this.back = await this.$axios.$post(this.$store.state.db.host+'manual_write',{marks: this.marks,case: this.$route.params.id}) 
       this.marks = []
+      this.SetApp('manual')
+      this.upl = 'manual'
+      this.loading = false
     },
     async ManualSave() {
       this.back = await this.$axios.$post(this.$store.state.db.host+'manual_save',{marks: this.marks,case: this.$route.params.id}) 

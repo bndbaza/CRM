@@ -9,6 +9,8 @@ def Faza_update(order):
   line1 = Point.select(fn.MAX(Point.line).alias('line'),fn.MAX(Point.faza).alias('faza')).where(Order.cas == order).join(Drawing).join(Order).order_by(Point.point_z,Point.point_y,Point.point_x).first()
   if line1.line != None:
     faza_max = Faza.select(fn.MAX(Faza.faza)).join(Order).where(Order.cas == order).scalar()
+    if faza_max == None:
+      faza_max = 0
     point_max = Point.select(fn.MAX(Point.faza)).join(Drawing).join(Order).where(Order.cas == order).scalar()
     if point_max - faza_max != 0:
       weight = Point.select(fn.SUM(Drawing.weight).alias('weight')).where(Order.cas == order,Point.faza == line1.faza).join(Drawing).join(Order).order_by(Point.point_z,Point.point_y,Point.point_x).first()
@@ -103,10 +105,13 @@ def PartPoint(faza,cas):
   Test(max2,faza,cas)
   
 def Test(max2,faza,case):
-  name = ('Монтажная пластина','Шайба','Шпилька','Рельс','Струбцина','Упор','Уголок','Монтажная деталь','Сито')
-  zi = PointPart.select(PointPart,fn.COUNT(PointPart.detail).alias('aaa')).join(Point).join(Drawing).where(Point.faza == faza,Drawing.cas == case).group_by(PointPart.detail).having(fn.COUNT(PointPart.detail) != 1)
-  yi = PointPart.select(PointPart,fn.COUNT(PointPart.detail).alias('aaa')).join(Point).join(Drawing).where(Point.faza == faza,Drawing.cas == case,Point.name.not_in(name)).group_by(PointPart.detail).having(fn.COUNT(PointPart.detail) == 1)
-  ti = PointPart.select(PointPart,fn.COUNT(PointPart.detail).alias('aaa')).join(Point).join(Drawing).where(Point.faza == faza,Drawing.cas == case,((Drawing.assembly.contains('Ш-')) | (Point.name.in_(name)))).group_by(PointPart.detail).having(fn.COUNT(PointPart.detail) == 1)
+  name = ('Монтажная пластина','Шайба','Шпилька','Рельс','Струбцина','Упор','Уголок','Монтажная деталь','Сито','Кран')
+  # zi = PointPart.select(PointPart,fn.COUNT(PointPart.detail).alias('aaa')).join(Point).join(Drawing).join_from(PointPart,Part).where(Point.faza == faza,Drawing.cas == case).group_by(PointPart.detail).having(fn.COUNT(PointPart.detail) != 1)
+  # yi = PointPart.select(PointPart,fn.COUNT(PointPart.detail).alias('aaa')).join(Point).join(Drawing).join_from(PointPart,Part).where(Point.faza == faza,Drawing.cas == case,Point.name.not_in(name)).group_by(PointPart.detail).having(fn.COUNT(PointPart.detail) == 1)
+  # ti = PointPart.select(PointPart,fn.COUNT(PointPart.detail).alias('aaa')).join(Point).join(Drawing).join_from(PointPart,Part).where(Point.faza == faza,Drawing.cas == case,((Drawing.assembly.contains('Ш-')) | (Point.name.in_(name)))).group_by(PointPart.detail).having(fn.COUNT(PointPart.detail) == 1)
+  zi = PointPart.select(PointPart,fn.SUM(Part.count).alias('aaa')).join(Point).join(Drawing).join_from(PointPart,Part).where(Point.faza == faza,Drawing.cas == case).group_by(PointPart.detail).having(fn.SUM(Part.count) != 1)
+  yi = PointPart.select(PointPart,fn.SUM(Part.count).alias('aaa')).join(Point).join(Drawing).join_from(PointPart,Part).where(Point.faza == faza,Drawing.cas == case,Point.name.not_in(name)).group_by(PointPart.detail).having(fn.SUM(Part.count) == 1)
+  ti = PointPart.select(PointPart,fn.SUM(Part.count).alias('aaa')).join(Point).join(Drawing).join_from(PointPart,Part).where(Point.faza == faza,Drawing.cas == case,((Drawing.assembly.contains('Ш-')) | (Point.name.in_(name)))).group_by(PointPart.detail).having(fn.SUM(Part.count) == 1)
   xi = PointPart.select().join(Point).join(Drawing).where(Point.faza == faza,Drawing.cas == case)
   index = max2
   all = []

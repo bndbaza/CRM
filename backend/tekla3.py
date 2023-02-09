@@ -4,6 +4,7 @@ from models import Order,PointPart,Point,Drawing
 from sawing_list import Sawing
 from send_bot import Tech
 from task import BaseInfo
+from peewee import fn, Case
 import asyncio
 
 
@@ -14,6 +15,7 @@ def PointPartInsert(lis,case):
     PartPoint(faza,order)
     Detail_create(faza,order)
     Task_create(faza,order)
+  weight_control(order)
   return
 
 
@@ -33,3 +35,9 @@ def PdfGenerate(lis,case):
     asyncio.run(Tech(Sawing(y,case)))
     asyncio.run(Tech(Tag(y,case)))
   return
+
+def weight_control(order):
+  weight_all = Point.select(Point.faza,fn.SUM(Drawing.weight).alias('weight')).join(Drawing).join(Order).where(Order.id == order.id).first()
+  if order.weight < weight_all.weight:
+    order.weight = weight_all.weight
+    order.save()

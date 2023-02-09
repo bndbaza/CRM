@@ -19,7 +19,7 @@
                   v-for="stage in stages"
                   :key="stage.id"
                 >
-                  <td v-if="Variant(header.text,stage) & (stage.detail == $store.state.db.search | $store.state.db.search == '')"><nuxt-link :to="'../../../detail/'+stage.detail" large><h2 class="text-center">{{ stage.detail }}</h2></nuxt-link></td>
+                  <td v-if="Variant(header.text,stage) & (stage.detail == $store.state.db.search | $store.state.db.search == '')"><nuxt-link :to="'../../../detail/'+stage.detail" large><h2 class="text-center orange--text">{{ stage.detail }}</h2></nuxt-link></td>
                 </tr>
               </tbody>
             </template>
@@ -169,9 +169,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-  nuxt-link{
-  text-decoration:none;
-  }  
-</style>

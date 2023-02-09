@@ -8,7 +8,7 @@ from pdf_act_otc import ActEveryDay
 from send_bot import AllReport2
 from shipment_list import ShipmentList
 from tekla3 import PdfGenerate, PointPartInsert
-from test import Fask, MMM, VVV, DELDEL, HOLECOF, PP, ZXC, CXZ, Catalog, DelMark, JKL, LKJ, exl
+from test import ggg,ggg2, DP, SUD, ZAE, Deltask, DEDR, Fask, MMM, VVV, DELDEL, HOLECOF, PP, ZXC, CXZ, Catalog, DelMark, JKL, LKJ, exl
 from db import connection
 from models import *
 from tekla import Tekla
@@ -22,11 +22,15 @@ from qr import QRPack, QRRun, QRUser
 from terminal import Detail_post, User_get
 from qr_list import QR_pdf
 from sawing_list import Sawing
-from correction import Correction, Replace
+from correction import Correction, Replace, correct_number
 from d_list import Dlist
 from d_list2 import ManualUpload
 from shipment import Start
+from metal import post_metal, get_metal
+from asterisk import main_asterisk
 import asyncio
+import requests
+from index import *
 from fastapi.responses import FileResponse
 from test2 import PAINTNONE, NormPaint, Time, Time4, Time5, UserNorm
 import operations
@@ -37,6 +41,7 @@ app = FastAPI()
 async def startup():
   connection.connect()
   task1 = asyncio.create_task(Start())
+  task2 = asyncio.create_task(main_asterisk())
 
 @app.on_event("shutdown")
 def shutdown():
@@ -68,8 +73,8 @@ app.add_middleware(
 
 @app.get('/test')  # Создание нарядов
 def get_test():
-  fazas = [2]
-  order = Order.get(Order.cas == '23253')
+  fazas = [1]
+  order = Order.get(Order.cas == '1510')
   for faza in fazas:
     if Faza.select().where(Faza.case == order,Faza.faza == faza).first() != None:
       print('УЖЕ ЕСТЬ')
@@ -83,9 +88,9 @@ def get_test():
 
 @app.get('/pdf') # Формирование нарядов PDF
 def get_pdf():
-  z = [2]
+  z = [12]
   for y in z:
-    case = '23251'
+    case = '2345'
     detail = []
     if len(detail) == 0:
       faza = PointPart.select(PointPart.detail).join(Point).join(Drawing).join(Order).where(Point.faza == y,Order.cas == case).group_by(PointPart.detail)
@@ -135,8 +140,7 @@ def get_aaa():
   # JN()
   # JJ()
   # KK()
-  # PP()
-  VVV()
+  # VVV()
   # ZXC()
   # CXZ()
   # Catalog()
@@ -146,6 +150,12 @@ def get_aaa():
   # exl()
   # MMM()
   # Fask()
+  # ZAE()
+  # SUD()
+  # PP()
+  # DP()
+  ggg2()
+  # Deltask()
   connection.close()
 
 @app.get('/dlist/{id}') # Загрузка диспетчерского листа
@@ -166,6 +176,7 @@ def get_weight(id):
 @app.get('/delete/{id}')
 def get_qr_user(id):
   DELDEL(id)
+  connection.close()
   return
 
 @app.get('/excel')  # Импорт из VVL.xlsx
@@ -176,7 +187,25 @@ def get_excel():
 
 @app.get('/index',response_model=List[OrderBase])
 def get_index():
-  orders = Order.select().where(Order.status != None).order_by(Order.status)
+  orders = get_orders()
+  # orders = Order.select().where(Order.status != None).order_by(Order.status,Order.inside)
+  # for order in orders:
+    # finish = 0
+    # fazas = Faza.select().where(Faza.case == order.id)
+    # for faza in fazas:
+      # if faza.kmd == 3:
+        # finish += faza.weight
+      # if faza.in_work == 3:
+        # finish += faza.weight
+      # if faza.weld == 3:
+        # finish += faza.weight
+      # if faza.paint == 3:
+        # finish += faza.weight
+      # if faza.packed == 3:
+        # finish += faza.weight
+      # if faza.shipment == 3:
+        # finish += faza.weight
+    # order.finish = int(finish / (order.weight*6) * 100)
   connection.close()
   return list(orders)
 
@@ -205,17 +234,20 @@ def post_tekla(
       Faza_update(order)
       point = Point.select(Point.faza).join(Drawing).join(Order).where(Order.cas == order).group_by(Point.faza).tuples()
       pointpart = PointPart.select(Point.faza).join(Point).join(Drawing).join(Order).where(Order.cas == order).group_by(Point.faza).tuples()
-      result = list(set(point) - set(pointpart))
-      print(f'result {result}')
+      res = list(set(point) - set(pointpart))
       try:
-        result.remove(max(result))
+        res.remove(max(res))
       except:
-        result = [max(point) + 1,]
+        res = [max(point) + 1,]
       d = []
-      for i in result:
+      for i in res:
         d.append(i[0])
-      PointPartInsert(d,order)
-      PdfGenerate(d,order)
+      if len(d) > 0:
+        PointPartInsert(d,order)
+        PdfGenerate(d,order)
+    faza = Faza.select(Faza.faza).join(Order).where(Order.cas == order).tuples()
+    weight = Point.select(Point.faza,fn.SUM(Drawing.weight).alias('weight')).join(Drawing).join(Order).where(Order.cas == order,Point.faza.not_in(faza)).group_by(Point.faza).tuples()
+    result['control'] = weight
   # Tekla(file,order)
   # Faza_update_test(order)
   # Faza_update_garage(order)
@@ -329,18 +361,18 @@ def get_stage(id):
   elif id.split(',')[1].isdigit():
     id = id.split(',')
     if id[1] == '0':
-      stage = Faza.select(Faza).join(Order).where(Order.status == 'В работе',Order.cas == id[0]).dicts()
+      stage = Faza.select(Faza).join(Order).where(Order.cas == id[0]).dicts()
     else:
-      stage = Faza.select(Faza).join(Order).where(Order.status == 'В работе',Order.cas == id[0],Faza.faza == id[1]).dicts()
+      stage = Faza.select(Faza).join(Order).where(Order.cas == id[0],Faza.faza == id[1]).dicts()
   else:
     id = id.split(',')
     if id[0] != '0':
       pp = PointPart.select(PointPart.detail).join(Part).join(Drawing).join(Order).where(Order.cas == id[0],Drawing.assembly == id[1]).group_by(PointPart.detail).tuples()
-      stage = Faza.select(Faza).join(Order).where(Order.status == 'В работе',Faza.detail.in_(pp)).dicts()
+      stage = Faza.select(Faza).join(Order).where(Faza.detail.in_(pp)).dicts()
       print(len(stage))
     else:
       pp = PointPart.select(PointPart.detail).join(Part).join(Drawing).where(Drawing.assembly == id[1]).group_by(PointPart.detail).tuples()
-      stage = Faza.select(Faza).join(Order).where(Order.status == 'В работе',Faza.detail.in_(pp)).dicts()
+      stage = Faza.select(Faza).join(Order).where(Faza.detail.in_(pp)).dicts()
 
   connection.close()
   return list(stage)
@@ -441,19 +473,24 @@ def get_report_faza(order):
 
 @app.get('/report/all/{order}',response_model=AllReport)
 def get_report_all(order):
-  order = Order.get(Order.cas == order)
-  faza = Faza.select(
-    fn.SUM(Faza.weight).alias('weight_kmd'),
-    fn.SUM(Case(None,[(Faza.in_work == 3,Faza.weight)],0)).alias('weight_in_work'),
-    fn.SUM(Case(None,[(Faza.paint != 0,Faza.weight)],0)).alias('weight_weld'),
-    fn.SUM(Case(None,[(Faza.paint == 3,Faza.weight)],0)).alias('weight_paint'),
-    fn.SUM(Case(None,[(Faza.packed == 3,Faza.weight)],0)).alias('weight_packed'),
-    fn.SUM(Case(None,[(Faza.shipment == 3,Faza.weight)],0)).alias('weight_shipment'),
-    fn.SUM(Case(None,[(Faza.mount == 3,Faza.weight)],0)).alias('weight_mount'),
-  ).where(Faza.case == order).group_by(Faza.case).first()
-  faza.weight_order = order.weight
-  connection.close()
-  return faza
+  try:
+    order = Order.get(Order.cas == order)
+    faza = Faza.select(
+      fn.SUM(Faza.weight).alias('weight_kmd'),
+      fn.SUM(Case(None,[(Faza.in_work == 3,Faza.weight)],0)).alias('weight_in_work'),
+      fn.SUM(Case(None,[(Faza.paint != 0,Faza.weight)],0)).alias('weight_weld'),
+      fn.SUM(Case(None,[(Faza.paint == 3,Faza.weight)],0)).alias('weight_paint'),
+      fn.SUM(Case(None,[(Faza.packed == 3,Faza.weight)],0)).alias('weight_packed'),
+      fn.SUM(Case(None,[(Faza.shipment == 3,Faza.weight)],0)).alias('weight_shipment'),
+      fn.SUM(Case(None,[(Faza.mount == 3,Faza.weight)],0)).alias('weight_mount'),
+    ).where(Faza.case == order).group_by(Faza.case).first()
+    faza.weight_order = order.weight
+    faza.status = order.status
+    connection.close()
+    return faza
+  except:
+    connection.close()
+    return
 
 
 @app.get('/report/workers/assembly/{start}/{end}',response_model=List[DetailUserBase])
@@ -482,6 +519,7 @@ def get_report_user(start,end):
     if detail != None:
       detail = (str(detail).split('.')[0])
       paints.append({'user':user.user,'norm':detail})
+  connection.close()
   return list(paints)
 
 @app.get('/report/workers/weld/{start}/{end}',response_model=List[DetailUserBase])
@@ -556,7 +594,12 @@ def post_package(pack:PackedBaseAll):
 @app.get('/file/{id}')
 def files(id):
   files = Packed.get(Packed.id == id)
+  print(files.ready)
   connection.close()
+  try:
+    open(files.ready)
+  except:
+    pass
   return FileResponse(files.ready)
 
 @app.get('/register/{id}')
@@ -644,7 +687,6 @@ def files(id):
   connection.close()
   return FileResponse(files.ready)
 
-
 @app.get('/users')
 def users():
   oper = ['admin','shipment','master','otc','chief','director']
@@ -673,21 +715,32 @@ def metall(case,faza):
 @app.get('/ip')
 def ip(request:Request):
   host = request.client.host
-  user = User.select().where(User.ip == host).dicts().first()
+  print(host)
+  user = User.select().where(User.ip.contains(host)).dicts().first()
+  print(user)
   connection.close()
   return user
 
 @app.get('/store')
 def store():
-  catalog = list(CatalogSteel.select().dicts())
+  catalog = list(CatalogSteel.select().order_by(CatalogSteel.name,CatalogSteel.size).dicts())
+  vendors = StoreSteel.select(StoreSteel.vendor).group_by(StoreSteel.vendor).tuples()
+  assemblys = AssemblyNorm.select(AssemblyNorm.name).group_by(AssemblyNorm.name).tuples()
+  vendor = []
+  assembly = []
+  for v in vendors:
+    vendor.append(v[0])
+  for v in assemblys:
+    assembly.append(v[0])
   connection.close()
-  return catalog
+  return {'catalog':catalog,'vendors':vendor, 'assembly': assembly}
 
 @app.post('/manual_write')
 def manual_write(marks:ManualMarks):
   import os
   ManualUpload(marks)
-  os.remove(f'/home/viktor/CRM/backend/{marks.case}.pkl')
+  shutil.move(f'{marks.case}.pkl',f'PKL/{marks.case}.pkl')
+  connection.close()
   return
 
 @app.post('/manual_save')
@@ -696,6 +749,7 @@ def manual_write(marks:ManualMarks):
   output = open(f'{marks.case}.pkl','wb')
   pickle.dump(marks,output)
   output.close()
+  connection.close()
   return
 
 @app.get('/manual_read/{case}',response_model=ManualMarks)
@@ -704,8 +758,118 @@ def manual_read(case):
   try:
     file = open(f'{case}.pkl','rb')
     data = pickle.load(file)
-    print(data)
+    connection.close()
     return data
   except:
+    connection.close()
     return {'marks':[],'case':''}
 
+@app.get('/close_faza/{case}')
+def close_faza(case):
+  faza = Faza.select(Faza.faza).join(Order).where(Order.cas == case).group_by(Faza.faza).tuples()
+  point = Point.select(Point.faza).join(Drawing).join(Order).where(Order.cas == case,Point.faza.not_in(faza)).group_by(Point.faza).tuples()
+  d = []
+  for p in point:
+    d.append(p[0])
+  PointPartInsert(d,case)
+  PdfGenerate(d,case)
+  connection.close()
+  return
+
+@app.post('/store_add')
+def store_add(run:StoreAdd):
+  for steel in run.run:
+    catalog = CatalogSteel.get(CatalogSteel.id == steel.id)
+    if steel.width == '-':
+      steel.width = 0
+    else:
+      steel.width = int(steel.width)
+    for c in range(steel.count):
+      StoreSteel.create(catalog_steel=catalog,width=steel.width,length=steel.lenght,name_steel=steel.name_steel,price=steel.price,receipt_date=run.date,vendor=run.vendor)
+  connection.close()
+  return
+
+@app.get('/upload_app/{case}')
+def upload_app(case):
+  order = Order.select().where(Order.cas == case).dicts().first()
+  connection.close()
+  return order
+
+@app.get('/set_app/{case}/{upload}')
+def set_app(case,upload):
+  order = Order.get(Order.cas == case)
+  order.upload = upload
+  order.save()
+  connection.close()
+  return
+
+@app.post('/need_for_metal')
+def need_for_metal(run:NeedForMetalBase):
+  nfm = post_metal(run)
+  connection.close()
+  return list(nfm)
+
+@app.get('/need_for_metal/{case}')
+def need_for_metal(case):
+  order = Order.get(Order.cas == case)
+  nfm = get_metal(order)
+  connection.close()
+  return list(nfm)
+
+@app.post('/add_order',response_model=List[OrderBase])
+def add_order(order:OrderBase):
+  order.color = get_color(order.inside)
+  Order.create(cas=order.cas,color=order.color,status='В работе',name=order.name,customer=order.customer,upload='',
+               contract=order.contract,consignee=order.consignee,weight=order.weight,inside=order.inside)
+  orders = get_orders()
+  connection.close()
+  return list(orders)
+
+@app.get('/call_list')
+def call_list():
+  lis = CallList.select().dicts()
+  for i in lis:
+    phone = PhoneBook.select().where(PhoneBook.phone == i['inbound']).first()
+    if phone:
+      i['inbound'] = ''
+      if phone.company:
+        i['inbound'] += f'{phone.company} '
+      if phone.surname:
+        i['inbound'] += f'{phone.surname} {phone.name[0]}.{phone.patronymic[0]}' 
+    phone = PhoneBook.select().where(PhoneBook.phone == i['outgoing']).first()
+    if phone:
+      i['outgoing'] = ''
+      if phone.company:
+        i['outgoing'] += f'{phone.company} '
+      if phone.surname:
+        i['outgoing'] += f'{phone.surname} {phone.name[0]}.{phone.patronymic[0]}' 
+  return list(lis)
+
+@app.get('/phone_book')
+def phone_book():
+  phones = PhoneBook.select().where(PhoneBook.direction == 'out').order_by(PhoneBook.company,PhoneBook.surname).dicts()
+  return list(phones)
+
+@app.get('/ring/{in_call}/{out_call}')
+def ring(in_call,out_call):
+  response = requests.post(f'http://192.168.0.69:8088/ari/channels/create?endpoint=SIP/Director/{out_call}&app=bss&appArgs=web_out,{in_call},{out_call}&api_key=viktor:35739517')
+
+@app.get('/ringing')
+def ringing():
+  response = requests.get(f'http://192.168.0.69:8088/ari/channels?api_key=viktor:35739517')
+  calls = []
+  for r in response.json():
+    if r['dialplan']['exten'] != '':
+      print(r)
+      in_call = PhoneBook.select().where(PhoneBook.phone == r['caller']['number']).first()
+      if in_call == None:
+        in_call = r['caller']['number']
+      else:
+        in_call = f'{in_call.company} {in_call.surname} {in_call.name} {in_call.patronymic}'.replace('None','').strip()
+      out_call = PhoneBook.select().where(PhoneBook.phone == r['dialplan']['exten']).first()
+      if out_call == None:
+        out_call = r['dialplan']['exten']
+      else:
+        out_call = f'{out_call.company} {out_call.surname} {out_call.name} {out_call.patronymic}'.replace('None','').strip()
+      calls.append({'in':in_call,'out':out_call})
+  return list(calls)

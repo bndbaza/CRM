@@ -9,7 +9,7 @@
             v-if="run.length != 0"
             color="indigo"
           >
-            <v-card-title >
+            <v-card-title>
               Приход
             </v-card-title>
             <v-card-text>
@@ -23,16 +23,15 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="info" @click.stop="dialog=true">OK</v-btn>
-              <v-btn color="error" @click="run = []">Отмена</v-btn>
+              <v-btn light color="teal" @click.stop="dialog=true">OK</v-btn>
+              <v-btn light color="red" @click="run = []">Отмена</v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
-        <v-col>
+        <v-col v-if="access()">
           <v-card
             elevation="2"
             class="mx-auto"
-            color="grey"
           >
             <v-card-title>
               Добавить
@@ -103,8 +102,8 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn v-if="steel.price" color="blue" @click="Run()">Добавить</v-btn>
-              <v-btn color="red" @click="Cancel()">Отмена</v-btn>
+              <v-btn v-if="steel.price" light color="teal" @click="Run()">Добавить</v-btn>
+              <v-btn light color="red" @click="Cancel()">Отмена</v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -134,7 +133,7 @@
         >
           <template v-slot:activator="{ on, attrs }">
             <v-text-field
-              v-model="date"
+              v-model="receipt_date"
               label="Дата поставки"
               v-bind="attrs"
               v-on="on"
@@ -143,7 +142,7 @@
           <v-date-picker
             v-model="date"
             no-title
-            @input="menu1 = false"
+            @input="menu1 = false,Replace(date)"
           ></v-date-picker>
         </v-menu>
           <!-- <v-date-picker -->
@@ -156,7 +155,7 @@
         <v-col cols="10">
           <v-select
             dense
-            v-model="provider"
+            v-model="vendor"
             label="Поставщик"
             :items="items"
           ></v-select>
@@ -170,21 +169,18 @@
           <v-text-field
             dense
             label="Поставщик"
-            v-model="provider"
+            v-model="vendor"
           ></v-text-field>
         </v-col>
         </v-row>
         </v-card-text>
         <v-card-actions>
-          <v-btn color="blue">ОК</v-btn>
-          <v-btn color="red" @click="plus=false,provider='',date=Replace(date)">Назад</v-btn>
+          <v-btn :disabled="vendor == '' || date == ''" color="blue" @click="StoreAdd()">ОК</v-btn>
+          <v-btn color="red" @click="plus=false,provider=''">Назад</v-btn>
         </v-card-actions>
         </v-container>
       </v-card>
     </v-dialog>
-    <p>{{run}}</p>
-    <p>{{steel}}</p>
-    <p>{{provider}}</p>
   </div>
 </template>
 
@@ -208,15 +204,16 @@ export default {
       start: [],
       all: [],
       dialog: false,
+      receipt_date: '',
       date: '',
-      provider: '',
-      items: [1,2,3,4],
+      vendor: '',
+      items: '',
       plus: false,
       menu1: false,
     }
   },
-  async mounted(){
-    this.catalog = await this.$axios.$get(this.$store.state.db.host+'store')
+  mounted(){
+    this.Start()
   },
   methods: {
     Test(full_name,size='',mark='') {
@@ -229,6 +226,12 @@ export default {
         catalog = this.catalog.filter(cat => cat[full_name] == this.steel[full_name]);
       }
       return catalog
+    },
+    async Start() {
+      let store
+      store = await this.$axios.$get(this.$store.state.db.host+'store')
+      this.catalog = store.catalog
+      this.items = store.vendors
     },
     Lenght() {
       for (const i of this.catalog) {
@@ -258,16 +261,36 @@ export default {
       this.id = {}
     },
     Replace(text) {
-      // text = text.split('T')[0]
-      // text = new Date(text.split('-'))
+      text = new Date(text.split('-'))
       var options = {
       year: 'numeric',
       month: 'numeric',
       day: 'numeric',
       };
-      // text = text.toLocaleString("ru",options)
-      return text
+      text = text.toLocaleString("ru",options)
+      this.receipt_date = text
+      return
     },
+    async StoreAdd() {
+      let store
+      store = await this.$axios.$post(this.$store.state.db.host+'store_add',{run: this.run, date: this.date, vendor: this.vendor})
+      this.dialog = false
+      this.run = []
+      this.date = ''
+      this.vendor = ''
+      this.receipt_date = ''
+      this.plus = false
+      this.Start()
+    },
+    access() {
+      let users = [57]
+      try {
+        return users.includes(this.$store.state.db.user.id)
+      }
+      catch {
+        return false
+      }
+    }
     
   } 
 }

@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PhoneBook>
+	<DirectoryEntry>
+		<Name>Белобородова Н.И</Name>
+		<Telephone>126</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Большедворский И.Ю</Name>
+		<Telephone>117</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Вахрушев В.В</Name>
+		<Telephone>115</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Вершинина О.А</Name>
+		<Telephone>135</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Вишневский В.Л</Name>
+		<Telephone>177</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Власов С.Ю</Name>
+		<Telephone>144</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Гараж</Name>
+		<Telephone>129</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Гнебедюк Д.С</Name>
+		<Telephone>141</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Золотуев А.Е</Name>
+		<Telephone>146</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Козликин В.А</Name>
+		<Telephone>150</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Корень И.Ю</Name>
+		<Telephone>119</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Корешков А.В</Name>
+		<Telephone>161</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Кошкина Н.П</Name>
+		<Telephone>148</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>КП-1(проходная)</Name>
+		<Telephone>113</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>КП-2</Name>
+		<Telephone>132</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Лемешева Т.А</Name>
+		<Telephone>139</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Лоншакова И.А</Name>
+		<Telephone>151</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Макарова Т.В</Name>
+		<Telephone>159</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Мальцева Т.П</Name>
+		<Telephone>145</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Новицкая Д.Д</Name>
+		<Telephone>118</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Обмоточная</Name>
+		<Telephone>155</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Пальвинский Ю.В</Name>
+		<Telephone>149</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Рыбакова Н.В</Name>
+		<Telephone>116</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Участок</Name>
+		<Telephone>130</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Центральный склад</Name>
+		<Telephone>114</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Цех</Name>
+		<Telephone>156</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Шелковая О.И</Name>
+		<Telephone>142</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Электроцех</Name>
+		<Telephone>127</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Юрьева Е.В</Name>
+		<Telephone>136</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Юшманов С.В</Name>
+		<Telephone>125</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+	<DirectoryEntry>
+		<Name>Юшманова В.С</Name>
+		<Telephone>147</Telephone>
+		<Mobile></Mobile>
+		<Other></Other>
+		<Ring>Default</Ring>
+		<Group></Group>
+	</DirectoryEntry>
+</PhoneBook>

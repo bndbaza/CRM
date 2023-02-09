@@ -23,6 +23,9 @@ aiogram = "^2.20"
 pyzbar = "^0.1.9"
 opencv-python = "^4.5.5.64"
 numpy = "^1.22.3"
+aioari = "^0.10.2"
+xmltodict = "^0.13.0"
+pysftp = "^0.2.9"
 
 [tool.poetry.dev-dependencies]
 

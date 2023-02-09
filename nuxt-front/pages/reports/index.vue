@@ -6,7 +6,7 @@
           <v-list>
             <v-list-item v-for="item in items" :key="item">
               <v-list-item-content>
-                <nuxt-link :to="item.link"><v-btn block>{{ item.text }}</v-btn></nuxt-link>
+                <nuxt-link :to="item.link"><v-btn light color="orange" block>{{ item.text }}</v-btn></nuxt-link>
               </v-list-item-content>
             </v-list-item>
           </v-list>

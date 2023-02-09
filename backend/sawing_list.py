@@ -186,6 +186,7 @@ def Body(tabl,width,height):
   height -= stroka
   for i in TaskPart.select(TaskPart,Drawing,Part,fn.SUM(TaskPart.count).alias('count_task')).join(Part).join(Drawing).where(TaskPart.task == tabl).group_by(Part.number).order_by(Part.number):
     x = ''
+    print(i.part.assembly)
     if i.part.width != '':x='x'
     if i.part.assembly.points[0].draw == -1:
       draw = i.part.assembly.assembly

@@ -17,6 +17,7 @@ def User_get(user):
   if user == '' or id == user:
     user = None
   base = Detail_result(id,worker,user,None)
+  connection.close()
   return base
 
 
@@ -42,6 +43,7 @@ def Detail_post(detail):
       time = True
     error,user2 = Detail_choise(task,users,1,time,'task')
   base = Detail_result(users[0].id,users,user2, error)
+  connection.close()
   return base
 
 
@@ -62,6 +64,7 @@ def Detail_result(id,worker,user,error):
     if len(detail) == 0 and error == None:
       error = 'Список Пуст'
   base = {'worker':list(worker),'detail':list(detail),'error':error}
+  connection.close()
   return base
 
 
@@ -99,6 +102,7 @@ def Detail_choise(task,users,to_work,one,stad):
     task.worker_2 = users[1].id
     task.save()
     user2 = users[1].id
+  connection.close()
   return error, user2
 
 def Task_end(task):
@@ -128,6 +132,7 @@ def Task_end(task):
         i.set = 1
     with connection.atomic():
       Faza.bulk_update(faza,fields=[Faza.preparation,Faza.set])
+  connection.close()
 
 
 def Detail_end(task):
@@ -147,7 +152,17 @@ def Detail_end(task):
     elif task.oper == 'weld':
       otc = Otc.select().where(Otc.detail == faza,Otc.oper == 'weld').first()
       if otc == None:
-        otc = Otc.create(detail=faza,start=datetime.datetime.today(),oper='weld')
+        detail = Detail.select().where(Detail.detail == task.detail,Detail.oper == 'paint').first()
+        if detail != None:
+          otc = Otc.create(detail=faza,start=datetime.datetime.today(),oper='weld')
+        else:
+          faza = task.faza
+          otc = Otc.create(detail=faza,start=datetime.datetime.today(),oper='paint')
+          faza.paint = 3
+          faza.set = 3
+          faza.assembly = 3
+          faza.weld = 3
+          faza.save()
       else:
         otc.fix = 0
         otc.error += 1
@@ -179,6 +194,7 @@ def Detail_end(task):
       faza.assembly = 3
       faza.weld = 3
       faza.save()
+  connection.close()
 
     
 def Detail_open(task,dates,faza,users,stad):
@@ -209,6 +225,7 @@ def Detail_open(task,dates,faza,users,stad):
     elif task.oper == 'weld':
       faza.weld = 2
     faza.save()
+  connection.close()
 
 def Detail_close(task,dates,stad):
   error = None
@@ -231,4 +248,5 @@ def Detail_close(task,dates,stad):
       Detail_end(task)
     elif stad == 'task':
       Task_end(task)
+  connection.close()
   return error

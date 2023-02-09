@@ -1198,14 +1198,14 @@ def ZAE():
   # drawing = Drawing.get(Drawing.id == 3440)
   # drawing.delete_instance(recursive=True)
   # return
-  faza = 1
-  case = 26
-  for i in Faza.select().where(Faza.faza > faza,Faza.case == case):
+  faza = 5
+  case = 23
+  for i in Faza.select().where(Faza.faza== faza,Faza.case == case):
     print(i)
     i.delete_instance(recursive=True)
-  for i in Task.select().where(Task.faza > faza,Task.order == case):
+  for i in Task.select().where(Task.faza == faza,Task.order == case):
     i.delete_instance(recursive=True)
-  for i in Point.select().join(Drawing).where(Point.faza > faza,Drawing.cas == case):
+  for i in Point.select().join(Drawing).where(Point.faza == faza,Drawing.cas == case):
     i.delete_instance(recursive=True)
   dr = Drawing.select().where(Drawing.cas == case)
   for d in dr:
@@ -1216,6 +1216,8 @@ def ZAE():
         d.save()
       else:
         d.delete_instance(recursive=True)
+  TaskPart.delete().where(TaskPart.part == None).execute()
+  TaskPart.delete().where(TaskPart.task == None).execute()
 
   
 def QWE():
@@ -1321,10 +1323,10 @@ def rrr():
   #     print(e)
 
 def PP():
-  packs = Packed.select().where(Packed.ready == None,Packed.order == 15)
+  packs = Packed.select().where(Packed.ready == None,Packed.order == 35)
   for pac in packs:
     ready = PackList(pac)
-    pac.size = '0x0x0'
+    # pac.size = '0x0x0'
     pac.pack = 'Пакет'
     pac.ready = ready
     pac.save()
@@ -1463,6 +1465,13 @@ def DELDEL(id):
   faza = Faza.select().where(Faza.case == None)
   for f in faza:
     f.delete_instance(recursive=True)
+  TaskPart.delete().where(TaskPart.part == None).execute()
+  TaskPart.delete().where(TaskPart.task == None).execute()
+  task = TaskPart.select(Task.id).join(Task).tuples()
+  tp = Task.select().where(Task.id.not_in(task))
+  for t in tp:
+    t.delete_instance()
+  print(len(tp))
 
 
 
@@ -1553,9 +1562,9 @@ def DEDR():
   #   print(x.assembly.assembly)
   # Point.update({Point.name: 'Закладные'}).where(Point.id.in_(p)).execute()
 
-  an = AssemblyNorm.select().where(AssemblyNorm.name == 'Колонна')
+  an = AssemblyNorm.select().where(AssemblyNorm.name == 'Ограждение')
   for a in an:
-    AssemblyNorm.create(name='Стойка',mass_to=a.mass_to,mass_of=a.mass_of,count_to=a.count_to,count_of=a.count_of,norm=a.norm,complexity=1)
+    AssemblyNorm.create(name='Арматурный каркас',mass_to=a.mass_to,mass_of=a.mass_of,count_to=a.count_to,count_of=a.count_of,norm=a.norm,complexity=1)
 
 
   # return
@@ -2214,3 +2223,142 @@ def Fask():
     print(p.detail)
     p.joint = 1
     p.save()
+
+def Deltask():
+  ship = Shipment.select().join(Packed).join(DetailPack).join(Faza).where(Shipment.number == 156).group_by(Faza.detail)
+  t = []
+  for packs in ship:
+    for dp in packs.packeds:
+      if dp.id not in t:
+        t.append(dp.id)
+        print(dp.shipment)
+        dp.shipment = None
+        dp.save()
+  return
+  CatalogSteel.update(gost='30245-2012').where(CatalogSteel.gost=='30245-2003').execute()
+  return
+  fazas = Faza.select().where(Faza.paint == 1)
+  for faza in fazas:
+    # Detail.delete().where(Detail.oper == 'paint',Detail.detail == faza.detail).execute()
+    det = Detail.select().where(Detail.detail == faza.detail,Detail.oper == 'paint').first()
+    if det == None:
+      print(faza.detail)
+      # faza.paint = 3
+      # faza.save()
+      # Otc.create(detail=faza,oper='paint')
+    # otc = Otc.select().where(Otc.detail == faza,Otc.oper == 'paint')
+    # for i in otc:
+      # print(i.detail.detail,i.oper)
+      # i.delete_instance()
+  return
+  points = Point.select(Drawing.id).join(Drawing).group_by(Drawing.id).tuples()
+  drawings = Drawing.select().where(Drawing.id.not_in(points))
+  for i in drawings:
+    print(i.cas,i.assembly)
+    # i.delete_instance(recursive=True)
+  orders = Drawing.select(Drawing,fn.COUNT(Point.id).alias('aaa')).join(Point).group_by(Drawing.id)
+  for i in orders:
+    if i.aaa == 0:
+      print(i.id,i.assembly)
+  # points = Point.select().join(Drawing).join(Order).where(Order.cas == '1510',Point.faza == 4)
+  # for point in points:
+    # point.delete_instance(recursive=True)
+  # fazas = Faza.select().join(Order).where(Order.cas == '1510',Faza.faza == 4)
+  # for point in fazas:
+    # point.delete_instance(recursive=True)
+  # for d in dd:
+
+    # if d.area > 0:
+      # d.upload = 'tekla'
+    # else:
+      # d.upload = 'manual'
+    # d.save()
+  pass
+  # faza = Faza.select(Faza.detail).where(Faza.case == 67).tuples()
+  # notdetail = Detail.select(Detail.detail).where(Detail.detail.in_(faza),Detail.oper=='paint').tuples()
+  # faza = Faza.select(Faza.detail).where(Faza.detail.in_(faza),Faza.detail.not_in(notdetail)).tuples()
+  # for f in faza:
+    # Detail.create(detail=f[0],basic='paint',oper='paint',to_work=0,norm=0,faza=18756)
+
+def SUD():
+  pack = Packed.select().where(Packed.order == 35)
+  for p in pack:
+    print(p.number)
+    p.ready = None
+    p.save()
+  return
+  faza = Faza.select(Faza.detail).where(Faza.case == 33,Faza.shipment != 3).tuples()
+  pp = PointPart.select().join(Point).join(Drawing).where(PointPart.detail.in_(faza)).group_by(Point.id)
+  ppp = []
+  for p in pp:
+    ppp.append(p.point.id)
+  point = Point.select(Point,fn.COUNT(Drawing.assembly).alias('count_as')).join(Drawing).where(Point.id.in_(ppp)).group_by(Drawing.assembly)
+  book = Workbook()
+  sheet = book.active
+  r = 1
+  for f in point:
+    print(f.assembly.assembly)
+    sheet.cell(row=r,column=1).value = f.assembly.assembly
+    sheet.cell(row=r,column=2).value = f.count_as
+    sheet.cell(row=r,column=3).value = f.assembly.weight
+    sheet.cell(row=r,column=4).value = f.assembly.weight * f.count_as
+    r += 1
+  book.save('sud2.xlsx')
+
+def DP():
+  pp = Packed.select().where(Packed.order == 27)
+  i = len(pp)
+  for p in pp:
+    detail = DetailPack.select(Faza.detail).join(Faza).where(DetailPack.pack == p).tuples()
+    Faza.update({Faza.packed:1}).where(Faza.detail.in_(detail)).execute()
+    DetailPack.delete().where(DetailPack.pack == p).execute()
+    p.delete_instance(recursive=True)
+    print(i)
+    i -= 1
+
+def ggg():
+  import xmltodict
+  import json
+  with open('contact.xml',encoding="utf-8") as file:
+    doc = xmltodict.parse(file.read())
+
+  j = json.dumps(doc,ensure_ascii=False)
+  print(j)
+  return
+  for i in doc['PhoneBook']['DirectoryEntry']:
+    name = i['Name'].split(' ')[0]
+    print(name,'-',i['Telephone'])
+    user = User.select().where(User.surname == name).first()
+    if user != None:
+      PhoneBook.create(surname=user.surname,name=user.name,patronymic=user.patronymic,phone=i['Telephone'],direction='in')
+    else:
+      PhoneBook.create(company=name,phone=i['Telephone'],direction='in')
+
+def ggg2():
+  import xmltodict
+  import pysftp
+  xmls = ('in','out','spec')
+  for text in xmls:
+    phone_in = {'PhoneBook':{"DirectoryEntry":[]}}
+    phones = PhoneBook.select().where(PhoneBook.direction == text).order_by(
+        fn.CONCAT(
+            (Case(None,[(PhoneBook.company == None,'')],PhoneBook.company)),
+            (Case(None,[(PhoneBook.surname == None,'')],PhoneBook.surname))
+          )
+      )
+    for phone in phones:
+      st = ''
+      if phone.company:
+        st += phone.company
+      if phone.surname:
+        st += ' '
+        st += phone.surname +' '+ phone.name[0] +'.'+phone.patronymic[0]
+      st = st.strip()
+      p = {"Name":st,"Telephone":phone.phone,"Mobile":None,"Other":None,"Ring":"Default","Group":None}
+      phone_in["PhoneBook"]["DirectoryEntry"].append(p)
+    xml = (xmltodict.unparse(phone_in,pretty=True))
+    with open(f'{text}.xml','w') as f:
+      f.write(xml)
+    with pysftp.Connection('192.168.0.51',username='admin',password='15296MV6') as sftp:
+      with sftp.cd('123'):
+        sftp.put(f'{text}.xml')

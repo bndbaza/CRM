@@ -11,8 +11,8 @@
         dense
       >
         <template v-slot:[`item.faza`]="{ item }">
-          <nuxt-link :to="'stage/'+$route.params.faza+','+item.faza" v-if="item.faza != 'Итог'">Фаза {{ item.faza }}</nuxt-link>
-          <nuxt-link :to="'stage/'+$route.params.faza+',0'" v-else >Итог</nuxt-link>
+          <nuxt-link class="orange--text" :to="'stage/'+$route.params.faza+','+item.faza" v-if="item.faza != 'Итог'">Фаза {{ item.faza }}</nuxt-link>
+          <nuxt-link class="orange--text" :to="'stage/'+$route.params.faza+',0'" v-else >Итог</nuxt-link>
         </template>
         <template v-slot:[`item.weight_kmd`]="{ item }">
           {{ item.weight_kmd / 1000 | number }}
@@ -69,8 +69,8 @@ export default {
         {text:'Окрашено',value:'weight_paint'},
         {text:'Упаковано',value:'weight_packed'},
         {text:'Отгружено',value:'weight_shipment'},
-        {text:'Доставлено на объект',value:'weight_in_object'},
-        {text:'Смонтировано',value:'weight_mount'},
+        // {text:'Доставлено на объект',value:'weight_in_object'},
+        // {text:'Смонтировано',value:'weight_mount'},
       ]
     }
   },

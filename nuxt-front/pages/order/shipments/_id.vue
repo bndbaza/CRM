@@ -6,13 +6,13 @@
           <h1 class="text-center">Заказ {{$route.params.id}}</h1>
         </v-col>
         <v-col>
-          <v-btn color="success" @click="dialog4 = true">Новая машина</v-btn>
+          <v-btn light color="orange" @click="dialog4 = true">Новая машина</v-btn>
         </v-col>
       </v-row>
       <v-row>
         <v-col>
           <h2 class="text-center">Машины</h2>
-          <v-simple-table>
+          <v-simple-table v-if="!loading">
             <template v-slot:default>
               <thead>
                 <tr>
@@ -47,8 +47,8 @@
                   <td>{{car.car}}</td>
                   <td>{{car.number_car}}</td>
                   <td>{{car.driver}}</td>
-                  <td v-if="!car.date"><v-btn color="success" @click="ship = car,dialog5 = true">Закончить</v-btn></td>
-                  <td v-if="car.date"><v-btn color="info" @click="DownloadShip(car)">Отправлен</v-btn></td>
+                  <td v-if="!car.date"><v-btn light color="green" @click="ship = car,dialog5 = true">Закончить</v-btn></td>
+                  <td v-if="car.date"><v-btn light color="blue" @click="DownloadShip(car)">Отправлен</v-btn></td>
                 </tr>
               </tbody>
             </template>
@@ -84,7 +84,7 @@
                   v-for="pack in packed"
                   :key="pack.id"
                 >
-                  <td v-if="!pack.ready"><v-btn color="black" icon text @click="structurePackage(pack.number)">{{ pack.number }}</v-btn></td>
+                  <td v-if="!pack.ready"><v-btn color="orange" icon text @click="structurePackage(pack.number)"><h3>{{ pack.number }}</h3></v-btn></td>
                   <td v-if="!pack.ready">{{ pack.date | date }}</td>
                   <td v-if="!pack.ready">{{ pack.size }}</td>
                   <td v-if="!pack.ready">{{ pack.pack }}</td>
@@ -127,14 +127,14 @@
                   v-for="pack in packed"
                   :key="pack.id"
                 >
-                  <!-- <td v-if="pack.ready">{{ pack.number }}</td> -->
-                  <td v-if="pack.ready"><v-btn color="black" icon text @click="structurePackage(pack.number)">{{ pack.number }}</v-btn></td>
+                  <td v-if="pack.ready"><v-btn color="orange" icon text @click="structurePackage(pack.number)"><h3>{{ pack.number }}</h3></v-btn></td>
                   <td v-if="pack.ready">{{ pack.date | date }}</td>
                   <td v-if="pack.ready">{{ pack.size }}</td>
                   <td v-if="pack.ready">{{ pack.pack }}</td>
                   <td v-if="pack.ready">
-                    <v-btn color="info" @click="Download(pack)" icon><v-icon>mdi-download</v-icon></v-btn>
-                    <v-btn color="red" @click="dialog2 = true, openDialog(pack)" icon><v-icon>mdi-close</v-icon></v-btn>
+                    <v-btn v-if="pack.shipment == null" color="info" @click="Download(pack)" icon><v-icon>mdi-download</v-icon></v-btn>
+                    <v-btn v-else color="green" @click="Download(pack)" icon><v-icon>mdi-car-estate</v-icon></v-btn>
+                    <v-btn v-if="pack.shipment == null" color="red" @click="dialog2 = true, openDialog(pack)" icon><v-icon>mdi-close</v-icon></v-btn>
                   </td>
                 </tr>
               </tbody>
@@ -144,6 +144,7 @@
       </v-row>
     </v-container>
     <v-dialog
+      dark
       v-model="dialog"
       scrollable
       persistent :overlay="false"
@@ -181,6 +182,7 @@
       </v-card>
     </v-dialog>
     <v-dialog
+      dark
       v-model="dialog2"
       scrollable
       persistent :overlay="false"
@@ -202,6 +204,7 @@
       </v-card>
     </v-dialog>
     <v-dialog
+      dark
       v-model="dialog3"
       scrollable
       persistent :overlay="false"
@@ -244,6 +247,7 @@
       </v-card>
     </v-dialog>
     <v-dialog
+      dark
       v-model="dialog4"
       scrollable
       persistent :overlay="false"
@@ -270,12 +274,13 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="success" @click="postCar()">OK</v-btn>
-          <v-btn color="error" @click="dialog4 = false">Отмена</v-btn>
+          <v-btn light :disabled="!car.car || !car.number_car || !car.driver" color="teal" @click="postCar()">OK</v-btn>
+          <v-btn light color="red" @click="dialog4 = false">Отмена</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
     <v-dialog
+      dark
       v-model="dialog5"
       scrollable
       persistent :overlay="false"
@@ -319,24 +324,16 @@
       </v-card>
     </v-dialog>
     <v-dialog
-      v-model="loader"
-      hide-overlay
-      persistent
-      width="300"
+      v-model="loading"
+      scrollable
+      persistent :overlay="false"
+      max-width="150px"
+      transition="dialog-transition"
     >
-      <v-card
-        color="primary"
-        dark
-      >
-        <v-card-text>
-          Идет загрузка
-          <v-progress-linear 
-            indeterminate
-            color="white"
-            class="mb-0"
-          ></v-progress-linear>
-        </v-card-text>
-      </v-card>
+      <v-progress-linear
+        indeterminate
+        color="orange"
+      ></v-progress-linear>
     </v-dialog>
   </div>
 </template>
@@ -354,7 +351,7 @@ export default {
       dialog3: false,
       dialog4: false,
       dialog5: false,
-      loader: false,
+      loading: true,
       structures: [],
       car: {},
       cars: [],
@@ -408,12 +405,16 @@ export default {
       this.packed = await this.$axios.$post(this.$store.state.db.host+'package_post',{pack: this.pack})
     },
     async postCar() {
+      this.loading = true
       this.dialog4 = false
       this.car.case = this.$route.params.id
       this.cars = await this.$axios.$post(this.$store.state.db.host+'post_car',{car: this.car});
+      this.car = {}
+      this.loading = false
     },
     async getCars() {
       this.cars = await this.$axios.$get(this.$store.state.db.host+'get_cars/'+this.$route.params.id)
+      this.loading = false
     },
     async getShip(car) {
       // this.ship = await this.$axios.$get(this.$store.state.db.host+'get_ship/'+car);

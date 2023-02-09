@@ -55,15 +55,15 @@ async def delete_pack(message):
       DetailPack.delete().where(DetailPack.pack == p).execute()
       p.delete_instance(recursive=True)
       await message.answer(f'Пачка {pack} удалена')
-
     else:
       await message.answer(f'Пачки {pack} не существует')
+  connection.close()
 
 
 
 # Запрос наличия нарядов на проверку ОТК
 @dp.message_handler(commands=['otc'])
-async def start(message):
+async def start_otc(message):
   if Worker.select().join(User).where(User.telegram == message.chat.id,Worker.oper.in_(['otc','admin','director'])).first() != None:
     oper = {'paint': 'Покраска','weld':'Сварка'}
     text = ''
@@ -72,8 +72,7 @@ async def start(message):
     detail_weld = Detail.select().where(Detail.faza.in_(otc_weld),Detail.oper.in_(['weld']))
     otc_paint = Otc.select(Otc.detail).where(Otc.end == None,Otc.oper == 'paint',Otc.fix == 0).tuples()
     detail_paint = Detail.select().where(Detail.faza.in_(otc_paint),Detail.oper.in_(['paint']))
-
-    # if len(detail) != 0:
+    # detail_paint = Detail.select().where(Detail.faza.in_(otc_paint),Detail.oper.in_(['weld']))
     for d in detail_weld:
       text += f'{d.detail} {oper[d.oper]} {d.worker_1.user.surname}\n'
       count += 1
@@ -96,7 +95,7 @@ async def start(message):
   connection.close()
 
 @dp.message_handler(commands=['weight'])
-async def start(message):
+async def start_weight(message):
   point = Point.select(Point,fn.SUM(Drawing.weight).alias('we')).join(Drawing).where(Drawing.cas == 15).group_by(Point.name)
   text = ''
   for p in point:
@@ -108,6 +107,7 @@ async def start(message):
 async def open(message):
   
   OpenDoor(message)
+  connection.close()
 
 @dp.callback_query_handler(lambda message: message.data.startswith('otc ok '))
 async def otc_callback(callback: types.CallbackQuery):
@@ -129,10 +129,6 @@ async def otc_callback(callback: types.CallbackQuery):
       Joint.create(detail=detail,part=pp.part)
     Detail.update({Detail.to_work: 1}).where(Detail.oper == 'paint',Detail.detail == otc.detail.detail).execute()
     faza.paint = 1
-
-
-
-
   otc.save()
   faza.save()
   await bot.send_message(callback.from_user.id,f'Наряд {faza.detail} прошел проверку')

@@ -64,13 +64,13 @@
         > 
           <template v-slot:[`item.status`]="{ item }">
             <template v-if="item.task.end">
-              <v-chip color="white">Готов</v-chip>
+              <v-chip light color="white">Готов</v-chip>
             </template>
             <template v-else-if="item.task.start">
-              <v-chip color="yellow">В работе</v-chip>
+              <v-chip light color="yellow">В работе</v-chip>
             </template>
             <template v-else>
-              <v-chip color="red">Не в работе</v-chip>
+              <v-chip light color="red">Не в работе</v-chip>
             </template>
           </template>
           <template v-slot:[`item.date`]="{ item }">

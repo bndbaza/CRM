@@ -221,9 +221,10 @@ def Tekla(xls):
           'more':more,
         }
         if tekla[row[1].replace(' ','')]['weight_clear'] - (tekla[row[1].replace(' ','')]['weight']['weight'] - tekla[row[1].replace(' ','')]['weight']['more']) > 2:
-          return (f"слишком большая погрешность в весе {row[1].replace(' ','')}")
+          return (f"слишком большая погрешность в весе {row[1].replace(' ','')} {tekla[row[1].replace(' ','')]['weight_clear']} {tekla[row[1].replace(' ','')]['weight']['weight']} {tekla[row[1].replace(' ','')]['weight']['more']}")
         elif tekla[row[1].replace(' ','')]['weight_clear'] - (tekla[row[1].replace(' ','')]['weight']['weight'] - tekla[row[1].replace(' ','')]['weight']['more']) < -2:
-          return (f"слишком большая погрешность в весе {row[1].replace(' ','')}")
+          return (f"слишком большая погрешность в весе {row[1].replace(' ','')} {tekla[row[1].replace(' ','')]['weight_clear']} {tekla[row[1].replace(' ','')]['weight']['weight']} {tekla[row[1].replace(' ','')]['weight']['more']}")
+          # return (f"слишком большая погрешность в весе {row[1].replace(' ','')}")
 
 
       if row[0].replace(' ','') == 'WELD' and row[1].replace(' ','') in tekla.keys():

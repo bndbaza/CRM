@@ -12,7 +12,7 @@ def ManualUpload(marks):
         'milling':'фрез',
         'bend':'гиб',
         'turning': 'ток'
-      }
+    }
     case = Order.get(Order.cas == marks.case)
     marks = marks.marks
     index = 0
@@ -24,7 +24,6 @@ def ManualUpload(marks):
         faza = 1
     for mark in marks:
         weight_mark = 0
-        print(mark)
         paint = int(mark.paint)
         drawing = Drawing.create(create_date=date,cas=case,assembly=mark.mark,area=0,count=mark.count,weight=0,more=0,paint=paint)
         try:

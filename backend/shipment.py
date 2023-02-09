@@ -94,6 +94,7 @@ async def Get(msgs):
       pack.save()
       weight = Shipment.select(fn.SUM(Faza.weight)).join(Packed).join(DetailPack).join(Faza).where(Shipment.id == pack.shipment).scalar()
       await Bots(f'Пачка {pack.number} заргужена в машину. В машине {weight} кг.')
+  connection.close()
 
 
   
@@ -110,11 +111,13 @@ async def handle_client(reader, writer):
     else:
       print('Disconnect')
   writer.close()
+  connection.close()
 
 async def Start():
   server = await asyncio.start_server(handle_client, server_host, 2000)
   async with server:
     await server.serve_forever()
+  connection.close()
 
 async def Ship(msg):
   ship = Shipment.select().where(Shipment.date == None).first()
@@ -126,4 +129,5 @@ async def Ship(msg):
     pack.save()
     weight = Shipment.select(fn.SUM(Faza.weight)).join(Packed).join(DetailPack).join(Faza).where(Shipment.id == pack.shipment).scalar()
     await Bots(f'Пачка {pack.number} заргужена в машину. В машине {weight} кг.')
+  connection.close()
 
